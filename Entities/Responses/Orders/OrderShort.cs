@@ -1,5 +1,6 @@
 ﻿using IikoTransport.Net.Entities.Common.Date;
 using IikoTransport.Net.Entities.Responses.Orders.Customers;
+using IikoTransport.Net.Entities.Responses.Orders.Discounts;
 using IikoTransport.Net.Entities.Responses.Orders.Payments;
 using Newtonsoft.Json;
 
