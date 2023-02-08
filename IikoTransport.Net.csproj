@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Entities\Requests\BanquetsAndReserves\" />
+    <Folder Include="Entities\Requests\Delivery\Addresses\" />
+    <Folder Include="Entities\Requests\Delivery\DeliveryCreateAndUpdate\" />
+    <Folder Include="Entities\Requests\Delivery\DeliveryRestrictions\" />
+    <Folder Include="Entities\Requests\Delivery\DeliveryRetrieve\" />
+    <Folder Include="Entities\Requests\Delivery\Drafts\" />
+    <Folder Include="Entities\Requests\Delivery\MarketingSources\" />
+    <Folder Include="Entities\Requests\General\Authorization\" />
+    <Folder Include="Entities\Requests\General\Dictionaries\" />
+    <Folder Include="Entities\Requests\General\Employees\" />
+    <Folder Include="Entities\Requests\General\Menu\" />
+    <Folder Include="Entities\Requests\General\Notifications\" />
+    <Folder Include="Entities\Requests\General\Operations\" />
+    <Folder Include="Entities\Requests\General\Organizations\" />
+    <Folder Include="Entities\Requests\General\TerminalGroups\" />
+    <Folder Include="Entities\Requests\LoyaltyAndDiscounts\CustomerCategories\" />
+    <Folder Include="Entities\Requests\LoyaltyAndDiscounts\Customers\" />
+    <Folder Include="Entities\Requests\LoyaltyAndDiscounts\DiscountsAndPromotions\" />
+    <Folder Include="Entities\Requests\LoyaltyAndDiscounts\Messages\" />
+    <Folder Include="Entities\Requests\Orders\" />
+    <Folder Include="Entities\Requests\Webhooks\" />
+    <Folder Include="Entities\Responses\Delivery\DeliveryCreateAndUpdate\" />
+    <Folder Include="Entities\Responses\Delivery\DeliveryRetrieve\" />
+    <Folder Include="Entities\Responses\Delivery\Addresses\" />
+    <Folder Include="Entities\Responses\Delivery\DeliveryRestrictions\" />
+    <Folder Include="Entities\Responses\Delivery\MarketingSources\" />
+    <Folder Include="Entities\Responses\Delivery\Drafts\" />
+    <Folder Include="Entities\Responses\LoyaltyAndDiscounts\DiscountsAndPromotions\" />
+    <Folder Include="Entities\Responses\LoyaltyAndDiscounts\CustomerCategories\" />
+    <Folder Include="Entities\Responses\LoyaltyAndDiscounts\Customers\" />
+    <Folder Include="Entities\Responses\LoyaltyAndDiscounts\Messages\" />
+    <Folder Include="Entities\Responses\BanquetsAndReserves\" />
+    <Folder Include="Entities\Responses\Webhooks\" />
+    <Folder Include="Entities\Requests\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+  </ItemGroup>
+
+</Project>
