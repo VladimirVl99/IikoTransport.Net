@@ -11,7 +11,7 @@ namespace IikoTransport.Net.Entities.Responses.General.Menu.Nomenclature
     /// Contains information about stock group.
     /// </summary>
     [JsonObject]
-    public class ProductGroup
+    public class ProductGroup : ProductGroupShort
     {
         /// <summary>
         /// Links to images.
@@ -46,22 +46,10 @@ namespace IikoTransport.Net.Entities.Responses.General.Menu.Nomenclature
         public bool IsGroupModifier { get; set; }
 
         /// <summary>
-        /// ID.
-        /// </summary>
-        [JsonProperty(PropertyName = "id", Required = Required.Always)]
-        public Guid Id { get; set; }
-
-        /// <summary>
         /// SKU.
         /// </summary>
         [JsonProperty(PropertyName = "code", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string? Code { get; set; }
-
-        /// <summary>
-        /// Name.
-        /// </summary>
-        [JsonProperty(PropertyName = "name", Required = Required.Always)]
-        public string Name { get; set; } = default!;
 
         /// <summary>
         /// Description.

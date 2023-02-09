@@ -13,7 +13,7 @@ namespace IikoTransport.Net.Entities.Responses.General.Menu.Nomenclature
     /// Contains information about menu item and modifier.
     /// </summary>
     [JsonObject]
-    public class Product
+    public class Product : ProductShort
     {
         /// <summary>
         /// Fat per 100g.
@@ -183,22 +183,10 @@ namespace IikoTransport.Net.Entities.Responses.General.Menu.Nomenclature
         public bool CanSetOpenPrice { get; set; }
 
         /// <summary>
-        /// ID.
-        /// </summary>
-        [JsonProperty(PropertyName = "id", Required = Required.Always)]
-        public Guid Id { get; set; }
-
-        /// <summary>
         /// SKU.
         /// </summary>
         [JsonProperty(PropertyName = "code", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string? Code { get; set; }
-
-        /// <summary>
-        /// Name.
-        /// </summary>
-        [JsonProperty(PropertyName = "name", Required = Required.Always)]
-        public string Name { get; set; } = default!;
 
         /// <summary>
         /// Description.

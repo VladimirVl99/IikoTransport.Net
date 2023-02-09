@@ -11,20 +11,8 @@ namespace IikoTransport.Net.Entities.Responses.General.Menu.Nomenclature
     /// Contains information about item size.
     /// </summary>
     [JsonObject]
-    public class Size
+    public class Size : SizeShort
     {
-        /// <summary>
-        /// ID.
-        /// </summary>
-        [JsonProperty(PropertyName = "id", Required = Required.Always)]
-        public Guid Id { get; set; }
-
-        /// <summary>
-        /// Name.
-        /// </summary>
-        [JsonProperty(PropertyName = "name", Required = Required.AllowNull)]
-        public string? Name { get; set; }
-
         /// <summary>
         /// Priority (serial number) of the size in the size scale.
         /// </summary>

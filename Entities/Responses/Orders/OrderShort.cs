@@ -1,4 +1,5 @@
 ﻿using IikoTransport.Net.Entities.Common.Date;
+using IikoTransport.Net.Entities.Responses.General.Dictionaries.Order;
 using IikoTransport.Net.Entities.Responses.Orders.Customers;
 using IikoTransport.Net.Entities.Responses.Orders.Discounts;
 using IikoTransport.Net.Entities.Responses.Orders.Payments;
@@ -111,7 +112,7 @@ namespace IikoTransport.Net.Entities.Responses.Orders
         /// Order type.
         /// </summary>
         [JsonProperty(PropertyName = "orderType", Required = Required.AllowNull)]
-        public OrderType? OrderType { get; set; }
+        public OrderTypeShort? OrderType { get; set; }
 
         /// <summary>
         /// ID of the terminal group where the order is located.
