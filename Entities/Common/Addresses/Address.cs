@@ -1,18 +1,20 @@
-﻿using Newtonsoft.Json;
+﻿using IikoTransport.Net.Entities.Common.Addresses.Regions;
+using IikoTransport.Net.Entities.Common.Addresses.Streets;
+using Newtonsoft.Json;
 
 namespace IikoTransport.Net.Entities.Common.Addresses
 {
-	/// <summary>
-	/// Delivery address details.
-	/// </summary>
-	[JsonObject]
+    /// <summary>
+    /// Delivery address details.
+    /// </summary>
+    [JsonObject]
 	public class Address
 	{
 		/// <summary>
 		/// Street.
 		/// </summary>
 		[JsonProperty(PropertyName = "street", Required = Required.Always)]
-		public Street Street { get; set; } = default!;
+		public StreetShort Street { get; set; } = default!;
 
 		/// <summary>
 		/// Postcode.
@@ -60,6 +62,6 @@ namespace IikoTransport.Net.Entities.Common.Addresses
 		/// Region.
 		/// </summary>
 		[JsonProperty(PropertyName = "region", Required = Required.Always)]
-		public Region? Region { get; set; }
+		public RegionShort? Region { get; set; }
 	}
 }

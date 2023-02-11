@@ -1,17 +1,12 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace IikoTransport.Net.Entities.Common.Addresses
+namespace IikoTransport.Net.Entities.Common.Addresses.Regions
 {
 	/// <summary>
-	/// City.
+	/// Region.
 	/// </summary>
 	[JsonObject]
-	public class City
+	public class RegionShort
 	{
 		/// <summary>
 		/// ID.
