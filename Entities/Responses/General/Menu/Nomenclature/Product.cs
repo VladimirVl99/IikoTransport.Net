@@ -1,4 +1,4 @@
-﻿using IikoTransport.Net.Entities.Responses.Orders;
+﻿using IikoTransport.Net.Entities.Common.Orders;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;

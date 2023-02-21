@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IikoTransport.Net.Entities.Responses.Orders
+namespace IikoTransport.Net.Entities.Responses.BanquetsAndReserves
 {
-    public enum OrderItemType
+    public class Color
     {
-        Product,
-        Compound
     }
 }

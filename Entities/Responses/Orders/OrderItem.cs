@@ -1,4 +1,5 @@
 ﻿using IikoTransport.Net.Entities.Common.Date;
+using IikoTransport.Net.Entities.Common.Orders;
 using IikoTransport.Net.Entities.Responses.General.Menu.Nomenclature;
 using IikoTransport.Net.Entities.Responses.Orders.Nomenclature;
 using Newtonsoft.Json;

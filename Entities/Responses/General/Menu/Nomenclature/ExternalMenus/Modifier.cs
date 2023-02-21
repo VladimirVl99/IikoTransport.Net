@@ -1,9 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IikoTransport.Net.Entities.Responses.General.Menu.Nomenclature.ExternalMenus
 {
@@ -34,8 +29,8 @@ namespace IikoTransport.Net.Entities.Responses.General.Menu.Nomenclature.Externa
         /// <summary>
         /// Modifier's name.
         /// </summary>
-        [JsonProperty(PropertyName = "name", Required = Required.AllowNull)]
-        public string? Name { get; set; }
+        [JsonProperty(PropertyName = "name", Required = Required.Always)]
+        public string Name { get; set; } = default!;
 
         /// <summary>
         /// Modifier's description.
