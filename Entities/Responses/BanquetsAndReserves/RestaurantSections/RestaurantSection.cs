@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace IikoTransport.Net.Entities.Responses.BanquetsAndReserves
+namespace IikoTransport.Net.Entities.Responses.BanquetsAndReserves.RestaurantSections
 {
     /// <summary>
     /// Restaurant section.

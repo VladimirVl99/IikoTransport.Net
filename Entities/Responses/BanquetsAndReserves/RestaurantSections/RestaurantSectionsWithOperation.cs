@@ -1,7 +1,7 @@
 ﻿using IikoTransport.Net.Entities.Responses.General.Operations;
 using Newtonsoft.Json;
 
-namespace IikoTransport.Net.Entities.Responses.BanquetsAndReserves
+namespace IikoTransport.Net.Entities.Responses.BanquetsAndReserves.RestaurantSections
 {
     /// <summary>
     /// All restaurant sections of specified terminal groups,

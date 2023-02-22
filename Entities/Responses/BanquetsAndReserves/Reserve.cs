@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IikoTransport.Net.Entities.Responses.BanquetsAndReserves
 {
-    public class RestaurantSectionEllipse
-    {
-    }
+	public class Reserve
+	{
+	}
 }

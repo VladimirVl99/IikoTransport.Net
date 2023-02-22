@@ -32,7 +32,6 @@
     <Folder Include="Entities\Responses\LoyaltyAndDiscounts\CustomerCategories\" />
     <Folder Include="Entities\Responses\LoyaltyAndDiscounts\Customers\" />
     <Folder Include="Entities\Responses\LoyaltyAndDiscounts\Messages\" />
-    <Folder Include="Entities\Responses\BanquetsAndReserves\" />
     <Folder Include="Entities\Responses\Webhooks\" />
   </ItemGroup>
 
