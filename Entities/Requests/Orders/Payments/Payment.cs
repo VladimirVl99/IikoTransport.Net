@@ -10,6 +10,13 @@ namespace IikoTransport.Net.Entities.Requests.Orders.Payments
     public class Payment
     {
         /// <summary>
+        /// Card No.
+        /// In iikoFront, it is possible to make card payment without card No.
+        /// </summary>
+        [JsonProperty(PropertyName = "number", Required = Required.Always)]
+        public string? Number { get; set; }
+
+        /// <summary>
         /// Payment type kind.
         /// </summary>
         [JsonProperty(PropertyName = "paymentTypeKind", Required = Required.Always)]

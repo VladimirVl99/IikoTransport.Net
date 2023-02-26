@@ -21,6 +21,7 @@ namespace IikoTransport.Net.Entities.Responses.Delivery.Drafts
         /// Name of customer.
         /// Required for new customers (i.e. if "id" == null) Not required if "id" specified.
         /// </summary>
+        [JsonProperty(PropertyName = "name", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public new string? Name { get; set; }
 
         /// <summary>

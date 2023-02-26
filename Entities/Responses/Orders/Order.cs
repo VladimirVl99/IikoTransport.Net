@@ -1,4 +1,5 @@
-﻿using IikoTransport.Net.Entities.Responses.Orders.Customers;
+﻿using IikoTransport.Net.Entities.Common.Orders;
+using IikoTransport.Net.Entities.Responses.Orders.Customers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -23,7 +24,7 @@ namespace IikoTransport.Net.Entities.Responses.Orders
         /// </summary>
         [JsonProperty(PropertyName = "status", Required = Required.Always)]
         [JsonConverter(typeof(StringEnumConverter))]
-        public Status Status { get; set; }
+        public OrderStatus Status { get; set; }
 
         /// <summary>
         /// Order waiter.

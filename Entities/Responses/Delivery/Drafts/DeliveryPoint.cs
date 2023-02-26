@@ -1,4 +1,5 @@
 ﻿using IikoTransport.Net.Entities.Common.Addresses;
+using IikoTransport.Net.Entities.Common.Orders;
 using Newtonsoft.Json;
 
 namespace IikoTransport.Net.Entities.Responses.Delivery.Drafts
@@ -7,7 +8,7 @@ namespace IikoTransport.Net.Entities.Responses.Delivery.Drafts
     /// Delivery point details.
     /// </summary>
     [JsonObject]
-    public class DeliveryPoint
+    public class DeliveryPoint : DeliveryPointShort
     {
         /// <summary>
         /// Delivery address coordinates.
@@ -21,19 +22,5 @@ namespace IikoTransport.Net.Entities.Responses.Delivery.Drafts
         /// </summary>
         [JsonProperty(PropertyName = "address", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public DeliveryAddress? Address { get; set; }
-
-        /// <summary>
-        /// [ 0 .. 100 ] characters.
-        /// Delivery location custom code in customer's API system.
-        /// </summary>
-        [JsonProperty(PropertyName = "externalCartographyId", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string? ExternalCartographyId { get; set; }
-
-        /// <summary>
-        /// [ 0 .. 500 ] characters
-        /// Additional information.
-        /// </summary>
-        [JsonProperty(PropertyName = "comment", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string? Comment { get; set; }
     }
 }

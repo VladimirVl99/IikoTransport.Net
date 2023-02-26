@@ -10,17 +10,35 @@ namespace IikoTransport.Net.Entities.Requests.Orders.Loyalties
     public class Discount
     {
         /// <summary>
+        /// Card program ID.
+        /// </summary>
+        [JsonProperty(PropertyName = "programId", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public Guid? ProgramId { get; set; }
+
+        /// <summary>
+        /// Card program name.
+        /// </summary>
+        [JsonProperty(PropertyName = "programName", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string? ProgramName { get; set; }
+
+        /// <summary>
+        /// Discount information for order items.
+        /// </summary>
+        [JsonProperty(PropertyName = "discountItems", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public IEnumerable<IikoCardDiscountItem>? DiscountItems { get; set; }
+
+        /// <summary>
         /// Discount type.
         /// Can be obtained by https://api-ru.iiko.services/api/1/discounts operation.
         /// </summary>
-        [JsonProperty(PropertyName = "discountTypeId", Required = Required.Always)]
-        public Guid DiscountTypeId { get; set; }
+        [JsonProperty(PropertyName = "discountTypeId", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public Guid? DiscountTypeId { get; set; }
 
         /// <summary>
         /// Discount/surcharge sum.
         /// </summary>
         [JsonProperty(PropertyName = "sum", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public double Sum { get; set; }
+        public double? Sum { get; set; }
 
         /// <summary>
         /// Order item positions.

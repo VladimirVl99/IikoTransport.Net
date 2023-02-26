@@ -1,7 +1,6 @@
 ﻿using IikoTransport.Net.Entities.Common.Date;
 using IikoTransport.Net.Entities.Common.Orders;
 using IikoTransport.Net.Entities.Responses.General.Menu.Nomenclature;
-using IikoTransport.Net.Entities.Responses.Orders.Nomenclature;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Modifier = IikoTransport.Net.Entities.Responses.Orders.Nomenclature.Modifier;
@@ -69,7 +68,7 @@ namespace IikoTransport.Net.Entities.Responses.Orders
         /// </summary>
         [JsonProperty(PropertyName = "status", Required = Required.Always)]
         [JsonConverter(typeof(StringEnumConverter))]
-        public CookingStatus Status { get; set; }
+        public OrderItemStatus Status { get; set; }
 
         /// <summary>
         /// Item deletion details. If filled up, item is deleted.

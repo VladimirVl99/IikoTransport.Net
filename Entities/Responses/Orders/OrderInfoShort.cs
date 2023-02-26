@@ -1,7 +1,7 @@
 ﻿using IikoTransport.Net.Entities.Responses.General.Operations;
-using IikoTransport.Net.Entities.Responses.Orders.Errors;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json;
+using IikoTransport.Net.Entities.Common.Orders.Errors;
 
 namespace IikoTransport.Net.Entities.Responses.Orders
 {

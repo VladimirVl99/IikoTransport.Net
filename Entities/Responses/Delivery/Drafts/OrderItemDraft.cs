@@ -7,5 +7,5 @@ namespace IikoTransport.Net.Entities.Responses.Delivery.Drafts
     /// Information about a order item draft.
     /// </summary>
     [JsonObject]
-    public class OrderItemDraft : OrderItem { }
+    public class OrderItemDraft : OrderItemShort { }
 }

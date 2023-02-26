@@ -7,18 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Entities\Responses\LoyaltyAndDiscounts\Messages\**" />
+    <EmbeddedResource Remove="Entities\Responses\LoyaltyAndDiscounts\Messages\**" />
+    <None Remove="Entities\Responses\LoyaltyAndDiscounts\Messages\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Entities\Requests\BanquetsAndReserves\" />
     <Folder Include="Entities\Requests\Delivery\Addresses\" />
-    <Folder Include="Entities\Requests\Delivery\DeliveryCreateAndUpdate\" />
-    <Folder Include="Entities\Requests\Delivery\DeliveryRestrictions\" />
-    <Folder Include="Entities\Requests\Delivery\DeliveryRetrieve\" />
+    <Folder Include="Entities\Requests\Delivery\Retrieve\" />
     <Folder Include="Entities\Requests\Delivery\Drafts\" />
     <Folder Include="Entities\Requests\Delivery\MarketingSources\" />
     <Folder Include="Entities\Requests\General\Authorization\" />
     <Folder Include="Entities\Requests\General\Dictionaries\" />
     <Folder Include="Entities\Requests\General\Employees\" />
     <Folder Include="Entities\Requests\General\Menu\" />
-    <Folder Include="Entities\Requests\General\Notifications\" />
     <Folder Include="Entities\Requests\General\Operations\" />
     <Folder Include="Entities\Requests\General\Organizations\" />
     <Folder Include="Entities\Requests\General\TerminalGroups\" />
@@ -28,11 +31,6 @@
     <Folder Include="Entities\Requests\LoyaltyAndDiscounts\Messages\" />
     <Folder Include="Entities\Requests\Webhooks\" />
     <Folder Include="Entities\Responses\Delivery\Addresses\" />
-    <Folder Include="Entities\Responses\LoyaltyAndDiscounts\DiscountsAndPromotions\" />
-    <Folder Include="Entities\Responses\LoyaltyAndDiscounts\CustomerCategories\" />
-    <Folder Include="Entities\Responses\LoyaltyAndDiscounts\Customers\" />
-    <Folder Include="Entities\Responses\LoyaltyAndDiscounts\Messages\" />
-    <Folder Include="Entities\Responses\Webhooks\" />
   </ItemGroup>
 
   <ItemGroup>
