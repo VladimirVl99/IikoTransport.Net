@@ -380,7 +380,7 @@ namespace IikoTransport.Net.Repositories.IikoTransport.Delivery
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="cityId">City ID.</param>
         /// <returns></returns>
-        Task<StreetsWithOperation> RetrieveStreetsByCity(Guid organizationId, Guid cityId);
+        Task<StreetsWithOperation> RetrieveStreetsByCityAsync(Guid organizationId, Guid cityId);
 
         #endregion
 
