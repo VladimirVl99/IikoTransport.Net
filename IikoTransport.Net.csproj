@@ -13,7 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Entities\Requests\BanquetsAndReserves\" />
     <Folder Include="Entities\Requests\Delivery\Addresses\" />
     <Folder Include="Entities\Requests\Delivery\Retrieve\" />
     <Folder Include="Entities\Requests\Delivery\Drafts\" />
@@ -27,7 +26,6 @@
     <Folder Include="Entities\Requests\General\TerminalGroups\" />
     <Folder Include="Entities\Requests\LoyaltyAndDiscounts\CustomerCategories\" />
     <Folder Include="Entities\Requests\LoyaltyAndDiscounts\Customers\" />
-    <Folder Include="Entities\Requests\LoyaltyAndDiscounts\DiscountsAndPromotions\" />
     <Folder Include="Entities\Requests\LoyaltyAndDiscounts\Messages\" />
     <Folder Include="Entities\Requests\Webhooks\" />
     <Folder Include="Entities\Responses\Delivery\Addresses\" />
