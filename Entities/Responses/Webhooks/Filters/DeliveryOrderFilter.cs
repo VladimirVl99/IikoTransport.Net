@@ -14,15 +14,15 @@ namespace IikoTransport.Net.Entities.Responses.Webhooks.Filters
         /// <summary>
         /// Statuses of orders, when changing which need to send a notification.
         /// </summary>
-        [JsonProperty(PropertyName = "orderStatuses", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonProperty(PropertyName = "orderStatuses", ItemConverterType = typeof(StringEnumConverter),
+            DefaultValueHandling = DefaultValueHandling.Ignore)]
         public IEnumerable<DeliveryStatus>? OrderStatuses { get; set; }
 
         /// <summary>
         /// Statuses of order items, when changing which need to send a notification.
         /// </summary>
-        [JsonProperty(PropertyName = "itemStatuses", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonProperty(PropertyName = "itemStatuses", ItemConverterType = typeof(StringEnumConverter),
+            DefaultValueHandling = DefaultValueHandling.Ignore)]
         public IEnumerable<OrderItemStatus>? ItemStatuses { get; set; }
 
         /// <summary>

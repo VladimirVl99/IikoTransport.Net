@@ -13,7 +13,7 @@ namespace IikoTransport.Net.Entities.Responses.General.Terminals.AvailabilityOfG
     /// Source: https://api-ru.iiko.services/#tag/Terminal-groups/paths/~1api~11~1terminal_groups~1is_alive/post.
     /// </summary>
     [JsonObject]
-    public class AvailabilityTerminalGroup : OperationInfo
+    public class AvailabilityTerminalGroupInfo : OperationInfo
     {
         /// <summary>
         /// Availability attribute of each requested terminal.

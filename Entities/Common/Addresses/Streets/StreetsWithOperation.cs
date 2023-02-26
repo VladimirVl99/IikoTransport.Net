@@ -7,7 +7,7 @@ namespace IikoTransport.Net.Entities.Common.Addresses.Streets
 	/// Streets by city.
 	/// </summary>
 	[JsonObject]
-	public class StreetsByOperation : OperationInfo
+	public class StreetsWithOperation : OperationInfo
 	{
 		/// <summary>
 		/// List of streets.
