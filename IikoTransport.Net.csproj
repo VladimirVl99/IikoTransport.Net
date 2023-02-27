@@ -24,7 +24,6 @@
     <Folder Include="Entities\Requests\General\Organizations\" />
     <Folder Include="Entities\Requests\General\TerminalGroups\" />
     <Folder Include="Entities\Requests\LoyaltyAndDiscounts\CustomerCategories\" />
-    <Folder Include="Entities\Requests\LoyaltyAndDiscounts\Customers\" />
     <Folder Include="Entities\Requests\LoyaltyAndDiscounts\Messages\" />
     <Folder Include="Entities\Requests\Webhooks\" />
     <Folder Include="Entities\Responses\Delivery\Addresses\" />

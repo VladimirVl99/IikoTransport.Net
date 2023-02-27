@@ -103,7 +103,7 @@ namespace IikoTransport.Net.Repositories.IikoTransport.BanquetsAndReserves
         /// Source: https://api-ru.iiko.services/#tag/Banquetsreserves/paths/~1api~11~1reserve~1status_by_id/post.
         /// </summary>
         /// <param name="organizationId">Organization ID for which an order search will be performed.
-        /// </param>
+        /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="reserveIds">IDs of banquets/reserves information on which is required.</param>
         /// <param name="sourceKeys">Source keys.</param>
         /// <returns></returns>
