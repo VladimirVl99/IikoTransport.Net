@@ -16,6 +16,12 @@ using IikoTransport.Net.Entities.Common.Addresses.Streets;
 using IikoTransport.Net.Entities.Responses.Delivery.Restrictions;
 using DeliveryRestrictionItem = IikoTransport.Net.Entities.Requests.Delivery.Restrictions.DeliveryRestrictionItem;
 using DeliveryZone = IikoTransport.Net.Entities.Requests.Delivery.Restrictions.DeliveryZone;
+using IikoTransport.Net.Entities.Responses.Delivery.Restrictions.AllowedRestirctions;
+using IikoTransport.Net.Entities.Requests.Delivery.Restrictions;
+using Coordinate = IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.Addresses.Coordinate;
+using IikoTransport.Net.Entities.Responses.Delivery.MarketingSources;
+using IikoTransport.Net.Entities.Responses.Delivery.Drafts;
+using DeliveryAddress = IikoTransport.Net.Entities.Requests.Delivery.Restrictions.DeliveryAddress;
 
 namespace IikoTransport.Net.Repositories.IikoTransport.Delivery
 {
@@ -390,7 +396,9 @@ namespace IikoTransport.Net.Repositories.IikoTransport.Delivery
         #region Delivery restrictions https://api-ru.iiko.services/#tag/Delivery-restrictions
 
         /// <summary>
-        /// 
+        /// Retrieve list of delivery restrictions.
+        /// Allowed from version 6.4.16.
+        /// Source: https://api-ru.iiko.services/#tag/Delivery-restrictions/paths/~1api~11~1delivery_restrictions/post.
         /// </summary>
         /// <param name="organizationIds">Organizations IDs which delivery restrictions have to be returned.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
@@ -448,7 +456,96 @@ namespace IikoTransport.Net.Repositories.IikoTransport.Delivery
             string? deliveryRegionsMapUrl = null, double? defaultMinSum = null, int? defaultFrom = null,
             int? defaultTo = null, Guid? defaultDeliveryServiceProductId = null, string? externalAssignationServiceUrl = null);
 
+        /// <summary>
+        /// Get suitable terminal groups for delivery restrictions.
+        /// Allowed from version 6.4.16.
+        /// Source: https://api-ru.iiko.services/#tag/Delivery-restrictions/paths/~1api~11~1delivery_restrictions~1allowed/post.
+        /// </summary>
+        /// <param name="organizationIds">Organization IDs.
+        /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="isCourierDelivery">Type of delivery service.</param>
+        /// <param name="deliveryAddress">Delivery address.</param>
+        /// <param name="orderLocation">Order location.</param>
+        /// <param name="orderItems">Order list.</param>
+        /// <param name="deliveryDate">Delivery date (Local for delivery terminal).</param>
+        /// <param name="deliverySum">Sum.</param>
+        /// <param name="discountSum">Discounts sum.</param>
+        /// <returns></returns>
+        Task<SuitableTerminalGroupsWithOperation> GetSuitableTerminalGroupsForDeliveryRestrictionsAsync(
+            IEnumerable<Guid> organizationIds, bool isCourierDelivery, DeliveryAddress? deliveryAddress = null,
+            Coordinate? orderLocation = null, IEnumerable<RestrictionsOrderItem>? orderItems = null,
+            DateTime? deliveryDate = null, double? deliverySum = null, double? discountSum = null);
 
+        #endregion
+
+        #region Marketing sources https://api-ru.iiko.services/#tag/Marketing-sources
+
+        /// <summary>
+        /// Marketing sources.
+        /// Allowed from version 7.2.5.
+        /// Source: https://api-ru.iiko.services/#tag/Marketing-sources/paths/~1api~11~1marketing_sources/post.
+        /// </summary>
+        /// <param name="organizationIds">Organizations IDs which marketing sources have to be returned.
+        /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <returns></returns>
+        Task<MarketingSourceWithOperation> RetrieveMarketingSourcesAsync(IEnumerable<Guid> organizationIds);
+
+        #endregion
+
+        #region Drafts https://api-ru.iiko.services/#tag/Drafts
+
+        /// <summary>
+        /// Retrieve order draft by ID.
+        /// Source: https://api-ru.iiko.services/#tag/Drafts/paths/~1api~11~1deliveries~1drafts~1by_id/post.
+        /// </summary>
+        /// <param name="organizationId">Organization ID for which an order search will be performed.
+        /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="orderId">Order ID.</param>
+        /// <param name="employeeId">ID of the employee who wants to get this draft for editing.</param>
+        /// <returns></returns>
+        Task<OrderDraftWithOperation> RetrieveOrderDraftByIdAsync(Guid organizationId, Guid orderId,
+            Guid employeeId);
+
+        /// <summary>
+        /// Retrieve order drafts list by parameters.
+        /// Source: https://api-ru.iiko.services/#tag/Drafts/paths/~1api~11~1deliveries~1drafts~1by_filter/post.
+        /// </summary>
+        /// <param name="organizationIds">Organization ID for which an order drafts search will be performed.
+        /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="deliveryDateFrom">Order delivery date (Local for delivery terminal). Lower limit.</param>
+        /// <param name="deliveryDateTo">Order delivery date (Local for delivery terminal). Upper limit.</param>
+        /// <param name="phone">Phone number.</param>
+        /// <param name="limit">Desirable size of result set (50 by default).</param>
+        /// <param name="offset">Offset from the beginning of full result set for paging.</param>
+        /// <param name="sourceKeys">Delivery sources (DeliveryClub, PH and etc.)</param>
+        /// <returns></returns>
+        Task<OrderDraftsListWithOperation> RetrieveOrderDraftsByParametersAsync(IEnumerable<Guid> organizationIds,
+            DateTime? deliveryDateFrom = null, DateTime? deliveryDateTo = null, string? phone = null,
+            int? limit = null, int? offset = null, IEnumerable<string>? sourceKeys = null);
+
+        /// <summary>
+        /// Store order draft changes to DB.
+        /// Source: https://api-ru.iiko.services/#tag/Drafts/paths/~1api~11~1deliveries~1drafts~1save/post.
+        /// </summary>
+        /// <param name="organizationId">Organization ID of a new order.
+        /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="order">Order item.</param>
+        /// <returns></returns>
+        Task<OperationInfo> StoreOrderDraftChangesToDbAsync(Guid organizationId, DeliveryOrder order);
+
+        /// <summary>
+        /// Admit order draft changes and send them to Front.
+        /// Source: https://api-ru.iiko.services/#tag/Drafts/paths/~1api~11~1deliveries~1drafts~1commit/post.
+        /// </summary>
+        /// <param name="organizationId">Organization ID of a new order.
+        /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="odrerId">ID of an order.</param>
+        /// <param name="terminalGroupId">Front group ID an order must be sent to.
+        /// Can be obtained by https://api-ru.iiko.services/api/1/terminal_groups operation.</param>
+        /// <param name="createOrderSettings">Order creation parameters.</param>
+        /// <returns></returns>
+        Task<OrderWithOperationInfo> AdmitOrderDraftChangesAndSendThemToFrontAsync(Guid organizationId,
+            Guid odrerId, Guid? terminalGroupId = null, OrderCreationSettings? createOrderSettings = null);
 
         #endregion
     }

@@ -15,7 +15,7 @@ namespace IikoTransport.Net.Entities.Responses.BanquetsAndReserves
         /// Terminal groups are in sleep mode because they are not active.
         /// Can be awakened by https://api-ru.iiko.services/api/1/terminal_groups/awake operation.
         /// </summary>
-        [JsonProperty(PropertyName = "terminalGroups", Required = Required.Always)]
-        public IEnumerable<TerminalInfo> TerminalGroupsInSleep { get; set; } = default!;
+        [JsonProperty(PropertyName = "terminalGroupsInSleep", Required = Required.Always)]
+        public new IEnumerable<TerminalInfo> TerminalGroupsInSleep { get; set; } = default!;
     }
 }
