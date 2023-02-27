@@ -13,6 +13,9 @@ using DeliveryStatus = IikoTransport.Net.Entities.Common.Deliveries.DeliveryStat
 using IikoTransport.Net.Entities.Common.Addresses.Regions;
 using IikoTransport.Net.Entities.Common.Addresses.Cities;
 using IikoTransport.Net.Entities.Common.Addresses.Streets;
+using IikoTransport.Net.Entities.Responses.Delivery.Restrictions;
+using DeliveryRestrictionItem = IikoTransport.Net.Entities.Requests.Delivery.Restrictions.DeliveryRestrictionItem;
+using DeliveryZone = IikoTransport.Net.Entities.Requests.Delivery.Restrictions.DeliveryZone;
 
 namespace IikoTransport.Net.Repositories.IikoTransport.Delivery
 {
@@ -385,6 +388,65 @@ namespace IikoTransport.Net.Repositories.IikoTransport.Delivery
         #endregion
 
         #region Delivery restrictions https://api-ru.iiko.services/#tag/Delivery-restrictions
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="organizationIds">Organizations IDs which delivery restrictions have to be returned.
+        /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <returns></returns>
+        Task<DeliveryRestrictionsWithOperation> RetrieveDeliveryRestrictionsAsync(IEnumerable<Guid> organizationIds);
+
+        /// <summary>
+        /// Update delivery restrictions.
+        /// Allowed from version 6.4.16.
+        /// Source: https://api-ru.iiko.services/#tag/Delivery-restrictions/paths/~1api~11~1delivery_restrictions~1update/post.
+        /// </summary>
+        /// <param name="organizationId">Organization ID.
+        /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="deliveryGeocodeServiceType">Geocoding service type.</param>
+        /// <param name="defaultDeliveryDurationInMinutes">General standard of delivery time.</param>
+        /// <param name="defaultSelfServiceDurationInMinutes">Default pickup time.</param>
+        /// <param name="useSameDeliveryDuration">Indication that all delivery points in all delivery zones
+        /// use common delivery time limits.</param>
+        /// <param name="useSameMinSum">Indication that all delivery points for all delivery zones use the total
+        /// minimum order amount.</param>
+        /// <param name="useSameWorkTimeInterval">Indication that all delivery points in all zones use common
+        /// time limits.</param>
+        /// <param name="useSameRestrictionsOnAllWeek">Indication that all delivery points in all zones use
+        /// the same schedule for all days of the week.</param>
+        /// <param name="restrictions">Restrictions.</param>
+        /// <param name="deliveryZones">Delivery zones.</param>
+        /// <param name="rejectOnGeocodingError">Reject delivery if we could not geocode the address.</param>
+        /// <param name="addDeliveryServiceCost">Add shipping cost to order.</param>
+        /// <param name="useSameDeliveryServiceProduct">Indication that the cost is the same for all
+        /// points of delivery.</param>
+        /// <param name="useExternalAssignationService">Use external delivery distribution service.</param>
+        /// <param name="frontTrustsCallCenterCheck">Indication whether or not to trust on the fronts the call
+        /// center mapping restrictions from the call center if the composition of the order has not changed since
+        /// the last check. If true, then trust.</param>
+        /// <param name="requireExactAddressForGeocoding">Require an exact geocoding address.</param>
+        /// <param name="zonesMode">Delivery restrictions mode.</param>
+        /// <param name="autoAssignExternalDeliveries">Automatically assigned delivery method based on cartography.</param>
+        /// <param name="actionOnValidationRejection">Action on problems with auto-assignment.</param>
+        /// <param name="deliveryRegionsMapUrl">Link to the map of delivery service regions.</param>
+        /// <param name="defaultMinSum">Total minimum order amount.</param>
+        /// <param name="defaultFrom">The beginning of the interval of the total work time for all points and delivery zones,
+        /// in minutes from the beginning of the day.</param>
+        /// <param name="defaultTo">End of the total work time interval for all points and delivery zones,
+        /// in minutes from the beginning of the day.</param>
+        /// <param name="defaultDeliveryServiceProductId">Link to "delivery service payment".</param>
+        /// <param name="externalAssignationServiceUrl">Address of external delivery distribution service.</param>
+        /// <returns></returns>
+        Task<OperationInfo> UpdateDeliveryRestrictionsAsync(Guid organizationId, int deliveryGeocodeServiceType,
+            long defaultDeliveryDurationInMinutes, long defaultSelfServiceDurationInMinutes, bool useSameDeliveryDuration,
+            bool useSameMinSum, bool useSameWorkTimeInterval, bool useSameRestrictionsOnAllWeek,
+            IEnumerable<DeliveryRestrictionItem> restrictions, IEnumerable<DeliveryZone> deliveryZones,
+            bool rejectOnGeocodingError, bool addDeliveryServiceCost, bool useSameDeliveryServiceProduct,
+            bool useExternalAssignationService, bool frontTrustsCallCenterCheck, bool requireExactAddressForGeocoding,
+            int zonesMode, bool autoAssignExternalDeliveries, int actionOnValidationRejection,
+            string? deliveryRegionsMapUrl = null, double? defaultMinSum = null, int? defaultFrom = null,
+            int? defaultTo = null, Guid? defaultDeliveryServiceProductId = null, string? externalAssignationServiceUrl = null);
 
 
 

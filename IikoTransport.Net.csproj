@@ -14,7 +14,6 @@
 
   <ItemGroup>
     <Folder Include="Entities\Requests\Delivery\Addresses\" />
-    <Folder Include="Entities\Requests\Delivery\Retrieve\" />
     <Folder Include="Entities\Requests\Delivery\Drafts\" />
     <Folder Include="Entities\Requests\Delivery\MarketingSources\" />
     <Folder Include="Entities\Requests\General\Authorization\" />
@@ -30,7 +29,6 @@
     <Folder Include="Entities\Requests\Webhooks\" />
     <Folder Include="Entities\Responses\Delivery\Addresses\" />
     <Folder Include="Repositories\IikoTransport\General\Authorization\" />
-    <Folder Include="Repositories\IikoTransport\" />
   </ItemGroup>
 
   <ItemGroup>
