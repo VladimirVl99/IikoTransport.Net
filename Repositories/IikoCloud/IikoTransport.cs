@@ -61,9 +61,9 @@ using SimpleDeliveryStatus = IikoTransport.Net.Entities.Requests.Delivery.Create
 using DeliveryRestrictionItemRequest = IikoTransport.Net.Entities.Requests.Delivery.Restrictions.DeliveryRestrictionItem;
 using DeliveryZoneRequest = IikoTransport.Net.Entities.Requests.Delivery.Restrictions.DeliveryZone;
 using IikoTransport.Net.Repositories.IikoCloud.General;
-using IikoTransport.Net.Entities.Responses.Webhooks.Orders;
 using System.Net;
 using OrderStatus = IikoTransport.Net.Entities.Common.Orders.OrderStatus;
+using IikoTransport.Net.Repositories.IikoCloud.Delivery;
 
 namespace IikoTransport.Net.Repositories.IikoCloud
 {
@@ -89,6 +89,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         /// </summary>
         private readonly HttpGeneral _httpGeneral;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        private readonly HttpDelivery _httpDelivery;
+
         #endregion
 
         #region Properties
@@ -112,6 +117,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
             _apiLogin = apiLogin;
             _token = token;
             _httpGeneral = new HttpGeneral(token);
+            _httpDelivery = new HttpDelivery(token);
         }
 
         #endregion
@@ -385,94 +391,300 @@ namespace IikoTransport.Net.Repositories.IikoCloud
             }
         }
 
-        public Task<ExternalMenuInfo> RetrieveExternalMenusWithPriceCategoriesAsync()
+        public async Task<ExternalMenuInfo> RetrieveExternalMenusWithPriceCategoriesAsync()
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpGeneral.RetrieveExternalMenusWithPriceCategoriesAsync();
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpGeneral.RetrieveExternalMenusWithPriceCategoriesAsync();
+                }
+
+                throw e;
+            }
         }
 
-        public Task<Menu> RetrieveExternalMenuByIdAsync(string externalMenuId, IEnumerable<Guid> organizationIds,
+        public async Task<Menu> RetrieveExternalMenuByIdAsync(string externalMenuId, IEnumerable<Guid> organizationIds,
             string? priceCategoryId = null, int? version = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpGeneral.RetrieveExternalMenuByIdAsync(externalMenuId, organizationIds, priceCategoryId,
+                    version);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpGeneral.RetrieveExternalMenuByIdAsync(externalMenuId, organizationIds,
+                        priceCategoryId, version);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OutOfStockInfo> RetrieveOutOfStockItemsAsync(IEnumerable<Guid> organizationIds)
+        public async Task<OutOfStockInfo> RetrieveOutOfStockItemsAsync(IEnumerable<Guid> organizationIds)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpGeneral.RetrieveOutOfStockItemsAsync(organizationIds);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpGeneral.RetrieveOutOfStockItemsAsync(organizationIds);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<ComboInfo> RetrieveCombosInfoAsync(bool extraData, Guid organizationId)
+        public async Task<ComboInfo> RetrieveCombosInfoAsync(bool extraData, Guid organizationId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpGeneral.RetrieveCombosInfoAsync(extraData, organizationId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpGeneral.RetrieveCombosInfoAsync(extraData, organizationId);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<ComboPriceInfo> CalculateComboPriceAsync(IEnumerable<OrderItemRequest> items, Guid organizationId)
+        public async Task<ComboPriceInfo> CalculateComboPriceAsync(IEnumerable<OrderItemRequest> items, Guid organizationId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpGeneral.CalculateComboPriceAsync(items, organizationId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpGeneral.CalculateComboPriceAsync(items, organizationId);
+                }
+
+                throw e;
+            }
         }
 
         #endregion
 
         #region Operations https://api-ru.iiko.services/#tag/Operations
 
-        public Task<CommandStatus> GetStatusOfCommandAsync(Guid organizationId, Guid correlationId)
+        public async Task<CommandStatus> GetStatusOfCommandAsync(Guid organizationId, Guid correlationId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpGeneral.GetStatusOfCommandAsync(organizationId, correlationId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpGeneral.GetStatusOfCommandAsync(organizationId, correlationId);
+                }
+
+                throw e;
+            }
         }
 
         #endregion
 
         #region Employees https://api-ru.iiko.services/#tag/Employees
 
-        public Task<CoordinateHistory> RetrieveDriversCoordinatesHistoryAsync(IEnumerable<Guid> organizationIds,
+        public async Task<CoordinateHistory> RetrieveCoordinatesHistoryOfDriverAsync(IEnumerable<Guid> organizationIds,
             int? offsetInSeconds = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpGeneral.RetrieveCoordinatesHistoryOfDriverAsync(organizationIds, offsetInSeconds);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpGeneral.RetrieveCoordinatesHistoryOfDriverAsync(organizationIds, offsetInSeconds);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<CouriersInfo> RetrieveDeliveryDriversInSpecifiedRestaurantsAsync(IEnumerable<Guid> organizationIds)
+        public async Task<CouriersInfo> RetrieveDeliveryDriversInSpecifiedRestaurantsAsync(IEnumerable<Guid> organizationIds)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpGeneral.RetrieveDeliveryDriversInSpecifiedRestaurantsAsync(organizationIds);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpGeneral.RetrieveDeliveryDriversInSpecifiedRestaurantsAsync(organizationIds);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<CouriersWithCheckRolesInfo> RetrieveDeliveryDriversInSpecifiedRestaurantsWithCheckRolesAsync(
+        public async Task<CouriersWithCheckRolesInfo> RetrieveDeliveryDriversInSpecifiedRestaurantsWithCheckRolesAsync(
             IEnumerable<Guid> organizationIds, IEnumerable<string> rolesToCheck)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpGeneral.RetrieveDeliveryDriversInSpecifiedRestaurantsWithCheckRolesAsync(
+                    organizationIds, rolesToCheck);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpGeneral.RetrieveDeliveryDriversInSpecifiedRestaurantsWithCheckRolesAsync(
+                        organizationIds, rolesToCheck);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<ActiveCouriersInfo> RetrieveActiveDeliveryDriversInSpecifiedRestaurantAndOnSpecifiedTerminalAsync(
+        public async Task<ActiveCouriersInfo> RetrieveActiveDeliveryDriversInSpecifiedRestaurantAndOnSpecifiedTerminalAsync(
             Guid organizationId, Guid terminalGroupId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpGeneral.RetrieveActiveDeliveryDriversInSpecifiedRestaurantAndOnSpecifiedTerminalAsync(
+                    organizationId, terminalGroupId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpGeneral.RetrieveActiveDeliveryDriversInSpecifiedRestaurantAndOnSpecifiedTerminalAsync(
+                        organizationId, terminalGroupId);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<ActiveCouriersInfo> RetrieveActiveDeliveryDriversInSpecifiedRestaurantsAsync(IEnumerable<Guid> organizationIds)
+        public async Task<ActiveCouriersInfo> RetrieveActiveLocationsOfCourierInSpecifiedRestaurantsAsync(
+            IEnumerable<Guid> organizationIds)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpGeneral.RetrieveActiveLocationsOfCourierInSpecifiedRestaurantsAsync(
+                    organizationIds);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpGeneral.RetrieveActiveLocationsOfCourierInSpecifiedRestaurantsAsync(
+                        organizationIds);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<EmployeeInfo> RetrieveEmployeeInfoAsync(Guid organizationId, Guid id)
+        public async Task<EmployeeInfo> RetrieveEmployeeInfoAsync(Guid organizationId, Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpGeneral.RetrieveEmployeeInfoAsync(organizationId, id);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpGeneral.RetrieveEmployeeInfoAsync(organizationId, id);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<PersonalSessionActionResult> OpenPersonalSessionAsync(Guid organizationId, Guid terminalGroupId,
-            Guid employeeId, Guid? roleId = null)
+        public async Task<PersonalSessionActionResult> OpenPersonalSessionAsync(Guid organizationId,
+            Guid terminalGroupId, Guid employeeId, Guid? roleId = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpGeneral.OpenPersonalSessionAsync(organizationId, terminalGroupId,
+                    employeeId, roleId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpGeneral.OpenPersonalSessionAsync(organizationId, terminalGroupId,
+                        employeeId, roleId);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<PersonalSessionActionResult> ClosePersonalSessionAsync(Guid organizationId, Guid terminalGroupId,
+        public async Task<PersonalSessionActionResult> ClosePersonalSessionAsync(Guid organizationId,
+            Guid terminalGroupId, Guid employeeId)
+        {
+            try
+            {
+                return await _httpGeneral.ClosePersonalSessionAsync(organizationId, terminalGroupId, employeeId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpGeneral.ClosePersonalSessionAsync(organizationId, terminalGroupId, employeeId);
+                }
+
+                throw e;
+            }
+        }
+
+        public async Task<PersonalSessionInfo> CheckForOpenPersonalShiftAsync(Guid organizationId, Guid terminalGroupId,
             Guid employeeId)
         {
-            throw new NotImplementedException();
-        }
+            try
+            {
+                return await _httpGeneral.CheckForOpenPersonalShiftAsync(organizationId, terminalGroupId, employeeId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpGeneral.CheckForOpenPersonalShiftAsync(organizationId, terminalGroupId, employeeId);
+                }
 
-        public Task<PersonalSessionInfo> CheckForOpenPersonalShiftAsync(Guid organizationId, Guid terminalGroupId,
-            Guid employeeId)
-        {
-            throw new NotImplementedException();
+                throw e;
+            }
         }
 
         #endregion
@@ -567,7 +779,8 @@ namespace IikoTransport.Net.Repositories.IikoCloud
             throw new NotImplementedException();
         }
 
-        public Task<OperationInfo> AssignOrChangeDeliveryOrderOperatorAsync(Guid organizationId, Guid orderId, Guid operatorId)
+        public Task<OperationInfo> AssignOrChangeDeliveryOrderOperatorAsync(Guid organizationId, Guid orderId,
+            Guid operatorId)
         {
             throw new NotImplementedException();
         }
@@ -999,6 +1212,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
             _token = await RetrieveSessionKeyForApiUserAsync(_apiLogin);
 
             _httpGeneral.Token = _token;
+            _httpDelivery.Token = _token;
 
             return _token;
         }

@@ -267,7 +267,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// ("current server time" - "offsetInSeconds", "current server time"],
         /// driver and their coordinates will be retrieved.</param>
         /// <returns></returns>
-        Task<CoordinateHistory> RetrieveDriversCoordinatesHistoryAsync(IEnumerable<Guid> organizationIds,
+        Task<CoordinateHistory> RetrieveCoordinatesHistoryOfDriverAsync(IEnumerable<Guid> organizationIds,
             int? offsetInSeconds = null);
 
         /// <summary>
@@ -311,7 +311,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// <param name="organizationIds">List of organizations.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <returns></returns>
-        Task<ActiveCouriersInfo> RetrieveActiveDeliveryDriversInSpecifiedRestaurantsAsync(
+        Task<ActiveCouriersInfo> RetrieveActiveLocationsOfCourierInSpecifiedRestaurantsAsync(
             IEnumerable<Guid> organizationIds);
 
         /// <summary>

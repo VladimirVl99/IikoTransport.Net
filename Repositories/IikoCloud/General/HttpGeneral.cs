@@ -19,9 +19,6 @@ using IikoTransport.Net.Entities.Responses.General.Terminals.AwakeTerminalGroups
 using IikoTransport.Net.Entities.Responses.General.Terminals.GroupsOfDeliveryTerminals;
 using Newtonsoft.Json;
 using IikoTransport.Net.Entities.Responses.General.Authorizations;
-using Newtonsoft.Json.Linq;
-using System.Net;
-using System;
 
 namespace IikoTransport.Net.Repositories.IikoCloud.General
 {
@@ -273,56 +270,118 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
 
         #endregion
 
+        #region Operations https://api-ru.iiko.services/#tag/Operations
+
+        public async Task<CommandStatus> GetStatusOfCommandAsync(Guid organizationId, Guid correlationId)
+        {
+            string body = JsonConvert.SerializeObject(new { organizationId, correlationId });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultStatusOfCommandRetrieveUri, body, Token);
+
+            return JsonConvert.DeserializeObject<CommandStatusInfo>(responseBody)?.State
+                ?? throw new Exception(DefaultNullableExceptionMessage);
+        }
+
         #endregion
 
-        public Task<PersonalSessionInfo> CheckForOpenPersonalShiftAsync(Guid organizationId, Guid terminalGroupId, Guid employeeId)
+        #region Employees https://api-ru.iiko.services/#tag/Employees
+
+        public async Task<CoordinateHistory> RetrieveCoordinatesHistoryOfDriverAsync(IEnumerable<Guid> organizationIds,
+            int? offsetInSeconds = null)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new { organizationIds, offsetInSeconds });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCoordinatesHistoryOfDriverRetrieveUri,
+                body, Token);
+
+            return JsonConvert.DeserializeObject<CoordinateHistory>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<PersonalSessionActionResult> ClosePersonalSessionAsync(Guid organizationId, Guid terminalGroupId, Guid employeeId)
+        public async Task<CouriersInfo> RetrieveDeliveryDriversInSpecifiedRestaurantsAsync(IEnumerable<Guid> organizationIds)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new { organizationIds });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultDeliveryDriversInSpecifiedRestaurantRetrieveUri,
+                body, Token);
+
+            return JsonConvert.DeserializeObject<CouriersInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<CommandStatus> GetStatusOfCommandAsync(Guid organizationId, Guid correlationId)
+        public async Task<PersonalSessionInfo> CheckForOpenPersonalShiftAsync(Guid organizationId, Guid terminalGroupId,
+            Guid employeeId)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new { organizationId, terminalGroupId, employeeId });
+            var responseBody = await SendHttpPostBearerRequestAsync(
+                DefaultCheckIfPersonalSessionIsOpenUri, body, Token);
+
+            return JsonConvert.DeserializeObject<PersonalSessionInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<PersonalSessionActionResult> OpenPersonalSessionAsync(Guid organizationId, Guid terminalGroupId, Guid employeeId, Guid? roleId = null)
+        public async Task<PersonalSessionActionResult> ClosePersonalSessionAsync(Guid organizationId, Guid terminalGroupId,
+            Guid employeeId)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new { organizationId, terminalGroupId, employeeId });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultClosePersonalSessionUri, body, Token);
+
+            return JsonConvert.DeserializeObject<PersonalSessionActionResult>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<ActiveCouriersInfo> RetrieveActiveDeliveryDriversInSpecifiedRestaurantAndOnSpecifiedTerminalAsync(Guid organizationId, Guid terminalGroupId)
+        public async Task<PersonalSessionActionResult> OpenPersonalSessionAsync(Guid organizationId,
+            Guid terminalGroupId, Guid employeeId, Guid? roleId = null)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new { organizationId, terminalGroupId, employeeId, roleId });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultOpenPersonalSessionUri, body, Token);
+
+            return JsonConvert.DeserializeObject<PersonalSessionActionResult>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<ActiveCouriersInfo> RetrieveActiveDeliveryDriversInSpecifiedRestaurantsAsync(IEnumerable<Guid> organizationIds)
+        public async Task<ActiveCouriersInfo> RetrieveActiveDeliveryDriversInSpecifiedRestaurantAndOnSpecifiedTerminalAsync(
+            Guid organizationId, Guid terminalGroupId)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new { organizationId, terminalGroupId });
+            var responseBody = await SendHttpPostBearerRequestAsync(
+                DefaultActiveLocationsOfCourierWhichAreClockedInOnSpecifiedDeliveryRetrieveUri, body, Token);
+
+            return JsonConvert.DeserializeObject<ActiveCouriersInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<CouriersInfo> RetrieveDeliveryDriversInSpecifiedRestaurantsAsync(IEnumerable<Guid> organizationIds)
+        public async Task<ActiveCouriersInfo> RetrieveActiveLocationsOfCourierInSpecifiedRestaurantsAsync(
+            IEnumerable<Guid> organizationIds)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new { organizationIds });
+            var responseBody = await SendHttpPostBearerRequestAsync(
+                DefaultActiveLocationsOfCourierBySpecifiedRestaurantsRetrieveUri, body, Token);
+
+            return JsonConvert.DeserializeObject<ActiveCouriersInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<CouriersWithCheckRolesInfo> RetrieveDeliveryDriversInSpecifiedRestaurantsWithCheckRolesAsync(IEnumerable<Guid> organizationIds, IEnumerable<string> rolesToCheck)
+        public async Task<CouriersWithCheckRolesInfo> RetrieveDeliveryDriversInSpecifiedRestaurantsWithCheckRolesAsync(
+            IEnumerable<Guid> organizationIds, IEnumerable<string> rolesToCheck)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new { organizationIds, rolesToCheck });
+            var responseBody = await SendHttpPostBearerRequestAsync(
+                DefaultDeliveryDriversInSpecifiedRestaurantAndRolesToCheckRetrieveUri, body, Token);
+
+            return JsonConvert.DeserializeObject<CouriersWithCheckRolesInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<CoordinateHistory> RetrieveDriversCoordinatesHistoryAsync(IEnumerable<Guid> organizationIds, int? offsetInSeconds = null)
+        public async Task<EmployeeInfo> RetrieveEmployeeInfoAsync(Guid organizationId, Guid id)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new { organizationId, id });
+            var responseBody = await SendHttpPostBearerRequestAsync(
+                DefaultEmployeeInfoRetrieveUri, body, Token);
+
+            return JsonConvert.DeserializeObject<EmployeeInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<EmployeeInfo> RetrieveEmployeeInfoAsync(Guid organizationId, Guid id)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
+
+        #endregion
     }
 }
