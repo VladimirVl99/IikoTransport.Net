@@ -23,7 +23,7 @@ using IikoTransport.Net.Entities.Responses.Delivery.MarketingSources;
 using IikoTransport.Net.Entities.Responses.Delivery.Drafts;
 using DeliveryAddress = IikoTransport.Net.Entities.Requests.Delivery.Restrictions.DeliveryAddress;
 
-namespace IikoTransport.Net.Repositories.IikoTransport.Delivery
+namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
 {
     /// <summary>
     /// Delivery's methods of iikoTransport.

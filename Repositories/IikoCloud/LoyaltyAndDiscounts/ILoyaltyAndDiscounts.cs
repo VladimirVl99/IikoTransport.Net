@@ -9,7 +9,7 @@ using IikoTransport.Net.Entities.Responses.LoyaltyAndDiscounts.DiscountsAndPromo
 using IikoTransport.Net.Entities.Responses.LoyaltyAndDiscounts.DiscountsAndPromotions.ManualConditions;
 using IikoTransport.Net.Entities.Responses.LoyaltyAndDiscounts.DiscountsAndPromotions.Programs;
 
-namespace IikoTransport.Net.Repositories.IikoTransport.LoyaltyAndDiscounts
+namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
 {
     /// <summary>
     /// Loyalty systems API.
@@ -301,11 +301,12 @@ namespace IikoTransport.Net.Repositories.IikoTransport.LoyaltyAndDiscounts
         /// Withdraw customer balance.
         /// Source: https://api-ru.iiko.services/#tag/Customers/paths/~1api~11~1loyalty~1iiko~1customer~1wallet~1chargeoff/post.
         /// </summary>
-        /// <param name="customerId"></param>
-        /// <param name="walletId"></param>
-        /// <param name="organizationId"></param>
-        /// <param name="sum"></param>
-        /// <param name="comment"></param>
+        /// <param name="customerId">Customer id.</param>
+        /// <param name="walletId">Wallet id.</param>
+        /// <param name="organizationId">Organization id.
+        /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="sum">Sum of balance change. Must be possible.</param>
+        /// <param name="comment">Comment. Can be null.</param>
         /// <returns></returns>
         Task WithdrawCustomerBalanceAsync(Guid customerId, Guid walletId, Guid organizationId, double sum,
             string? comment = null);

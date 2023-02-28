@@ -5,7 +5,7 @@ using IikoTransport.Net.Entities.Responses.BanquetsAndReserves.RestaurantSection
 using IikoTransport.Net.Entities.Responses.General.Organizations.AvailableOrganizations;
 using IikoTransport.Net.Entities.Responses.General.Terminals.GroupsOfDeliveryTerminals;
 
-namespace IikoTransport.Net.Repositories.IikoTransport.BanquetsAndReserves
+namespace IikoTransport.Net.Repositories.IikoCloud.BanquetsAndReserves
 {
     public interface IReserves
     {

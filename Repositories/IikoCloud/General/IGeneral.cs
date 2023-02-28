@@ -18,7 +18,7 @@ using IikoTransport.Net.Entities.Responses.General.Terminals.AwakeTerminalGroups
 using IikoTransport.Net.Entities.Responses.General.Terminals.GroupsOfDeliveryTerminals;
 using IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate;
 
-namespace IikoTransport.Net.Repositories.IikoTransport.General
+namespace IikoTransport.Net.Repositories.IikoCloud.General
 {
     /// <summary>
     /// General methods of iikoTransport.
@@ -234,7 +234,7 @@ namespace IikoTransport.Net.Repositories.IikoTransport.General
         /// <param name="organizationId">Organization id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <returns></returns>
-        Task<ComboPriceInfo> CalculateComboPrice(IEnumerable<OrderItem> items,
+        Task<ComboPriceInfo> CalculateComboPriceAsync(IEnumerable<OrderItem> items,
             Guid organizationId);
 
         #endregion

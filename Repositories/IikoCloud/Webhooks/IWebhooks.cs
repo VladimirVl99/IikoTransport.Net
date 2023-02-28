@@ -2,7 +2,7 @@
 using IikoTransport.Net.Entities.Responses.Webhooks;
 using IikoTransport.Net.Entities.Responses.Webhooks.Filters;
 
-namespace IikoTransport.Net.Repositories.IikoTransport.Webhooks
+namespace IikoTransport.Net.Repositories.IikoCloud.Webhooks
 {
     /// <summary>
     /// Webhook notifications. Webhook handlers can be registered by calling the POST

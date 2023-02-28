@@ -8,7 +8,7 @@ using IikoTransport.Net.Entities.Requests.Orders;
 using IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.Payments;
 using Customer = IikoTransport.Net.Entities.Requests.Orders.Customers.Customer;
 
-namespace IikoTransport.Net.Repositories.IikoTransport.Orders
+namespace IikoTransport.Net.Repositories.IikoCloud.Orders
 {
     public interface IOrders
     {

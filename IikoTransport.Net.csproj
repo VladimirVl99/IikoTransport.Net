@@ -27,7 +27,6 @@
     <Folder Include="Entities\Requests\LoyaltyAndDiscounts\Messages\" />
     <Folder Include="Entities\Requests\Webhooks\" />
     <Folder Include="Entities\Responses\Delivery\Addresses\" />
-    <Folder Include="Repositories\IikoTransport\General\Authorization\" />
   </ItemGroup>
 
   <ItemGroup>
