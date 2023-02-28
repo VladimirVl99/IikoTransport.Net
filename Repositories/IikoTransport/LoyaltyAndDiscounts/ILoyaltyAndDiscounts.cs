@@ -1,4 +1,5 @@
-﻿using IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate;
+﻿using IikoTransport.Net.Entities.Common.Customers;
+using IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate;
 using IikoTransport.Net.Entities.Requests.LoyaltyAndDiscounts.Customers;
 using IikoTransport.Net.Entities.Requests.LoyaltyAndDiscounts.DiscountsAndPromotions;
 using IikoTransport.Net.Entities.Responses.LoyaltyAndDiscounts.CustomerCategories;
@@ -194,6 +195,147 @@ namespace IikoTransport.Net.Repositories.IikoTransport.LoyaltyAndDiscounts
         /// <param name="id">Customer id.</param>
         /// <returns></returns>
         Task<CustomerInfo> GetCustomerInfoByIdAsync(Guid organizationId, Guid id);
+
+        /// <summary>
+        /// Create or update customer info by id or phone or card track.
+        /// Source: https://api-ru.iiko.services/#tag/Customers/paths/~1api~11~1loyalty~1iiko~1customer~1create_or_update/post.
+        /// </summary>
+        /// <param name="organizationId">Organization id.
+        /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="id">Customer id.</param>
+        /// <param name="phone">Customer phone. Can be null.</param>
+        /// <param name="cardTrack">Card track. Required if cardNumber set. Can be null.</param>
+        /// <param name="cardNumber">Card number. Required if cardTrack set. Can be null.</param>
+        /// <param name="name">Customer name. Can be null.</param>
+        /// <param name="middleName">Customer middle name. Can be null.</param>
+        /// <param name="surName">Customer surname. Can be null.</param>
+        /// <param name="birthday">Customer birthday.</param>
+        /// <param name="email">Customer email. Can be null.</param>
+        /// <param name="sex">Customer sex.</param>
+        /// <param name="consentStatus">Customer consent status.</param>
+        /// <param name="shouldReceivePromoActionsInfo">Customer get promo messages (email, sms). If null - unknown.</param>
+        /// <param name="referrerId">Id for referrer guest. Null for old integrations, Guid.Empty - for referrer deletion.
+        /// Can be null.</param>
+        /// <param name="userData">Customer user data. Can be null.</param>
+        /// <returns></returns>
+        Task<Guid> CreateOrUpdateCustomerAsync(Guid organizationId, Guid? id = null, string? phone = null,
+            string? cardTrack = null, string? cardNumber = null, string? name = null, string? middleName = null,
+            string? surName = null, DateTime? birthday = null, string? email = null, Gender? sex = null,
+            GuestConsentStatus? consentStatus = null, bool? shouldReceivePromoActionsInfo = null,
+            Guid? referrerId = null, string? userData = null);
+
+        /// <summary>
+        /// Add new customer for program.
+        /// Source: https://api-ru.iiko.services/#tag/Customers/paths/~1api~11~1loyalty~1iiko~1customer~1program~1add/post.
+        /// </summary>
+        /// <param name="customerId">Customer id.</param>
+        /// <param name="programId">Program id.</param>
+        /// <param name="organizationId">Organization id.
+        /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <returns></returns>
+        Task<Guid> AddCustomerToProgramAsync(Guid customerId, Guid programId, Guid organizationId);
+
+        /// <summary>
+        /// Add new card for customer.
+        /// Source: https://api-ru.iiko.services/#tag/Customers/paths/~1api~11~1loyalty~1iiko~1customer~1card~1add/post.
+        /// </summary>
+        /// <param name="customerId">Customer id.</param>
+        /// <param name="cardTrack">Card track.</param>
+        /// <param name="cardNumber">Card number.</param>
+        /// <param name="organizationId">Organization id.
+        /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <returns></returns>
+        Task AddCardForCustomerAsync(Guid customerId, string cardTrack, string cardNumber, Guid organizationId);
+
+        /// <summary>
+        /// Delete existing card for customer.
+        /// Source: https://api-ru.iiko.services/#tag/Customers/paths/~1api~11~1loyalty~1iiko~1customer~1card~1remove/post.
+        /// </summary>
+        /// <param name="customerId">Customer id.</param>
+        /// <param name="cardTrack">Card track.</param>
+        /// <param name="organizationId">Organization id.
+        /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <returns></returns>
+        Task DeleteCardForCustomerAsync(Guid customerId, string cardTrack, Guid organizationId);
+
+        /// <summary>
+        /// Hold customer's money in loyalty program. Payment will be process on POS during processing of an order.
+        /// Source: https://api-ru.iiko.services/#tag/Customers/paths/~1api~11~1loyalty~1iiko~1customer~1wallet~1hold/post.
+        /// </summary>
+        /// <param name="customerId">Customer id.</param>
+        /// <param name="walletId">Wallet id.</param>
+        /// <param name="organizationId">Organization id.
+        /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="sum">Sum.</param>
+        /// <param name="transactionId">Predefined transaction id. Random if empty.</param>
+        /// <param name="comment">Additional information about holding. Can be null.</param>
+        /// <returns></returns>
+        Task<Guid> HoldMoneyOfCustomerAsync(Guid customerId, Guid walletId, Guid organizationId, double sum,
+            Guid? transactionId = null, string? comment = null);
+
+        /// <summary>
+        /// Cancel holding transaction that created earlier.
+        /// Source: https://api-ru.iiko.services/#tag/Customers/paths/~1api~11~1loyalty~1iiko~1customer~1wallet~1cancel_hold/post.
+        /// </summary>
+        /// <param name="transactionId">Transaction id.</param>
+        /// <param name="organizationId">Organization id.
+        /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <returns></returns>
+        Task CancelHoldMoneyOfCustomerAsync(Guid transactionId, Guid organizationId);
+
+        /// <summary>
+        /// Refill customer balance.
+        /// Source: https://api-ru.iiko.services/#tag/Customers/paths/~1api~11~1loyalty~1iiko~1customer~1wallet~1topup/post.
+        /// </summary>
+        /// <param name="customerId">Customer id.</param>
+        /// <param name="walletId">Wallet id.</param>
+        /// <param name="organizationId">Organization id.
+        /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="sum">Sum of balance change. Must be possible.</param>
+        /// <param name="comment">Comment. Can be null.</param>
+        /// <returns></returns>
+        Task RefillCustomerBalanceAsync(Guid customerId, Guid walletId, Guid organizationId, double sum,
+            string? comment = null);
+
+        /// <summary>
+        /// Withdraw customer balance.
+        /// Source: https://api-ru.iiko.services/#tag/Customers/paths/~1api~11~1loyalty~1iiko~1customer~1wallet~1chargeoff/post.
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <param name="walletId"></param>
+        /// <param name="organizationId"></param>
+        /// <param name="sum"></param>
+        /// <param name="comment"></param>
+        /// <returns></returns>
+        Task WithdrawCustomerBalanceAsync(Guid customerId, Guid walletId, Guid organizationId, double sum,
+            string? comment = null);
+
+        #endregion
+
+        #region Messages https://api-ru.iiko.services/#tag/Messages
+
+        /// <summary>
+        /// Send sms message to specified phone number. Sending proceed according iikoCard organization's settings.
+        /// Source: https://api-ru.iiko.services/#tag/Messages/paths/~1api~11~1loyalty~1iiko~1message~1send_sms/post.
+        /// </summary>
+        /// <param name="phone">Customer's phone number. Can be null.</param>
+        /// <param name="text">Message text.</param>
+        /// <param name="organizationId">Organization id.
+        /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <returns></returns>
+        Task SendSmsAsync(string phone, string text, Guid organizationId);
+
+        /// <summary>
+        /// Send email message to specified email address. Sending proceed according iikoCard organization's settings.
+        /// Source: https://api-ru.iiko.services/#tag/Messages/paths/~1api~11~1loyalty~1iiko~1message~1send_email/post.
+        /// </summary>
+        /// <param name="receiver">Email address.</param>
+        /// <param name="subject">Message subject.</param>
+        /// <param name="body">Message body.</param>
+        /// <param name="organizationId">Organization id.
+        /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <returns></returns>
+        Task SendEmailAsync(string receiver, string subject, Guid organizationId, string? body = null);
 
         #endregion
     }
