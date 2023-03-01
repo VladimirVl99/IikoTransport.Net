@@ -5,7 +5,7 @@ using IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts;
 using IikoTransport.Net.Repositories.IikoCloud.Orders;
 using IikoTransport.Net.Repositories.IikoCloud.Webhooks;
 
-namespace IikoTransport.Net.Repositories
+namespace IikoTransport.Net.Repositories.IikoCloud
 {
     /// <summary>
     /// 

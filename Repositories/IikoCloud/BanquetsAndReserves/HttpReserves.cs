@@ -4,6 +4,7 @@ using IikoTransport.Net.Entities.Responses.BanquetsAndReserves;
 using IikoTransport.Net.Entities.Responses.BanquetsAndReserves.RestaurantSections;
 using IikoTransport.Net.Entities.Responses.General.Organizations.AvailableOrganizations;
 using IikoTransport.Net.Entities.Responses.General.Terminals.GroupsOfDeliveryTerminals;
+using Newtonsoft.Json;
 
 namespace IikoTransport.Net.Repositories.IikoCloud.BanquetsAndReserves
 {
@@ -41,41 +42,123 @@ namespace IikoTransport.Net.Repositories.IikoCloud.BanquetsAndReserves
 
         #region Methods
 
+        #region Banquets/reserves https://api-ru.iiko.services/#tag/Banquetsreserves
 
+        public async Task<OrganizationInfo> RetrieveOrganizationsForWhichReserveBookingAreAvailableAsync(
+            IEnumerable<Guid>? organizationIds = null, bool returnAdditionalInfo = false, bool includeDisabled = false)
+        {
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationIds,
+                returnAdditionalInfo,
+                includeDisabled
+            });
 
-        #endregion
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveOrganizationsForWhichReserveBookingAreAvailableUri,
+                body, Token);
 
-        public Task<BanquetWithOperation> CreateReserveAsync(Guid organizationId, Guid terminalGroupId,
+            return JsonConvert.DeserializeObject<OrganizationInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
+        }
+
+        public async Task<DeliveryTerminalGroupInfo> RetrieveTerminalGroupsForWhichReserveBookingAreAvailableAsync(
+            IEnumerable<Guid> organizationIds)
+        {
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationIds
+            });
+
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveTerminalGroupsForWhichReserveBookingAreAvailableUri,
+                body, Token);
+
+            return JsonConvert.DeserializeObject<DeliveryTerminalGroupInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
+        }
+
+        public async Task<RestaurantSectionsWithOperation> RetrieveRestaurantSectionsForWhichReserveBookingAreAvailableAsync(
+            IEnumerable<Guid> terminalGroupIds, bool returnSchema = false, long? revision = null)
+        {
+            string body = JsonConvert.SerializeObject(new
+            {
+                terminalGroupIds,
+                returnSchema,
+                revision
+            });
+
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveRestaurantSectionsForWhichReserveBookingAreAvailableUri,
+                body, Token);
+
+            return JsonConvert.DeserializeObject<RestaurantSectionsWithOperation>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
+        }
+
+        public async Task<ReservesWithOperation> RetrieveReservesForPassedRestaurantSectionsAsync(
+            IEnumerable<Guid> restaurantSectionIds, DateTime dateFrom, DateTime? dateTo = null)
+        {
+            string body = JsonConvert.SerializeObject(new
+            {
+                restaurantSectionIds,
+                dateFrom = dateFrom.ToCustomerDateFormat(),
+                dateTo = dateTo?.ToCustomerDateFormat()
+            });
+
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveReservesForPassedRestaurantSectionsUri,
+                body, Token);
+
+            return JsonConvert.DeserializeObject<ReservesWithOperation>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
+        }
+
+        public async Task<BanquetWithOperation> CreateReserveAsync(Guid organizationId, Guid terminalGroupId,
             Customer customer, string phone, long durationInMinutes, bool shouldRemind, IEnumerable<Guid> tableIds,
             DateTime estimatedStartTime, Guid? id = null, string? externalNumber = null, ReserveOrder? order = null,
             string? comment = null, int? transportToFrontTimeout = null, GuestDetails? guests = null)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                terminalGroupId,
+                customer,
+                phone,
+                durationInMinutes,
+                shouldRemind,
+                tableIds,
+                estimatedStartTime = estimatedStartTime.ToCustomerDateFormat(),
+                id,
+                externalNumber,
+                order,
+                comment,
+                transportToFrontTimeout,
+                guests
+            });
+
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCreateReserveUri,
+                body, Token);
+
+            return JsonConvert.DeserializeObject<BanquetWithOperation>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<OrganizationInfo> RetrieveOrganizationsForWhichReserveBookingAreAvailableAsync(IEnumerable<Guid>? organizationIds = null, bool returnAdditionalInfo = false, bool includeDisabled = false)
+        public async Task<ReservesWithOperation> RetrieveReservesStatusesByIdsAsync(Guid organizationId,
+            IEnumerable<Guid> reserveIds, IEnumerable<string>? sourceKeys = null)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                reserveIds,
+                sourceKeys
+            });
+
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveReservesStatusesByIdsUri,
+                body, Token);
+
+            return JsonConvert.DeserializeObject<ReservesWithOperation>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<ReservesWithOperation> RetrieveReservesForPassedRestaurantSectionsAsync(IEnumerable<Guid> restaurantSectionIds, DateTime dateFrom, DateTime? dateTo = null)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
 
-        public Task<ReservesWithOperation> RetrieveReservesStatusesByIdsAsync(Guid organizationId, IEnumerable<Guid> reserveIds, IEnumerable<string>? sourceKeys = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<RestaurantSectionsWithOperation> RetrieveRestaurantSectionsForWhichReserveBookingAreAvailableAsync(IEnumerable<Guid> terminalGroupIds, bool returnSchema = false, long? revision = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<DeliveryTerminalGroupInfo> RetrieveTerminalGroupsForWhichReserveBookingAreAvailableAsync(IEnumerable<Guid> organizationIds)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
     }
 }

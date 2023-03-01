@@ -68,6 +68,8 @@ using PaymentRequest = IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpd
 using TipsRequest = IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.Payments.Tips;
 using IikoTransport.Net.Repositories.IikoCloud.Orders;
 using IikoTransport.Net.Repositories.IikoCloud.BanquetsAndReserves;
+using IikoTransport.Net.Repositories.IikoCloud.Webhooks;
+using IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts;
 
 namespace IikoTransport.Net.Repositories.IikoCloud
 {
@@ -108,6 +110,16 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         /// </summary>
         private readonly HttpReserves _httpReserves;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        private readonly HttpWebhooks _httpWebhooks;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private readonly HttpLoyalty _httpLoyalty;
+
         #endregion
 
         #region Properties
@@ -134,6 +146,8 @@ namespace IikoTransport.Net.Repositories.IikoCloud
             _httpDelivery = new HttpDelivery(token);
             _httpOrders = new HttpOrders(token);
             _httpReserves = new HttpReserves(token);
+            _httpWebhooks = new HttpWebhooks(token);
+            _httpLoyalty = new HttpLoyalty(token);
         }
 
         #endregion
@@ -1585,43 +1599,135 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         #region Banquets/reserves https://api-ru.iiko.services/#tag/Banquetsreserves
 
-        public Task<OrganizationInfo> RetrieveOrganizationsForWhichReserveBookingAreAvailableAsync(
+        public async Task<OrganizationInfo> RetrieveOrganizationsForWhichReserveBookingAreAvailableAsync(
             IEnumerable<Guid>? organizationIds = null, bool returnAdditionalInfo = false, bool includeDisabled = false)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpReserves.RetrieveOrganizationsForWhichReserveBookingAreAvailableAsync(
+                    organizationIds, returnAdditionalInfo, includeDisabled);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpReserves.RetrieveOrganizationsForWhichReserveBookingAreAvailableAsync(
+                        organizationIds, returnAdditionalInfo, includeDisabled);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<DeliveryTerminalGroupInfo> RetrieveTerminalGroupsForWhichReserveBookingAreAvailableAsync(
+        public async Task<DeliveryTerminalGroupInfo> RetrieveTerminalGroupsForWhichReserveBookingAreAvailableAsync(
             IEnumerable<Guid> organizationIds)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpReserves.RetrieveTerminalGroupsForWhichReserveBookingAreAvailableAsync(
+                    organizationIds);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpReserves.RetrieveTerminalGroupsForWhichReserveBookingAreAvailableAsync(
+                        organizationIds);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<RestaurantSectionsWithOperation> RetrieveRestaurantSectionsForWhichReserveBookingAreAvailableAsync(
+        public async Task<RestaurantSectionsWithOperation> RetrieveRestaurantSectionsForWhichReserveBookingAreAvailableAsync(
             IEnumerable<Guid> terminalGroupIds, bool returnSchema = false, long? revision = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpReserves.RetrieveRestaurantSectionsForWhichReserveBookingAreAvailableAsync(
+                    terminalGroupIds, returnSchema, revision);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpReserves.RetrieveRestaurantSectionsForWhichReserveBookingAreAvailableAsync(
+                        terminalGroupIds, returnSchema, revision);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<ReservesWithOperation> RetrieveReservesForPassedRestaurantSectionsAsync(
+        public async Task<ReservesWithOperation> RetrieveReservesForPassedRestaurantSectionsAsync(
             IEnumerable<Guid> restaurantSectionIds, DateTime dateFrom, DateTime? dateTo = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpReserves.RetrieveReservesForPassedRestaurantSectionsAsync(
+                    restaurantSectionIds, dateFrom, dateTo);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpReserves.RetrieveReservesForPassedRestaurantSectionsAsync(
+                        restaurantSectionIds, dateFrom, dateTo);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<BanquetWithOperation> CreateReserveAsync(Guid organizationId, Guid terminalGroupId,
+        public async Task<BanquetWithOperation> CreateReserveAsync(Guid organizationId, Guid terminalGroupId,
             CustomerOfDeliveryRequest customer, string phone, long durationInMinutes, bool shouldRemind,
             IEnumerable<Guid> tableIds, DateTime estimatedStartTime, Guid? id = null, string? externalNumber = null,
             ReserveOrder? order = null, string? comment = null, int? transportToFrontTimeout = null,
             GuestDetailsRequest? guests = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpReserves.CreateReserveAsync(organizationId, terminalGroupId, customer,
+                    phone, durationInMinutes, shouldRemind, tableIds, estimatedStartTime, id, externalNumber,
+                    order, comment, transportToFrontTimeout, guests);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpReserves.CreateReserveAsync(organizationId, terminalGroupId, customer,
+                        phone, durationInMinutes, shouldRemind, tableIds, estimatedStartTime, id, externalNumber,
+                        order, comment, transportToFrontTimeout, guests);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<ReservesWithOperation> RetrieveReservesStatusesByIdsAsync(Guid organizationId,
+        public async Task<ReservesWithOperation> RetrieveReservesStatusesByIdsAsync(Guid organizationId,
             IEnumerable<Guid> reserveIds, IEnumerable<string>? sourceKeys = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpReserves.RetrieveReservesStatusesByIdsAsync(organizationId,
+                    reserveIds, sourceKeys);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpReserves.RetrieveReservesStatusesByIdsAsync(organizationId,
+                        reserveIds, sourceKeys);
+                }
+
+                throw e;
+            }
         }
 
         #endregion
@@ -1632,15 +1738,43 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         #region Webhooks https://api-ru.iiko.services/#tag/Webhooks
 
-        public Task<WebhookSettings> GetWebhooksSettingsForSpecifiedOrganizationAsync(Guid organizationId)
+        public async Task<WebhookSettings> GetWebhooksSettingsForSpecifiedOrganizationAsync(Guid organizationId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpWebhooks.GetWebhooksSettingsForSpecifiedOrganizationAsync(organizationId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpWebhooks.GetWebhooksSettingsForSpecifiedOrganizationAsync(organizationId);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> UpdateWebhooksSettingsForSpecifiedOrganizationAsync(Guid organizationId, string webHooksUri,
-            string? authToken = null, Filter? webHooksFilter = null)
+        public async Task<OperationInfo> UpdateWebhooksSettingsForSpecifiedOrganizationAsync(Guid organizationId,
+            string webHooksUri, string? authToken = null, Filter? webHooksFilter = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpWebhooks.UpdateWebhooksSettingsForSpecifiedOrganizationAsync(organizationId,
+                    webHooksUri, authToken, webHooksFilter);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpWebhooks.UpdateWebhooksSettingsForSpecifiedOrganizationAsync(organizationId,
+                        webHooksUri, authToken, webHooksFilter);
+                }
+
+                throw e;
+            }
         }
 
         #endregion
@@ -1651,152 +1785,496 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         #region Discounts and promotions https://api-ru.iiko.services/#tag/Discounts-and-promotions
 
-        public Task<CheckinInfo> CalculateCheckinAsync(DeliveryOrderRequest order, Guid organizationId, string? coupon = null,
+        public async Task<CheckinInfo> CalculateCheckinAsync(DeliveryOrderRequest order, Guid organizationId, string? coupon = null,
             Guid? referrerId = null, Guid? terminalGroupId = null, IEnumerable<DynamicDiscount>? dynamicDiscounts = null,
             IEnumerable<Guid>? availablePaymentMarketingCampaignIds = null, IEnumerable<Guid>? applicableManualConditions = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpLoyalty.CalculateCheckinAsync(order, organizationId, coupon, referrerId, terminalGroupId,
+                    dynamicDiscounts, availablePaymentMarketingCampaignIds, applicableManualConditions);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpLoyalty.CalculateCheckinAsync(order, organizationId, coupon, referrerId, terminalGroupId,
+                        dynamicDiscounts, availablePaymentMarketingCampaignIds, applicableManualConditions);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<ManualConditionInfos> GetManualConditionsAsync(Guid organizationId)
+        public async Task<ManualConditionInfos> GetManualConditionsAsync(Guid organizationId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpLoyalty.GetManualConditionsAsync(organizationId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpLoyalty.GetManualConditionsAsync(organizationId);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<ProgramInfos> GetProgramsAsync(Guid organizationId, bool? WithoutMarketingCampaigns = null)
+        public async Task<ProgramInfos> GetProgramsAsync(Guid organizationId, bool? WithoutMarketingCampaigns = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpLoyalty.GetProgramsAsync(organizationId, WithoutMarketingCampaigns);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpLoyalty.GetProgramsAsync(organizationId, WithoutMarketingCampaigns);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<CouponInfos> GetCouponInfoAsync(Guid organizationId, string? number = null, string? series = null)
+        public async Task<CouponInfos> GetCouponInfoAsync(Guid organizationId, string? number = null, string? series = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpLoyalty.GetCouponInfoAsync(organizationId, number, series);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpLoyalty.GetCouponInfoAsync(organizationId, number, series);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<SeriesWithNotActivatedCouponInfos> GetCouponSeriesWithNonActivatedCouponsAsync(Guid organizationId)
+        public async Task<SeriesWithNotActivatedCouponInfos> GetCouponSeriesWithNonActivatedCouponsAsync(Guid organizationId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpLoyalty.GetCouponSeriesWithNonActivatedCouponsAsync(organizationId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpLoyalty.GetCouponSeriesWithNonActivatedCouponsAsync(organizationId);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<NotActivatedCouponInfos> GetNonActivatedCouponsAsync(Guid organizationId, string? series = null,
+        public async Task<NotActivatedCouponInfos> GetNonActivatedCouponsAsync(Guid organizationId, string? series = null,
             int? pageSize = null, int? page = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpLoyalty.GetNonActivatedCouponsAsync(organizationId, series, pageSize, page);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpLoyalty.GetNonActivatedCouponsAsync(organizationId, series, pageSize, page);
+                }
+
+                throw e;
+            }
         }
 
         #endregion
 
         #region Customer categories https://api-ru.iiko.services/#tag/Customer-categories
 
-        public Task<CustomerCategoryInfos> GetCustomerCategoriesAsync(Guid organizationId)
+        public async Task<CustomerCategoryInfos> GetCustomerCategoriesAsync(Guid organizationId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpLoyalty.GetCustomerCategoriesAsync(organizationId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpLoyalty.GetCustomerCategoriesAsync(organizationId);
+                }
+
+                throw e;
+            }
         }
 
-        public Task AddCategoryForCustomerAsync(Guid customerId, Guid categoryId, Guid organizationId)
+        public async Task AddCategoryForCustomerAsync(Guid customerId, Guid categoryId, Guid organizationId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _httpLoyalty.AddCategoryForCustomerAsync(customerId, categoryId, organizationId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    await _httpLoyalty.AddCategoryForCustomerAsync(customerId, categoryId, organizationId);
+                    return;
+                }
+
+                throw e;
+            }
         }
 
-        public Task RemoveCategoryForCustomerAsync(Guid customerId, Guid categoryId, Guid organizationId)
+        public async Task RemoveCategoryForCustomerAsync(Guid customerId, Guid categoryId, Guid organizationId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _httpLoyalty.RemoveCategoryForCustomerAsync(customerId, categoryId, organizationId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    await _httpLoyalty.RemoveCategoryForCustomerAsync(customerId, categoryId, organizationId);
+                    return;
+                }
+
+                throw e;
+            }
         }
 
         #endregion
 
         #region Customers https://api-ru.iiko.services/#tag/Customers
 
-        public Task<CustomerInfo> GetCustomerInfoByCardNumberAsync(Guid organizationId, string cardNumber)
+        public async Task<CustomerInfo> GetCustomerInfoByCardNumberAsync(Guid organizationId, string cardNumber)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpLoyalty.GetCustomerInfoByCardNumberAsync(organizationId, cardNumber);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpLoyalty.GetCustomerInfoByCardNumberAsync(organizationId, cardNumber);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<CustomerInfo> GetCustomerInfoByCardTrackAsync(Guid organizationId, string cardTrack)
+        public async Task<CustomerInfo> GetCustomerInfoByCardTrackAsync(Guid organizationId, string cardTrack)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpLoyalty.GetCustomerInfoByCardTrackAsync(organizationId, cardTrack);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpLoyalty.GetCustomerInfoByCardTrackAsync(organizationId, cardTrack);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<CustomerInfo> GetCustomerInfoByEmailAsync(Guid organizationId, string email)
+        public async Task<CustomerInfo> GetCustomerInfoByEmailAsync(Guid organizationId, string email)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpLoyalty.GetCustomerInfoByEmailAsync(organizationId, email);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpLoyalty.GetCustomerInfoByEmailAsync(organizationId, email);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<CustomerInfo> GetCustomerInfoByIdAsync(Guid organizationId, Guid id)
+        public async Task<CustomerInfo> GetCustomerInfoByIdAsync(Guid organizationId, Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpLoyalty.GetCustomerInfoByIdAsync(organizationId, id);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpLoyalty.GetCustomerInfoByIdAsync(organizationId, id);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<CustomerInfo> GetCustomerInfoByPhoneAsync(Guid organizationId, string phone)
+        public async Task<CustomerInfo> GetCustomerInfoByPhoneAsync(Guid organizationId, string phone)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpLoyalty.GetCustomerInfoByPhoneAsync(organizationId, phone);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpLoyalty.GetCustomerInfoByPhoneAsync(organizationId, phone);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<CustomerInfo> GetCustomerInfoBySpecifiedCriterionAsync(Guid organizationId, SearchCustomerType type,
+        public async Task<CustomerInfo> GetCustomerInfoBySpecifiedCriterionAsync(Guid organizationId, SearchCustomerType type,
             Guid? id = null, string? phone = null, string? cardTrack = null, string? cardNumber = null, string? email = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpLoyalty.GetCustomerInfoBySpecifiedCriterionAsync(organizationId, type, id, phone,
+                    cardTrack, cardNumber, email);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpLoyalty.GetCustomerInfoBySpecifiedCriterionAsync(organizationId, type, id, phone,
+                        cardTrack, cardNumber, email);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<Guid> CreateOrUpdateCustomerAsync(Guid organizationId, Guid? id = null, string? phone = null,
+        public async Task<Guid> CreateOrUpdateCustomerAsync(Guid organizationId, Guid? id = null, string? phone = null,
             string? cardTrack = null, string? cardNumber = null, string? name = null, string? middleName = null,
             string? surName = null, DateTime? birthday = null, string? email = null, Gender? sex = null,
             GuestConsentStatus? consentStatus = null, bool? shouldReceivePromoActionsInfo = null, Guid? referrerId = null,
             string? userData = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpLoyalty.CreateOrUpdateCustomerAsync(organizationId, id, phone, cardTrack, cardNumber,
+                    name, middleName, surName, birthday, email, sex, consentStatus, shouldReceivePromoActionsInfo,
+                    referrerId, userData);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpLoyalty.CreateOrUpdateCustomerAsync(organizationId, id, phone, cardTrack, cardNumber,
+                        name, middleName, surName, birthday, email, sex, consentStatus, shouldReceivePromoActionsInfo,
+                        referrerId, userData);
+                }
+
+                throw e;
+            }
         }
 
-        public Task AddCardForCustomerAsync(Guid customerId, string cardTrack, string cardNumber, Guid organizationId)
+        public async Task AddCardForCustomerAsync(Guid customerId, string cardTrack, string cardNumber, Guid organizationId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _httpLoyalty.AddCardForCustomerAsync(customerId, cardTrack, cardNumber, organizationId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    await _httpLoyalty.AddCardForCustomerAsync(customerId, cardTrack, cardNumber, organizationId);
+                    return;
+                }
+
+                throw e;
+            }
         }
 
-        public Task<Guid> AddCustomerToProgramAsync(Guid customerId, Guid programId, Guid organizationId)
+        public async Task<Guid> AddCustomerToProgramAsync(Guid customerId, Guid programId, Guid organizationId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpLoyalty.AddCustomerToProgramAsync(customerId, programId, organizationId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpLoyalty.AddCustomerToProgramAsync(customerId, programId, organizationId);
+                }
+
+                throw e;
+            }
         }
 
-        public Task CancelHoldMoneyOfCustomerAsync(Guid transactionId, Guid organizationId)
+        public async Task CancelHoldMoneyOfCustomerAsync(Guid transactionId, Guid organizationId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _httpLoyalty.CancelHoldMoneyOfCustomerAsync(transactionId, organizationId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    await _httpLoyalty.CancelHoldMoneyOfCustomerAsync(transactionId, organizationId);
+                    return;
+                }
+
+                throw e;
+            }
         }
 
-        public Task DeleteCardForCustomerAsync(Guid customerId, string cardTrack, Guid organizationId)
+        public async Task DeleteCardForCustomerAsync(Guid customerId, string cardTrack, Guid organizationId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _httpLoyalty.DeleteCardForCustomerAsync(customerId, cardTrack, organizationId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    await _httpLoyalty.DeleteCardForCustomerAsync(customerId, cardTrack, organizationId);
+                    return;
+                }
+
+                throw e;
+            }
         }
 
-        public Task<Guid> HoldMoneyOfCustomerAsync(Guid customerId, Guid walletId, Guid organizationId, double sum,
+        public async Task<Guid> HoldMoneyOfCustomerAsync(Guid customerId, Guid walletId, Guid organizationId, double sum,
             Guid? transactionId = null, string? comment = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpLoyalty.HoldMoneyOfCustomerAsync(customerId, walletId, organizationId, sum,
+                    transactionId, comment);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpLoyalty.HoldMoneyOfCustomerAsync(customerId, walletId, organizationId, sum,
+                        transactionId, comment);
+                }
+
+                throw e;
+            }
         }
 
-        public Task RefillCustomerBalanceAsync(Guid customerId, Guid walletId, Guid organizationId, double sum,
+        public async Task RefillCustomerBalanceAsync(Guid customerId, Guid walletId, Guid organizationId, double sum,
             string? comment = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _httpLoyalty.RefillCustomerBalanceAsync(customerId, walletId, organizationId, sum, comment);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    await _httpLoyalty.RefillCustomerBalanceAsync(customerId, walletId, organizationId, sum, comment);
+                    return;
+                }
+
+                throw e;
+            }
         }
 
-        public Task WithdrawCustomerBalanceAsync(Guid customerId, Guid walletId, Guid organizationId, double sum,
+        public async Task WithdrawCustomerBalanceAsync(Guid customerId, Guid walletId, Guid organizationId, double sum,
             string? comment = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _httpLoyalty.WithdrawCustomerBalanceAsync(customerId, walletId, organizationId, sum, comment);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    await _httpLoyalty.WithdrawCustomerBalanceAsync(customerId, walletId, organizationId, sum, comment);
+                    return;
+                }
+
+                throw e;
+            }
         }
 
         #endregion
 
         #region Messages https://api-ru.iiko.services/#tag/Messages
 
-        public Task SendEmailAsync(string receiver, string subject, Guid organizationId, string? body = null)
+        public async Task SendEmailAsync(string receiver, string subject, Guid organizationId, string? body = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _httpLoyalty.SendEmailAsync(receiver, subject, organizationId, body);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    await _httpLoyalty.SendEmailAsync(receiver, subject, organizationId, body);
+                    return;
+                }
+
+                throw e;
+            }
         }
 
-        public Task SendSmsAsync(string phone, string text, Guid organizationId)
+        public async Task SendSmsAsync(string phone, string text, Guid organizationId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _httpLoyalty.SendSmsAsync(phone, text, organizationId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    await _httpLoyalty.SendSmsAsync(phone, text, organizationId);
+                    return;
+                }
+
+                throw e;
+            }
         }
 
         #endregion
@@ -1819,6 +2297,8 @@ namespace IikoTransport.Net.Repositories.IikoCloud
             _httpDelivery.Token = _token;
             _httpOrders.Token = _token;
             _httpReserves.Token = _token;
+            _httpWebhooks.Token = _token;
+            _httpLoyalty.Token = _token;
 
             return _token;
         }
