@@ -539,13 +539,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// </summary>
         /// <param name="organizationId">Organization ID of a new order.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
-        /// <param name="odrerId">ID of an order.</param>
+        /// <param name="orderId">ID of an order.</param>
         /// <param name="terminalGroupId">Front group ID an order must be sent to.
         /// Can be obtained by https://api-ru.iiko.services/api/1/terminal_groups operation.</param>
         /// <param name="createOrderSettings">Order creation parameters.</param>
         /// <returns></returns>
         Task<OrderWithOperationInfo> AdmitOrderDraftChangesAndSendThemToFrontAsync(Guid organizationId,
-            Guid odrerId, Guid? terminalGroupId = null, OrderCreationSettings? createOrderSettings = null);
+            Guid orderId, Guid? terminalGroupId = null, OrderCreationSettings? createOrderSettings = null);
 
         #endregion
     }

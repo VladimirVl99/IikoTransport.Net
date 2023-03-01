@@ -22,6 +22,8 @@ using ComboRequest = IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdat
 using IikoTransport.Net.Entities.Responses.Delivery.CreateAndUpdate;
 using Payment = IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.Payments.Payment;
 using Tips = IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.Payments.Tips;
+using DeliveryRestrictionItemRequest = IikoTransport.Net.Entities.Requests.Delivery.Restrictions.DeliveryRestrictionItem;
+using DeliveryZoneRequest = IikoTransport.Net.Entities.Requests.Delivery.Restrictions.DeliveryZone;
 
 namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
 {
@@ -77,7 +79,6 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
             = "https://api-ru.iiko.services/api/1/deliveries/drafts/commit";
 
         private const string DefaultNullableExceptionMessage = "Fail to convert json response to the object.";
-        private const string DefaultCustomDateFormat = "yyyy-MM-dd HH:mm:ss.fff";
 
         #endregion
 
@@ -121,7 +122,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
             SimpleDeliveryStatus deliveryStatus, DateTime? deliveryDate = null)
         {
             string body = JsonConvert.SerializeObject(new { organizationId, orderId, deliveryStatus = deliveryStatus.ToString(),
-                deliveryDate = deliveryDate?.ToString(DefaultCustomDateFormat) });
+                deliveryDate = deliveryDate?.ToCustomerDateFormat() });
             var responseBody = await SendHttpPostBearerRequestAsync(DefaultUpdateDeliveryStatusUri, body, Token);
 
             return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
@@ -164,7 +165,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
             {
                 organizationId,
                 orderId,
-                deliveryDate = deliveryDate?.ToString(DefaultCustomDateFormat)
+                deliveryDate = deliveryDate?.ToCustomerDateFormat()
             });
             var responseBody = await SendHttpPostBearerRequestAsync(DefaultCloseOrderUri, body, Token);
 
@@ -197,7 +198,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
             {
                 organizationId,
                 orderId,
-                newCompleteBefore = newCompleteBefore.ToString(DefaultCustomDateFormat)
+                newCompleteBefore = newCompleteBefore.ToCustomerDateFormat()
             });
             var responseBody = await SendHttpPostBearerRequestAsync(DefaultChangeTimeWhenClientWantsOrderToBeDeliveredUri,
                 body, Token);
@@ -322,92 +323,335 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
 
         #endregion
 
-        #endregion
+        #region Deliveries: Retrieve https://api-ru.iiko.services/#tag/Deliveries:-Retrieve
 
-        public Task<OrderWithOperationInfo> AdmitOrderDraftChangesAndSendThemToFrontAsync(Guid organizationId, Guid odrerId,
-            Guid? terminalGroupId = null, OrderCreationSettings? createOrderSettings = null)
+        public async Task<OrderInfoWithOperation> RetrieveDeliveryOrdersByIdsAsync(Guid organizationId, IEnumerable<Guid>? orderIds = null,
+            IEnumerable<string>? sourceKeys = null, IEnumerable<Guid>? posOrderIds = null)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                orderIds,
+                sourceKeys,
+                posOrderIds
+            });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveOrdersByIdsUri, body, Token);
+
+            return JsonConvert.DeserializeObject<OrderInfoWithOperation>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<SuitableTerminalGroupsWithOperation> GetSuitableTerminalGroupsForDeliveryRestrictionsAsync(
+        public async Task<RevisionOrderInfo> RetrieveDeliveryOrdersByStatusesAndDatesAsync(IEnumerable<Guid> organizationIds,
+            DateTime deliveryDateFrom, DateTime? deliveryDateTo = null, IEnumerable<SimpleDeliveryStatus>? statuses = null,
+            IEnumerable<string>? sourceKeys = null)
+        {
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationIds,
+                deliveryDateFrom = deliveryDateFrom.ToCustomerDateFormat(),
+                deliveryDateTo = deliveryDateTo?.ToCustomerDateFormat(),
+                statuses = statuses?.ToSimpleDeliveryStatuses(),
+                sourceKeys
+            });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveOrdersByStatusesAndDatesUri, body, Token);
+
+            return JsonConvert.DeserializeObject<RevisionOrderInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
+        }
+
+        public async Task<RevisionOrderInfo> RetrieveDeliveryOrdersChangedFromTimeRevisionAsync(long startRevision,
+            IEnumerable<Guid> organizationIds, IEnumerable<string>? sourceKeys = null)
+        {
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationIds,
+                startRevision,
+                sourceKeys
+            });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveOrdersChangedFromTimeRevisionWasPassedUri,
+                body, Token);
+
+            return JsonConvert.DeserializeObject<RevisionOrderInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
+        }
+
+        public async Task<RevisionOrderInfo> RetrieveDeliveryOrdersByPhoneAndDatesAndRevisionAsync(IEnumerable<Guid> organizationIds,
+            string? phone = null, DateTime? deliveryDateFrom = null, DateTime? deliveryDateTo = null, long? startRevision = null,
+            IEnumerable<string>? sourceKeys = null, int? rowsCount = null)
+        {
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationIds,
+                phone,
+                deliveryDateFrom = deliveryDateFrom?.ToCustomerDateFormat(),
+                deliveryDateTo = deliveryDateTo?.ToCustomerDateFormat(),
+                startRevision,
+                rowsCount,
+                sourceKeys
+            });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveOrdersByTelephoneDatesAndRevisionUri,
+                body, Token);
+
+            return JsonConvert.DeserializeObject<RevisionOrderInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
+        }
+
+        public async Task<RevisionOrderInfo> RetrieveDeliveryOrdersByAdditionalFiltersAsync(IEnumerable<Guid> organizationIds,
+            SortProperty sortProperty, SortDirection sortDirection, IEnumerable<Guid>? terminalGroupIds = null,
+            DateTime? deliveryDateFrom = null, DateTime? deliveryDateTo = null, IEnumerable<DeliveryStatus>? statuses = null,
+            bool? hasProblem = null, OrderServiceType? orderServiceType = null, string? searchText = null,
+            int? timeToCookingErrorTimeout = null, int? cookingTimeout = null, int? rowsCount = null,
+            IEnumerable<string>? sourceKeys = null, IEnumerable<Guid>? orderIds = null, IEnumerable<Guid>? posOrderIds = null)
+        {
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationIds,
+                sortProperty = sortProperty.ToString(),
+                sortDirection = sortDirection.ToString(),
+                terminalGroupIds,
+                deliveryDateFrom = deliveryDateFrom?.ToCustomerDateFormat(),
+                deliveryDateTo = deliveryDateTo?.ToCustomerDateFormat(),
+                statuses = statuses?.ToDeliveryStatuses(),
+                hasProblem,
+                orderServiceType = orderServiceType.ToString(),
+                searchText,
+                timeToCookingErrorTimeout,
+                cookingTimeout,
+                rowsCount,
+                sourceKeys,
+                orderIds,
+                posOrderIds
+            });
+
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultSearchOrdersByAdditionalFiltersUri,
+                body, Token);
+
+            return JsonConvert.DeserializeObject<RevisionOrderInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
+        }
+
+        #endregion
+
+        #region Addresses https://api-ru.iiko.services/#tag/Addresses
+
+        public async Task<RegionWithOperation> RetrieveRegionsAsync(IEnumerable<Guid> organizationIds)
+        {
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationIds
+            });
+
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveRegionsUri, body, Token);
+
+            return JsonConvert.DeserializeObject<RegionWithOperation>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
+        }
+
+        public async Task<CitiesWithOperation> RetrieveCitiesAsync(IEnumerable<Guid> organizationIds)
+        {
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationIds
+            });
+
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveCitiesUri, body, Token);
+
+            return JsonConvert.DeserializeObject<CitiesWithOperation>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
+        }
+
+        public async Task<StreetsWithOperation> RetrieveStreetsByCityAsync(Guid organizationId, Guid cityId)
+        {
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                cityId
+            });
+
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveStreetsByCityUri, body, Token);
+
+            return JsonConvert.DeserializeObject<StreetsWithOperation>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
+        }
+
+        #endregion
+
+        #region Delivery restrictions https://api-ru.iiko.services/#tag/Delivery-restrictions
+
+        public async Task<DeliveryRestrictionsWithOperation> RetrieveDeliveryRestrictionsAsync(IEnumerable<Guid> organizationIds)
+        {
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationIds
+            });
+
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveDeliveryRestrictionsUri, body, Token);
+
+            return JsonConvert.DeserializeObject<DeliveryRestrictionsWithOperation>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
+        }
+
+        public async Task<OperationInfo> UpdateDeliveryRestrictionsAsync(Guid organizationId, int deliveryGeocodeServiceType,
+            long defaultDeliveryDurationInMinutes, long defaultSelfServiceDurationInMinutes, bool useSameDeliveryDuration,
+            bool useSameMinSum, bool useSameWorkTimeInterval, bool useSameRestrictionsOnAllWeek,
+            IEnumerable<DeliveryRestrictionItemRequest> restrictions, IEnumerable<DeliveryZoneRequest> deliveryZones,
+            bool rejectOnGeocodingError, bool addDeliveryServiceCost, bool useSameDeliveryServiceProduct,
+            bool useExternalAssignationService, bool frontTrustsCallCenterCheck, bool requireExactAddressForGeocoding,
+            int zonesMode, bool autoAssignExternalDeliveries, int actionOnValidationRejection,
+            string? deliveryRegionsMapUrl = null, double? defaultMinSum = null, int? defaultFrom = null,
+            int? defaultTo = null, Guid? defaultDeliveryServiceProductId = null, string? externalAssignationServiceUrl = null)
+        {
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                deliveryGeocodeServiceType,
+                defaultDeliveryDurationInMinutes,
+                defaultSelfServiceDurationInMinutes,
+                useSameDeliveryDuration,
+                useSameMinSum,
+                useSameWorkTimeInterval,
+                useSameRestrictionsOnAllWeek,
+                restrictions,
+                deliveryZones,
+                rejectOnGeocodingError,
+                addDeliveryServiceCost,
+                useSameDeliveryServiceProduct,
+                useExternalAssignationService,
+                frontTrustsCallCenterCheck,
+                requireExactAddressForGeocoding,
+                zonesMode,
+                autoAssignExternalDeliveries,
+                actionOnValidationRejection,
+                deliveryRegionsMapUrl,
+                defaultMinSum,
+                defaultFrom,
+                defaultTo,
+                defaultDeliveryServiceProductId,
+                externalAssignationServiceUrl
+            });
+
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultUpdateDeliveryRestrictionsUri, body, Token);
+
+            return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
+        }
+
+        public async Task<SuitableTerminalGroupsWithOperation> GetSuitableTerminalGroupsForDeliveryRestrictionsAsync(
             IEnumerable<Guid> organizationIds, bool isCourierDelivery, DeliveryAddressRequest? deliveryAddress = null,
             Coordinate? orderLocation = null, IEnumerable<RestrictionsOrderItem>? orderItems = null,
             DateTime? deliveryDate = null, double? deliverySum = null, double? discountSum = null)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationIds,
+                isCourierDelivery,
+                deliveryAddress,
+                orderLocation,
+                orderItems,
+                deliveryDate = deliveryDate?.ToCustomerDateFormat(),
+                deliverySum,
+                discountSum
+            });
+
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultGetSuitableTerminalGroupsForDeliveryRestrictionsUri,
+                body, Token);
+
+            return JsonConvert.DeserializeObject<SuitableTerminalGroupsWithOperation>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<CitiesWithOperation> RetrieveCitiesAsync(IEnumerable<Guid> organizationIds)
+        #endregion
+
+        #region Marketing sources https://api-ru.iiko.services/#tag/Marketing-sources
+
+        public async Task<MarketingSourceWithOperation> RetrieveMarketingSourcesAsync(IEnumerable<Guid> organizationIds)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationIds
+            });
+
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveMarketingSourcesUri, body, Token);
+
+            return JsonConvert.DeserializeObject<MarketingSourceWithOperation>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<RevisionOrderInfo> RetrieveDeliveryOrdersByAdditionalFiltersAsync(IEnumerable<Guid> organizationIds,
-            SortProperty sortProperty, SortDirection sortDirection, IEnumerable<Guid>? terminalGroupIds = null,
-            DateTime? deliveryDateFrom = null, DateTime? deliveryDateTo = null, IEnumerable<DeliveryStatus>? statuses = null, bool? hasProblem = null, OrderServiceType? orderServiceType = null, string? searchText = null, int? timeToCookingErrorTimeout = null, int? cookingTimeout = null, int? rowsCount = null, IEnumerable<string>? sourceKeys = null, IEnumerable<Guid>? orderIds = null, IEnumerable<Guid>? posOrderIds = null)
+        #endregion
+
+        #region Drafts https://api-ru.iiko.services/#tag/Drafts
+
+        public async Task<OrderDraftWithOperation> RetrieveOrderDraftByIdAsync(Guid organizationId, Guid orderId,
+            Guid employeeId)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                orderId,
+                employeeId
+            });
+
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveOrderDraftByIdUri, body, Token);
+
+            return JsonConvert.DeserializeObject<OrderDraftWithOperation>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<OrderInfoWithOperation> RetrieveDeliveryOrdersByIdsAsync(Guid organizationId, IEnumerable<Guid>? orderIds = null, IEnumerable<string>? sourceKeys = null, IEnumerable<Guid>? posOrderIds = null)
+        public async Task<OrderDraftsListWithOperation> RetrieveOrderDraftsByParametersAsync(IEnumerable<Guid> organizationIds,
+            DateTime? deliveryDateFrom = null, DateTime? deliveryDateTo = null, string? phone = null, int? limit = null,
+            int? offset = null, IEnumerable<string>? sourceKeys = null)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationIds,
+                deliveryDateFrom = deliveryDateFrom?.ToCustomerDateFormat(),
+                deliveryDateTo = deliveryDateTo?.ToCustomerDateFormat(),
+                phone,
+                limit,
+                offset,
+                sourceKeys
+            });
+
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveOrderDraftsByParametersUri, body, Token);
+
+            return JsonConvert.DeserializeObject<OrderDraftsListWithOperation>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<RevisionOrderInfo> RetrieveDeliveryOrdersByPhoneAndDatesAndRevisionAsync(IEnumerable<Guid> organizationIds, string? phone = null, DateTime? deliveryDateFrom = null, DateTime? deliveryDateTo = null, long? startRevision = null, IEnumerable<string>? sourceKeys = null, int? rowsCount = null)
+        public async Task<OperationInfo> StoreOrderDraftChangesToDbAsync(Guid organizationId, DeliveryOrderRequest order)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                order
+            });
+
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultStoreOrderDraftChangesToDbUri, body, Token);
+
+            return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<RevisionOrderInfo> RetrieveDeliveryOrdersByStatusesAndDatesAsync(IEnumerable<Guid> organizationIds, DateTime deliveryDateFrom, DateTime? deliveryDateTo = null, IEnumerable<Entities.Requests.Delivery.CreateAndUpdate.DeliveryStatus>? statuses = null, IEnumerable<string>? sourceKeys = null)
+        public async Task<OrderWithOperationInfo> AdmitOrderDraftChangesAndSendThemToFrontAsync(Guid organizationId, Guid orderId,
+            Guid? terminalGroupId = null, OrderCreationSettings? createOrderSettings = null)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                orderId,
+                terminalGroupId,
+                createOrderSettings
+            });
+
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultAdmitOrderDraftChangesAndSendThemToFrontUri,
+                body, Token);
+
+            return JsonConvert.DeserializeObject<OrderWithOperationInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<RevisionOrderInfo> RetrieveDeliveryOrdersChangedFromTimeRevisionAsync(long startRevision, IEnumerable<Guid> organizationIds, IEnumerable<string>? sourceKeys = null)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
 
-        public Task<DeliveryRestrictionsWithOperation> RetrieveDeliveryRestrictionsAsync(IEnumerable<Guid> organizationIds)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<MarketingSourceWithOperation> RetrieveMarketingSourcesAsync(IEnumerable<Guid> organizationIds)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<OrderDraftWithOperation> RetrieveOrderDraftByIdAsync(Guid organizationId, Guid orderId, Guid employeeId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<OrderDraftsListWithOperation> RetrieveOrderDraftsByParametersAsync(IEnumerable<Guid> organizationIds, DateTime? deliveryDateFrom = null, DateTime? deliveryDateTo = null, string? phone = null, int? limit = null, int? offset = null, IEnumerable<string>? sourceKeys = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<RegionWithOperation> RetrieveRegionsAsync(IEnumerable<Guid> organizationIds)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<StreetsWithOperation> RetrieveStreetsByCityAsync(Guid organizationId, Guid cityId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<OperationInfo> StoreOrderDraftChangesToDbAsync(Guid organizationId, Entities.Requests.Delivery.CreateAndUpdate.DeliveryOrder order)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<OperationInfo> UpdateDeliveryRestrictionsAsync(Guid organizationId, int deliveryGeocodeServiceType, long defaultDeliveryDurationInMinutes, long defaultSelfServiceDurationInMinutes, bool useSameDeliveryDuration, bool useSameMinSum, bool useSameWorkTimeInterval, bool useSameRestrictionsOnAllWeek, IEnumerable<Entities.Requests.Delivery.Restrictions.DeliveryRestrictionItem> restrictions, IEnumerable<Entities.Requests.Delivery.Restrictions.DeliveryZone> deliveryZones, bool rejectOnGeocodingError, bool addDeliveryServiceCost, bool useSameDeliveryServiceProduct, bool useExternalAssignationService, bool frontTrustsCallCenterCheck, bool requireExactAddressForGeocoding, int zonesMode, bool autoAssignExternalDeliveries, int actionOnValidationRejection, string? deliveryRegionsMapUrl = null, double? defaultMinSum = null, int? defaultFrom = null, int? defaultTo = null, Guid? defaultDeliveryServiceProductId = null, string? externalAssignationServiceUrl = null)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
     }
 }

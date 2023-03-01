@@ -5,7 +5,6 @@ using IikoTransport.Net.Entities.Common.Customers;
 using IikoTransport.Net.Entities.Common.Orders;
 using IikoTransport.Net.Entities.Requests.BanquetsAndReserves.CreateReserve;
 using IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.Addresses;
-using IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.Payments;
 using IikoTransport.Net.Entities.Requests.Delivery.Restrictions;
 using IikoTransport.Net.Entities.Requests.Delivery.Retrieve;
 using IikoTransport.Net.Entities.Requests.General.Notifications;
@@ -50,7 +49,7 @@ using CustomerRequest = IikoTransport.Net.Entities.Requests.Orders.Customers.Cus
 using CustomerOfDeliveryRequest = IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.Customers.Customer;
 using OrderItemRequest = IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.OrderItem;
 using ComboRequest = IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.Combo;
-using OrderWithOperationInfoResponse = IikoTransport.Net.Entities.Responses.Delivery.CreateAndUpdate.OrderWithOperationInfo;
+using DeliveryOrderWithOperationInfoResponse = IikoTransport.Net.Entities.Responses.Delivery.CreateAndUpdate.OrderWithOperationInfo;
 using DeliveryOrderRequest = IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.DeliveryOrder;
 using DeliveryPointRequest = IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.Addresses.DeliveryPoint;
 using OrderServiceType = IikoTransport.Net.Entities.Common.Orders.OrderServiceType;
@@ -64,6 +63,11 @@ using IikoTransport.Net.Repositories.IikoCloud.General;
 using System.Net;
 using OrderStatus = IikoTransport.Net.Entities.Common.Orders.OrderStatus;
 using IikoTransport.Net.Repositories.IikoCloud.Delivery;
+using TableOrderWithOperationInfo = IikoTransport.Net.Entities.Responses.Orders.OrderWithOperationInfo;
+using PaymentRequest = IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.Payments.Payment;
+using TipsRequest = IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.Payments.Tips;
+using IikoTransport.Net.Repositories.IikoCloud.Orders;
+using IikoTransport.Net.Repositories.IikoCloud.BanquetsAndReserves;
 
 namespace IikoTransport.Net.Repositories.IikoCloud
 {
@@ -94,6 +98,16 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         /// </summary>
         private readonly HttpDelivery _httpDelivery;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        private readonly HttpOrders _httpOrders;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private readonly HttpReserves _httpReserves;
+
         #endregion
 
         #region Properties
@@ -118,6 +132,8 @@ namespace IikoTransport.Net.Repositories.IikoCloud
             _token = token;
             _httpGeneral = new HttpGeneral(token);
             _httpDelivery = new HttpDelivery(token);
+            _httpOrders = new HttpOrders(token);
+            _httpReserves = new HttpReserves(token);
         }
 
         #endregion
@@ -695,165 +711,514 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         #region Deliveries: Create and update https://api-ru.iiko.services/#tag/Deliveries:-Create-and-update
 
-        public Task<OrderWithOperationInfoResponse> CreateDeliveryAsync(Guid organizationId, DeliveryOrderRequest order,
+        public async Task<DeliveryOrderWithOperationInfoResponse> CreateDeliveryAsync(Guid organizationId, DeliveryOrderRequest order,
             Guid? terminalGroupId = null, OrderCreationSettings? createOrderSettings = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.CreateDeliveryAsync(organizationId, order, terminalGroupId, createOrderSettings);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.CreateDeliveryAsync(organizationId, order, terminalGroupId, createOrderSettings);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> UpdateDeliveryOrderProblemAsync(Guid organizationId, Guid orderId, bool hasProblem,
+        public async Task<OperationInfo> UpdateDeliveryOrderProblemAsync(Guid organizationId, Guid orderId, bool hasProblem,
             string? problem = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.UpdateDeliveryOrderProblemAsync(organizationId, orderId, hasProblem, problem);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.UpdateDeliveryOrderProblemAsync(organizationId, orderId, hasProblem, problem);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> UpdateDeliveryStatusAsync(Guid organizationId, Guid orderId, SimpleDeliveryStatus deliveryStatus,
+        public async Task<OperationInfo> UpdateDeliveryStatusAsync(Guid organizationId, Guid orderId, SimpleDeliveryStatus deliveryStatus,
             DateTime? deliveryDate = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.UpdateDeliveryStatusAsync(organizationId, orderId, deliveryStatus, deliveryDate);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.UpdateDeliveryStatusAsync(organizationId, orderId, deliveryStatus, deliveryDate);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> UpdateDeliveryOrderCourierAsync(Guid organizationId, Guid orderId, Guid employeeId)
+        public async Task<OperationInfo> UpdateDeliveryOrderCourierAsync(Guid organizationId, Guid orderId, Guid employeeId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.UpdateDeliveryOrderCourierAsync(organizationId, orderId, employeeId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.UpdateDeliveryOrderCourierAsync(organizationId, orderId, employeeId);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> AddDeliveryOrderItemsAsync(Guid organizationId, Guid orderId, IEnumerable<OrderItemRequest> items,
+        public async Task<OperationInfo> AddDeliveryOrderItemsAsync(Guid organizationId, Guid orderId, IEnumerable<OrderItemRequest> items,
             IEnumerable<ComboRequest>? combos = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.AddDeliveryOrderItemsAsync(organizationId, orderId, items, combos);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.AddDeliveryOrderItemsAsync(organizationId, orderId, items, combos);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> CloseDeliveryOrderAsync(Guid organizationId, Guid orderId, DateTime? deliveryDate = null)
+        public async Task<OperationInfo> CloseDeliveryOrderAsync(Guid organizationId, Guid orderId, DateTime? deliveryDate = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.CloseDeliveryOrderAsync(organizationId, orderId, deliveryDate);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.CloseDeliveryOrderAsync(organizationId, orderId, deliveryDate);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> CancelDeliveryOrderAsync(Guid organizationId, Guid orderId, Guid? movedOrderId = null,
+        public async Task<OperationInfo> CancelDeliveryOrderAsync(Guid organizationId, Guid orderId, Guid? movedOrderId = null,
             Guid? cancelCauseId = null, Guid? removalTypeId = null, Guid? userIdForWriteoff = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.CancelDeliveryOrderAsync(organizationId, orderId, movedOrderId, cancelCauseId,
+                    removalTypeId, userIdForWriteoff);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.CancelDeliveryOrderAsync(organizationId, orderId, movedOrderId, cancelCauseId,
+                        removalTypeId, userIdForWriteoff);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> ChangeTimeWhenClientWantsOrderToBeDeliveredAsync(Guid organizationId,
+        public async Task<OperationInfo> ChangeTimeWhenClientWantsOrderToBeDeliveredAsync(Guid organizationId,
             Guid orderId, DateTime newCompleteBefore)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.ChangeTimeWhenClientWantsOrderToBeDeliveredAsync(organizationId,
+                    orderId, newCompleteBefore);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.ChangeTimeWhenClientWantsOrderToBeDeliveredAsync(organizationId,
+                        orderId, newCompleteBefore);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> ChangeDeliveryPointForDeliveryOrderAsync(Guid organizationId, Guid orderId,
+        public async Task<OperationInfo> ChangeDeliveryPointForDeliveryOrderAsync(Guid organizationId, Guid orderId,
             DeliveryPointRequest newDeliveryPoint)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.ChangeDeliveryPointForDeliveryOrderAsync(organizationId, orderId,
+                    newDeliveryPoint);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.ChangeDeliveryPointForDeliveryOrderAsync(organizationId, orderId,
+                        newDeliveryPoint);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> ChangeDeliveryTypeForOrderAsync(Guid organizationId, Guid orderId,
+        public async Task<OperationInfo> ChangeDeliveryTypeForOrderAsync(Guid organizationId, Guid orderId,
             OrderServiceType newServiceType, DeliveryPointRequest? deliveryPoint = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.ChangeDeliveryTypeForOrderAsync(organizationId, orderId,
+                    newServiceType, deliveryPoint);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.ChangeDeliveryTypeForOrderAsync(organizationId, orderId,
+                        newServiceType, deliveryPoint);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> ChangePaymentForDeliveryOrderAsync(Guid organizationId, Guid orderId,
-            IEnumerable<Payment> payments, IEnumerable<Tips>? tips = null)
+        public async Task<OperationInfo> ChangePaymentForDeliveryOrderAsync(Guid organizationId, Guid orderId,
+            IEnumerable<PaymentRequest> payments, IEnumerable<TipsRequest>? tips = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.ChangePaymentForDeliveryOrderAsync(organizationId, orderId,
+                    payments, tips);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.ChangePaymentForDeliveryOrderAsync(organizationId, orderId,
+                        payments, tips);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> ChangeDeliveryCommentAsync(Guid organizationId, Guid orderId, string comment)
+        public async Task<OperationInfo> ChangeDeliveryCommentAsync(Guid organizationId, Guid orderId, string comment)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.ChangeDeliveryCommentAsync(organizationId, orderId, comment);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.ChangeDeliveryCommentAsync(organizationId, orderId, comment);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> PrintDeliveryBillAsync(Guid organizationId, Guid orderId)
+        public async Task<OperationInfo> PrintDeliveryBillAsync(Guid organizationId, Guid orderId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.PrintDeliveryBillAsync(organizationId, orderId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.PrintDeliveryBillAsync(organizationId, orderId);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> ConfirmDeliveryAsync(Guid organizationId, Guid orderId)
+        public async Task<OperationInfo> ConfirmDeliveryAsync(Guid organizationId, Guid orderId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.ConfirmDeliveryAsync(organizationId, orderId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.ConfirmDeliveryAsync(organizationId, orderId);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> CancelDeliveryConfirmationAsync(Guid organizationId, Guid orderId)
+        public async Task<OperationInfo> CancelDeliveryConfirmationAsync(Guid organizationId, Guid orderId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.CancelDeliveryConfirmationAsync(organizationId, orderId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.CancelDeliveryConfirmationAsync(organizationId, orderId);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> AssignOrChangeDeliveryOrderOperatorAsync(Guid organizationId, Guid orderId,
+        public async Task<OperationInfo> AssignOrChangeDeliveryOrderOperatorAsync(Guid organizationId, Guid orderId,
             Guid operatorId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.AssignOrChangeDeliveryOrderOperatorAsync(organizationId, orderId,
+                    operatorId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.AssignOrChangeDeliveryOrderOperatorAsync(organizationId, orderId,
+                        operatorId);
+                }
+
+                throw e;
+            }
         }
 
         #endregion
 
         #region Deliveries: Retrieve https://api-ru.iiko.services/#tag/Deliveries:-Retrieve
 
-        public Task<OrderInfoWithOperation> RetrieveDeliveryOrdersByIdsAsync(Guid organizationId, IEnumerable<Guid>? orderIds = null,
-            IEnumerable<string>? sourceKeys = null, IEnumerable<Guid>? posOrderIds = null)
+        public async Task<OrderInfoWithOperation> RetrieveDeliveryOrdersByIdsAsync(Guid organizationId,
+            IEnumerable<Guid>? orderIds = null, IEnumerable<string>? sourceKeys = null, IEnumerable<Guid>? posOrderIds = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.RetrieveDeliveryOrdersByIdsAsync(organizationId, orderIds, sourceKeys,
+                    posOrderIds);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.RetrieveDeliveryOrdersByIdsAsync(organizationId, orderIds, sourceKeys,
+                        posOrderIds);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<RevisionOrderInfo> RetrieveDeliveryOrdersByStatusesAndDatesAsync(IEnumerable<Guid> organizationIds,
+        public async Task<RevisionOrderInfo> RetrieveDeliveryOrdersByStatusesAndDatesAsync(IEnumerable<Guid> organizationIds,
             DateTime deliveryDateFrom, DateTime? deliveryDateTo = null, IEnumerable<SimpleDeliveryStatus>? statuses = null,
             IEnumerable<string>? sourceKeys = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.RetrieveDeliveryOrdersByStatusesAndDatesAsync(organizationIds, deliveryDateFrom,
+                    deliveryDateTo, statuses, sourceKeys);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.RetrieveDeliveryOrdersByStatusesAndDatesAsync(organizationIds, deliveryDateFrom,
+                        deliveryDateTo, statuses, sourceKeys);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<RevisionOrderInfo> RetrieveDeliveryOrdersChangedFromTimeRevisionAsync(long startRevision,
+        public async Task<RevisionOrderInfo> RetrieveDeliveryOrdersChangedFromTimeRevisionAsync(long startRevision,
             IEnumerable<Guid> organizationIds, IEnumerable<string>? sourceKeys = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.RetrieveDeliveryOrdersChangedFromTimeRevisionAsync(startRevision,
+                    organizationIds, sourceKeys);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.RetrieveDeliveryOrdersChangedFromTimeRevisionAsync(startRevision,
+                        organizationIds, sourceKeys);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<RevisionOrderInfo> RetrieveDeliveryOrdersByPhoneAndDatesAndRevisionAsync(IEnumerable<Guid> organizationIds,
+        public async Task<RevisionOrderInfo> RetrieveDeliveryOrdersByPhoneAndDatesAndRevisionAsync(IEnumerable<Guid> organizationIds,
             string? phone = null, DateTime? deliveryDateFrom = null, DateTime? deliveryDateTo = null, long? startRevision = null,
             IEnumerable<string>? sourceKeys = null, int? rowsCount = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.RetrieveDeliveryOrdersByPhoneAndDatesAndRevisionAsync(organizationIds, phone,
+                    deliveryDateFrom, deliveryDateTo, startRevision, sourceKeys, rowsCount);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.RetrieveDeliveryOrdersByPhoneAndDatesAndRevisionAsync(organizationIds, phone,
+                        deliveryDateFrom, deliveryDateTo, startRevision, sourceKeys, rowsCount);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<RevisionOrderInfo> RetrieveDeliveryOrdersByAdditionalFiltersAsync(IEnumerable<Guid> organizationIds,
+        public async Task<RevisionOrderInfo> RetrieveDeliveryOrdersByAdditionalFiltersAsync(IEnumerable<Guid> organizationIds,
             SortProperty sortProperty, SortDirection sortDirection, IEnumerable<Guid>? terminalGroupIds = null,
             DateTime? deliveryDateFrom = null, DateTime? deliveryDateTo = null, IEnumerable<DeliveryStatus>? statuses = null,
             bool? hasProblem = null, OrderServiceType? orderServiceType = null, string? searchText = null,
             int? timeToCookingErrorTimeout = null, int? cookingTimeout = null, int? rowsCount = null,
             IEnumerable<string>? sourceKeys = null, IEnumerable<Guid>? orderIds = null, IEnumerable<Guid>? posOrderIds = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.RetrieveDeliveryOrdersByAdditionalFiltersAsync(organizationIds, sortProperty,
+                    sortDirection, terminalGroupIds, deliveryDateFrom, deliveryDateTo, statuses, hasProblem, orderServiceType,
+                    searchText, timeToCookingErrorTimeout, cookingTimeout, rowsCount, sourceKeys, orderIds, posOrderIds);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.RetrieveDeliveryOrdersByAdditionalFiltersAsync(organizationIds, sortProperty,
+                        sortDirection, terminalGroupIds, deliveryDateFrom, deliveryDateTo, statuses, hasProblem, orderServiceType,
+                        searchText, timeToCookingErrorTimeout, cookingTimeout, rowsCount, sourceKeys, orderIds, posOrderIds);
+                }
+
+                throw e;
+            }
         }
 
         #endregion
 
         #region Addresses https://api-ru.iiko.services/#tag/Addresses
 
-        public Task<RegionWithOperation> RetrieveRegionsAsync(IEnumerable<Guid> organizationIds)
+        public async Task<RegionWithOperation> RetrieveRegionsAsync(IEnumerable<Guid> organizationIds)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.RetrieveRegionsAsync(organizationIds);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.RetrieveRegionsAsync(organizationIds);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<CitiesWithOperation> RetrieveCitiesAsync(IEnumerable<Guid> organizationIds)
+        public async Task<CitiesWithOperation> RetrieveCitiesAsync(IEnumerable<Guid> organizationIds)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.RetrieveCitiesAsync(organizationIds);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.RetrieveCitiesAsync(organizationIds);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<StreetsWithOperation> RetrieveStreetsByCityAsync(Guid organizationId, Guid cityId)
+        public async Task<StreetsWithOperation> RetrieveStreetsByCityAsync(Guid organizationId, Guid cityId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.RetrieveStreetsByCityAsync(organizationId, cityId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.RetrieveStreetsByCityAsync(organizationId, cityId);
+                }
+
+                throw e;
+            }
         }
 
         #endregion
 
         #region Delivery restrictions https://api-ru.iiko.services/#tag/Delivery-restrictions
 
-        public Task<DeliveryRestrictionsWithOperation> RetrieveDeliveryRestrictionsAsync(IEnumerable<Guid> organizationIds)
+        public async Task<DeliveryRestrictionsWithOperation> RetrieveDeliveryRestrictionsAsync(IEnumerable<Guid> organizationIds)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.RetrieveDeliveryRestrictionsAsync(organizationIds);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.RetrieveDeliveryRestrictionsAsync(organizationIds);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> UpdateDeliveryRestrictionsAsync(Guid organizationId, int deliveryGeocodeServiceType,
+        public async Task<OperationInfo> UpdateDeliveryRestrictionsAsync(Guid organizationId, int deliveryGeocodeServiceType,
             long defaultDeliveryDurationInMinutes, long defaultSelfServiceDurationInMinutes, bool useSameDeliveryDuration,
             bool useSameMinSum, bool useSameWorkTimeInterval, bool useSameRestrictionsOnAllWeek,
             IEnumerable<DeliveryRestrictionItemRequest> restrictions, IEnumerable<DeliveryZoneRequest> deliveryZones,
@@ -863,52 +1228,163 @@ namespace IikoTransport.Net.Repositories.IikoCloud
             double? defaultMinSum = null, int? defaultFrom = null, int? defaultTo = null, Guid? defaultDeliveryServiceProductId = null,
             string? externalAssignationServiceUrl = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.UpdateDeliveryRestrictionsAsync(organizationId, deliveryGeocodeServiceType,
+                    defaultDeliveryDurationInMinutes, defaultSelfServiceDurationInMinutes, useSameDeliveryDuration,
+                    useSameMinSum, useSameWorkTimeInterval, useSameRestrictionsOnAllWeek, restrictions, deliveryZones,
+                    rejectOnGeocodingError, addDeliveryServiceCost, useSameDeliveryServiceProduct, useExternalAssignationService,
+                    frontTrustsCallCenterCheck, requireExactAddressForGeocoding, zonesMode, autoAssignExternalDeliveries,
+                    actionOnValidationRejection, deliveryRegionsMapUrl, defaultMinSum, defaultFrom, defaultTo,
+                    defaultDeliveryServiceProductId, externalAssignationServiceUrl);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.UpdateDeliveryRestrictionsAsync(organizationId, deliveryGeocodeServiceType,
+                        defaultDeliveryDurationInMinutes, defaultSelfServiceDurationInMinutes, useSameDeliveryDuration,
+                        useSameMinSum, useSameWorkTimeInterval, useSameRestrictionsOnAllWeek, restrictions, deliveryZones,
+                        rejectOnGeocodingError, addDeliveryServiceCost, useSameDeliveryServiceProduct, useExternalAssignationService,
+                        frontTrustsCallCenterCheck, requireExactAddressForGeocoding, zonesMode, autoAssignExternalDeliveries,
+                        actionOnValidationRejection, deliveryRegionsMapUrl, defaultMinSum, defaultFrom, defaultTo,
+                        defaultDeliveryServiceProductId, externalAssignationServiceUrl);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<SuitableTerminalGroupsWithOperation> GetSuitableTerminalGroupsForDeliveryRestrictionsAsync(
+        public async Task<SuitableTerminalGroupsWithOperation> GetSuitableTerminalGroupsForDeliveryRestrictionsAsync(
             IEnumerable<Guid> organizationIds, bool isCourierDelivery, DeliveryAddressRequest? deliveryAddress = null,
             Coordinate? orderLocation = null, IEnumerable<RestrictionsOrderItem>? orderItems = null,
             DateTime? deliveryDate = null, double? deliverySum = null, double? discountSum = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.GetSuitableTerminalGroupsForDeliveryRestrictionsAsync(organizationIds,
+                    isCourierDelivery, deliveryAddress, orderLocation, orderItems, deliveryDate, deliverySum,
+                    discountSum);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.GetSuitableTerminalGroupsForDeliveryRestrictionsAsync(organizationIds,
+                        isCourierDelivery, deliveryAddress, orderLocation, orderItems, deliveryDate, deliverySum,
+                        discountSum);
+                }
+
+                throw e;
+            }
         }
 
         #endregion
 
         #region Marketing sources https://api-ru.iiko.services/#tag/Marketing-sources
 
-        public Task<MarketingSourceWithOperation> RetrieveMarketingSourcesAsync(IEnumerable<Guid> organizationIds)
+        public async Task<MarketingSourceWithOperation> RetrieveMarketingSourcesAsync(IEnumerable<Guid> organizationIds)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.RetrieveMarketingSourcesAsync(organizationIds);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.RetrieveMarketingSourcesAsync(organizationIds);
+                }
+
+                throw e;
+            }
         }
 
         #endregion
 
         #region Drafts https://api-ru.iiko.services/#tag/Drafts
 
-        public Task<OrderDraftWithOperation> RetrieveOrderDraftByIdAsync(Guid organizationId, Guid orderId,
+        public async Task<OrderDraftWithOperation> RetrieveOrderDraftByIdAsync(Guid organizationId, Guid orderId,
             Guid employeeId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.RetrieveOrderDraftByIdAsync(organizationId, orderId, employeeId);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.RetrieveOrderDraftByIdAsync(organizationId, orderId, employeeId);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OrderDraftsListWithOperation> RetrieveOrderDraftsByParametersAsync(IEnumerable<Guid> organizationIds,
+        public async Task<OrderDraftsListWithOperation> RetrieveOrderDraftsByParametersAsync(IEnumerable<Guid> organizationIds,
             DateTime? deliveryDateFrom = null, DateTime? deliveryDateTo = null, string? phone = null, int? limit = null,
             int? offset = null, IEnumerable<string>? sourceKeys = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.RetrieveOrderDraftsByParametersAsync(organizationIds, deliveryDateFrom,
+                    deliveryDateTo, phone, limit, offset, sourceKeys);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.RetrieveOrderDraftsByParametersAsync(organizationIds, deliveryDateFrom,
+                        deliveryDateTo, phone, limit, offset, sourceKeys);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> StoreOrderDraftChangesToDbAsync(Guid organizationId, DeliveryOrderRequest order)
+        public async Task<OperationInfo> StoreOrderDraftChangesToDbAsync(Guid organizationId, DeliveryOrderRequest order)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.StoreOrderDraftChangesToDbAsync(organizationId, order);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.StoreOrderDraftChangesToDbAsync(organizationId, order);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OrderWithOperationInfoResponse> AdmitOrderDraftChangesAndSendThemToFrontAsync(Guid organizationId, Guid odrerId,
-            Guid? terminalGroupId = null, OrderCreationSettings? createOrderSettings = null)
+        public async Task<DeliveryOrderWithOperationInfoResponse> AdmitOrderDraftChangesAndSendThemToFrontAsync(Guid organizationId,
+            Guid orderId, Guid? terminalGroupId = null, OrderCreationSettings? createOrderSettings = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpDelivery.AdmitOrderDraftChangesAndSendThemToFrontAsync(organizationId, orderId, terminalGroupId,
+                    createOrderSettings);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpDelivery.AdmitOrderDraftChangesAndSendThemToFrontAsync(organizationId, orderId, terminalGroupId,
+                        createOrderSettings);
+                }
+
+                throw e;
+            }
         }
 
         #endregion
@@ -919,58 +1395,186 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         #region Orders https://api-ru.iiko.services/#tag/Orders
 
-        public Task<OrderWithOperationInfo> CreateTableOrderAsync(Guid organizationId, Guid terminalGroupId,
+        public async Task<TableOrderWithOperationInfo> CreateTableOrderAsync(Guid organizationId, Guid terminalGroupId,
             TableOrder? order = null, OrderCreationSettings? createOrderSettings = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpOrders.CreateTableOrderAsync(organizationId, terminalGroupId, order, createOrderSettings);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpOrders.CreateTableOrderAsync(organizationId, terminalGroupId, order,
+                        createOrderSettings);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OrdersWithOperationInfo> RetrieveTableOrdersByIdAsync(IEnumerable<Guid> organizationIds,
+        public async Task<OrdersWithOperationInfo> RetrieveTableOrdersByIdAsync(IEnumerable<Guid> organizationIds,
             IEnumerable<Guid>? orderIds = null, IEnumerable<Guid>? posOrderIds = null, IEnumerable<string>? sourceKeys = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpOrders.RetrieveTableOrdersByIdAsync(organizationIds, orderIds, posOrderIds, sourceKeys);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpOrders.RetrieveTableOrdersByIdAsync(organizationIds, orderIds, posOrderIds, sourceKeys);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OrdersWithOperationInfo> RetrieveTableOrdersByTablesAsync(IEnumerable<Guid> organizationIds,
+        public async Task<OrdersWithOperationInfo> RetrieveTableOrdersByTablesAsync(IEnumerable<Guid> organizationIds,
             IEnumerable<Guid> tableIds, IEnumerable<OrderStatus>? statuses = null, DateTime? dateFrom = null,
             DateTime? dateTo = null, IEnumerable<string>? sourceKeys = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpOrders.RetrieveTableOrdersByTablesAsync(organizationIds, tableIds, statuses,
+                    dateFrom, dateTo, sourceKeys);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpOrders.RetrieveTableOrdersByTablesAsync(organizationIds, tableIds, statuses,
+                        dateFrom, dateTo, sourceKeys);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> AddTableOrderItemsAsync(Guid organizationId, Guid orderId, IEnumerable<OrderItemRequest> items,
+        public async Task<OperationInfo> AddTableOrderItemsAsync(Guid organizationId, Guid orderId, IEnumerable<OrderItemRequest> items,
             IEnumerable<ComboRequest> combos)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpOrders.AddTableOrderItemsAsync(organizationId, orderId, items, combos);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpOrders.AddTableOrderItemsAsync(organizationId, orderId, items, combos);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> CloseTableOrderAsync(Guid organizationId, Guid orderId,
+        public async Task<OperationInfo> CloseTableOrderAsync(Guid organizationId, Guid orderId,
             ChequeAdditionalInfo? chequeAdditionalInfo = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpOrders.CloseTableOrderAsync(organizationId, orderId,
+                    chequeAdditionalInfo);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpOrders.CloseTableOrderAsync(organizationId, orderId,
+                        chequeAdditionalInfo);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> ChangePaymentsForTableOrderAsync(Guid organizationId, Guid orderId,
-            IEnumerable<Payment> payments, IEnumerable<Tips>? tips = null)
+        public async Task<OperationInfo> ChangePaymentsForTableOrderAsync(Guid organizationId, Guid orderId,
+            IEnumerable<PaymentRequest> payments, IEnumerable<TipsRequest>? tips = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpOrders.ChangePaymentsForTableOrderAsync(organizationId, orderId,
+                    payments, tips);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpOrders.ChangePaymentsForTableOrderAsync(organizationId, orderId,
+                        payments, tips);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> InitTableOrdersByTablesAsync(Guid organizationId, Guid terminalGroupId,
+        public async Task<OperationInfo> InitTableOrdersByTablesAsync(Guid organizationId, Guid terminalGroupId,
             IEnumerable<Guid> tableIds)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpOrders.InitTableOrdersByTablesAsync(organizationId, terminalGroupId,
+                    tableIds);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpOrders.InitTableOrdersByTablesAsync(organizationId, terminalGroupId,
+                        tableIds);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> InitTableOrdersByPOSOrdersAsync(Guid organizationId, Guid terminalGroupId,
+        public async Task<OperationInfo> InitTableOrdersByPOSOrdersAsync(Guid organizationId, Guid terminalGroupId,
             IEnumerable<Guid> posOrderIds)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpOrders.InitTableOrdersByPOSOrdersAsync(organizationId, terminalGroupId,
+                    posOrderIds);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpOrders.InitTableOrdersByPOSOrdersAsync(organizationId, terminalGroupId,
+                        posOrderIds);
+                }
+
+                throw e;
+            }
         }
 
-        public Task<OperationInfo> AddCustomerToTableOrderAsync(Guid organizationId, Guid orderId, CustomerRequest customer)
+        public async Task<OperationInfo> AddCustomerToTableOrderAsync(Guid organizationId, Guid orderId, CustomerRequest customer)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpOrders.AddCustomerToTableOrderAsync(organizationId, orderId, customer);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await UpdateSessionKeyForApiUserAsync();
+                    return await _httpOrders.AddCustomerToTableOrderAsync(organizationId, orderId, customer);
+                }
+
+                throw e;
+            }
         }
 
         #endregion
@@ -1213,6 +1817,8 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
             _httpGeneral.Token = _token;
             _httpDelivery.Token = _token;
+            _httpOrders.Token = _token;
+            _httpReserves.Token = _token;
 
             return _token;
         }
