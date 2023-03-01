@@ -2,12 +2,9 @@
 using IikoTransport.Net.Entities.Common.Addresses.Regions;
 using IikoTransport.Net.Entities.Common.Addresses.Streets;
 using IikoTransport.Net.Entities.Common.Orders;
-using IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate;
 using IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.Addresses;
-using IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.Payments;
 using IikoTransport.Net.Entities.Requests.Delivery.Restrictions;
 using IikoTransport.Net.Entities.Requests.Delivery.Retrieve;
-using IikoTransport.Net.Entities.Responses.Delivery.CreateAndUpdate;
 using IikoTransport.Net.Entities.Responses.Delivery.DeliveryRetrieve;
 using IikoTransport.Net.Entities.Responses.Delivery.Drafts;
 using IikoTransport.Net.Entities.Responses.Delivery.MarketingSources;
@@ -17,7 +14,14 @@ using IikoTransport.Net.Entities.Responses.General.Operations;
 using DeliveryOrderRequest = IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.DeliveryOrder;
 using DeliveryPointRequest = IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.Addresses.DeliveryPoint;
 using DeliveryAddressRequest = IikoTransport.Net.Entities.Requests.Delivery.Restrictions.DeliveryAddress;
-
+using SimpleDeliveryStatus = IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.DeliveryStatus;
+using DeliveryStatus = IikoTransport.Net.Entities.Common.Deliveries.DeliveryStatus;
+using Newtonsoft.Json;
+using OrderItemRequest = IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.OrderItem;
+using ComboRequest = IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.Combo;
+using IikoTransport.Net.Entities.Responses.Delivery.CreateAndUpdate;
+using Payment = IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.Payments.Payment;
+using Tips = IikoTransport.Net.Entities.Requests.Delivery.CreateAndUpdate.Payments.Tips;
 
 namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
 {
@@ -73,6 +77,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
             = "https://api-ru.iiko.services/api/1/deliveries/drafts/commit";
 
         private const string DefaultNullableExceptionMessage = "Fail to convert json response to the object.";
+        private const string DefaultCustomDateFormat = "yyyy-MM-dd HH:mm:ss.fff";
 
         #endregion
 
@@ -92,93 +97,227 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
 
         #region Deliveries: Create and update https://api-ru.iiko.services/#tag/Deliveries:-Create-and-update
 
-        public Task<OrderWithOperationInfo> CreateDeliveryAsync(Guid organizationId, DeliveryOrderRequest order,
+        public async Task<OrderWithOperationInfo> CreateDeliveryAsync(Guid organizationId, DeliveryOrderRequest order,
             Guid? terminalGroupId = null, OrderCreationSettings? createOrderSettings = null)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new { organizationId, order, terminalGroupId, createOrderSettings });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCreateDeliveryUri, body, Token);
+
+            return JsonConvert.DeserializeObject<OrderWithOperationInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<OperationInfo> UpdateDeliveryOrderProblemAsync(Guid organizationId, Guid orderId, bool hasProblem,
+        public async Task<OperationInfo> UpdateDeliveryOrderProblemAsync(Guid organizationId, Guid orderId, bool hasProblem,
             string? problem = null)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new { organizationId, orderId, hasProblem, problem });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultUpdateOrderProblemUri, body, Token);
+
+            return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<OperationInfo> UpdateDeliveryStatusAsync(Guid organizationId, Guid orderId, DeliveryStatus deliveryStatus,
-            DateTime? deliveryDate = null)
+        public async Task<OperationInfo> UpdateDeliveryStatusAsync(Guid organizationId, Guid orderId,
+            SimpleDeliveryStatus deliveryStatus, DateTime? deliveryDate = null)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new { organizationId, orderId, deliveryStatus = deliveryStatus.ToString(),
+                deliveryDate = deliveryDate?.ToString(DefaultCustomDateFormat) });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultUpdateDeliveryStatusUri, body, Token);
+
+            return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<OperationInfo> UpdateDeliveryOrderCourierAsync(Guid organizationId, Guid orderId, Guid employeeId)
+        public async Task<OperationInfo> UpdateDeliveryOrderCourierAsync(Guid organizationId, Guid orderId, Guid employeeId)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                orderId,
+                employeeId,
+            });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultUpdateOrderCourierUri, body, Token);
+
+            return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<OperationInfo> AddDeliveryOrderItemsAsync(Guid organizationId, Guid orderId, IEnumerable<OrderItem> items,
-            IEnumerable<Combo>? combos = null)
+        public async Task<OperationInfo> AddDeliveryOrderItemsAsync(Guid organizationId, Guid orderId,
+            IEnumerable<OrderItemRequest> items, IEnumerable<ComboRequest>? combos = null)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                orderId,
+                items,
+                combos
+            });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultAddOrderItemsUri, body, Token);
+
+            return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<OperationInfo> CloseDeliveryOrderAsync(Guid organizationId, Guid orderId, DateTime? deliveryDate = null)
+        public async Task<OperationInfo> CloseDeliveryOrderAsync(Guid organizationId, Guid orderId, DateTime? deliveryDate = null)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                orderId,
+                deliveryDate = deliveryDate?.ToString(DefaultCustomDateFormat)
+            });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCloseOrderUri, body, Token);
+
+            return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<OperationInfo> CancelDeliveryOrderAsync(Guid organizationId, Guid orderId, Guid? movedOrderId = null,
+        public async Task<OperationInfo> CancelDeliveryOrderAsync(Guid organizationId, Guid orderId, Guid? movedOrderId = null,
             Guid? cancelCauseId = null, Guid? removalTypeId = null, Guid? userIdForWriteoff = null)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                orderId,
+                movedOrderId,
+                cancelCauseId,
+                removalTypeId,
+                userIdForWriteoff
+            });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCancelDeliveryOrderUri, body, Token);
+
+            return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<OperationInfo> ChangeTimeWhenClientWantsOrderToBeDeliveredAsync(Guid organizationId, Guid orderId,
+        public async Task<OperationInfo> ChangeTimeWhenClientWantsOrderToBeDeliveredAsync(Guid organizationId, Guid orderId,
             DateTime newCompleteBefore)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                orderId,
+                newCompleteBefore = newCompleteBefore.ToString(DefaultCustomDateFormat)
+            });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultChangeTimeWhenClientWantsOrderToBeDeliveredUri,
+                body, Token);
+
+            return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<OperationInfo> ChangeDeliveryPointForDeliveryOrderAsync(Guid organizationId, Guid orderId,
+        public async Task<OperationInfo> ChangeDeliveryPointForDeliveryOrderAsync(Guid organizationId, Guid orderId,
             DeliveryPointRequest newDeliveryPoint)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                orderId,
+                newDeliveryPoint
+            });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultChangeDeliveryPointInformationOfOrderUri, body, Token);
+
+            return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<OperationInfo> ChangeDeliveryTypeForOrderAsync(Guid organizationId, Guid orderId, OrderServiceType newServiceType,
+        public async Task<OperationInfo> ChangeDeliveryTypeForOrderAsync(Guid organizationId, Guid orderId, OrderServiceType newServiceType,
             DeliveryPointRequest? deliveryPoint = null)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                orderId,
+                newServiceType = newServiceType.ToString(),
+                deliveryPoint
+            });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultChangeDeliveryTypeOfOrderUri, body, Token);
+
+            return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<OperationInfo> ChangePaymentForDeliveryOrderAsync(Guid organizationId, Guid orderId, IEnumerable<Payment> payments,
+        public async Task<OperationInfo> ChangePaymentForDeliveryOrderAsync(Guid organizationId, Guid orderId, IEnumerable<Payment> payments,
             IEnumerable<Tips>? tips = null)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                orderId,
+                payments,
+                tips
+            });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultChangePaymentOfOrderUri, body, Token);
+
+            return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<OperationInfo> ChangeDeliveryCommentAsync(Guid organizationId, Guid orderId, string comment)
+        public async Task<OperationInfo> ChangeDeliveryCommentAsync(Guid organizationId, Guid orderId, string comment)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                orderId,
+                comment
+            });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultChangeCommentOfOrderUri, body, Token);
+
+            return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<OperationInfo> PrintDeliveryBillAsync(Guid organizationId, Guid orderId)
+        public async Task<OperationInfo> PrintDeliveryBillAsync(Guid organizationId, Guid orderId)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                orderId
+            });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultPrintDeliveryBillUri, body, Token);
+
+            return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<OperationInfo> ConfirmDeliveryAsync(Guid organizationId, Guid orderId)
+        public async Task<OperationInfo> ConfirmDeliveryAsync(Guid organizationId, Guid orderId)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                orderId
+            });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultConfirmDeliveryUri, body, Token);
+
+            return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<OperationInfo> CancelDeliveryConfirmationAsync(Guid organizationId, Guid orderId)
+        public async Task<OperationInfo> CancelDeliveryConfirmationAsync(Guid organizationId, Guid orderId)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                orderId
+            });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCancelDeliveryConfirmationUri, body, Token);
+
+            return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public Task<OperationInfo> AssignOrChangeDeliveryOrderOperatorAsync(Guid organizationId, Guid orderId, Guid operatorId)
+        public async Task<OperationInfo> AssignOrChangeDeliveryOrderOperatorAsync(Guid organizationId, Guid orderId, Guid operatorId)
         {
-            throw new NotImplementedException();
+            string body = JsonConvert.SerializeObject(new
+            {
+                organizationId,
+                orderId,
+                operatorId
+            });
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultAssignOrChangeOrderOperatorUri, body, Token);
+
+            return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
+                ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         #endregion

@@ -100,7 +100,8 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         public async Task SendNotificationToExternalSystemsAsync(string orderSource, Guid orderId,
             string additionalInfo, MessageType messageType, Guid organizationId)
         {
-            string body = JsonConvert.SerializeObject(new { orderSource, orderId, additionalInfo, messageType, organizationId });
+            string body = JsonConvert.SerializeObject(new { orderSource, orderId, additionalInfo,
+                messageType = messageType.ToString(), organizationId });
             await SendHttpPostBearerRequestAsync(DefaultSendNotificationToIikoFrontUri, body, Token);
         }
 
