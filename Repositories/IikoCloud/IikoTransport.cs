@@ -1777,6 +1777,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud
             }
         }
 
+        public delegate Task HandleUpdateAsync(WebhookNotification update);
+
+        public event HandleUpdateAsync? OnUpdate;
+
         #endregion
 
         #endregion
