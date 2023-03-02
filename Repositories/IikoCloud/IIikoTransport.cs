@@ -12,6 +12,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud
     /// </summary>
     public interface IIikoTransport : IGeneral, IDelivery, IOrders, IReserves, IWebhooks, ILoyaltyAndDiscounts
     {
+        string ApiLogin { get; }
 
+        string Token { get; }
+
+        string? WebHooksUri { get; }
     }
 }

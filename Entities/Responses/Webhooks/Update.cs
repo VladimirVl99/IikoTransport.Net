@@ -10,7 +10,7 @@ namespace IikoTransport.Net.Entities.Responses.Webhooks
     /// Source: https://api-ru.iiko.services/#tag/Webhooks.
     /// </summary>
     [JsonObject]
-    public class WebhookNotification : OperationInfo
+    public class Update : OperationInfo
     {
         /// <summary>
         /// Event type.

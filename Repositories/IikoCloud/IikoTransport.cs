@@ -93,6 +93,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         /// <summary>
         /// 
         /// </summary>
+        private string? _webHooksUri;
+
+        /// <summary>
+        /// 
+        /// </summary>
         private readonly HttpGeneral _httpGeneral;
 
         /// <summary>
@@ -134,14 +139,20 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         /// </summary>
         public string Token => _token;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public string? WebHooksUri => _webHooksUri;
+
         #endregion
 
         #region Constructors
 
-        private IikoTransport(string apiLogin, string token)
+        private IikoTransport(string apiLogin, string token, string? webHooksUri = null)
         {
             _apiLogin = apiLogin;
             _token = token;
+            _webHooksUri = webHooksUri;
             _httpGeneral = new HttpGeneral(token);
             _httpDelivery = new HttpDelivery(token);
             _httpOrders = new HttpOrders(token);
@@ -160,11 +171,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         /// Initialization.
         /// </summary>
         /// <param name="apiLogin"></param>
+        /// <param name="webHooksUri"></param>
         /// <returns></returns>
-        public async Task<IikoTransport> CreateAsync(string apiLogin)
+        public async Task<IikoTransport> CreateAsync(string apiLogin, string? webHooksUri = null)
         {
             var token = await RetrieveSessionKeyForApiUserAsync(apiLogin);
-            return new IikoTransport(apiLogin, token);
+            return new IikoTransport(apiLogin, token, webHooksUri);
         }
 
         #region General
@@ -1776,10 +1788,6 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 throw e;
             }
         }
-
-        public delegate Task HandleUpdateAsync(WebhookNotification update);
-
-        public event HandleUpdateAsync? OnUpdate;
 
         #endregion
 
