@@ -23,10 +23,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud.BanquetsAndReserves
         /// <param name="returnAdditionalInfo">A sign whether additional information about the organization should be returned
         /// (RMS version, country, restaurantAddress, etc.), or only minimal information should be returned (id and name).</param>
         /// <param name="includeDisabled">Attribute that shows that response contains disabled organizations.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OrganizationInfo> RetrieveOrganizationsForWhichReserveBookingAreAvailableAsync(
             IEnumerable<Guid>? organizationIds = null, bool returnAdditionalInfo = false,
-            bool includeDisabled = false);
+            bool includeDisabled = false, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Returns all terminal groups of specified organizations, for which banquet/reserve booking are available.
@@ -35,9 +36,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.BanquetsAndReserves
         /// </summary>
         /// <param name="organizationIds">Organizations IDs for which information is requested.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<DeliveryTerminalGroupInfo> RetrieveTerminalGroupsForWhichReserveBookingAreAvailableAsync(
-            IEnumerable<Guid> organizationIds);
+            IEnumerable<Guid> organizationIds, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Returns all restaurant sections of specified terminal groups, for which banquet/reserve booking are available.
@@ -48,9 +50,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud.BanquetsAndReserves
         /// Can be obtained by https://api-ru.iiko.services/api/1/terminal_groups operation.</param>
         /// <param name="returnSchema">Indicates whether table layout information should be returned.</param>
         /// <param name="revision">Last modified time after.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<RestaurantSectionsWithOperation> RetrieveRestaurantSectionsForWhichReserveBookingAreAvailableAsync(
-            IEnumerable<Guid> terminalGroupIds, bool returnSchema = false, long? revision = null);
+            IEnumerable<Guid> terminalGroupIds, bool returnSchema = false, long? revision = null,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Returns all banquets/reserves for passed restaurant sections.
@@ -61,9 +65,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.BanquetsAndReserves
         /// Can be obtained by https://api-ru.iiko.services/api/1/reserve/available_restaurant_sections operation.</param>
         /// <param name="dateFrom">Estimated start time (Local for the terminal). Lower limit.</param>
         /// <param name="dateTo">Estimated start time (Local for the terminal). Upper limit.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<ReservesWithOperation> RetrieveReservesForPassedRestaurantSectionsAsync(IEnumerable<Guid> restaurantSectionIds,
-            DateTime dateFrom, DateTime? dateTo = null);
+            DateTime dateFrom, DateTime? dateTo = null, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Create banquet/reserve.
@@ -91,11 +96,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud.BanquetsAndReserves
         /// banquet/reserve to reach iikoFront. After this time, banquet/reserve is nullified if iikoFront
         /// doesn't take it. By default - 8 seconds.</param>
         /// <param name="guests">Guests information.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<BanquetWithOperation> CreateReserveAsync(Guid organizationId, Guid terminalGroupId, Customer customer, string phone,
             long durationInMinutes, bool shouldRemind, IEnumerable<Guid> tableIds, DateTime estimatedStartTime, Guid? id = null,
             string? externalNumber = null, ReserveOrder? order = null, string? comment = null, int? transportToFrontTimeout = null,
-            GuestDetails? guests = null);
+            GuestDetails? guests = null, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Retrieve banquets/reserves statuses by IDs.
@@ -106,9 +112,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.BanquetsAndReserves
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="reserveIds">IDs of banquets/reserves information on which is required.</param>
         /// <param name="sourceKeys">Source keys.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<ReservesWithOperation> RetrieveReservesStatusesByIdsAsync(Guid organizationId, IEnumerable<Guid> reserveIds,
-            IEnumerable<string>? sourceKeys = null);
+            IEnumerable<string>? sourceKeys = null, CancellationToken? cancellationToken = default);
 
         #endregion
     }

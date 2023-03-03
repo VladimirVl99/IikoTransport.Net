@@ -33,11 +33,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// <param name="availablePaymentMarketingCampaignIds">List of identifiers of applied campaigns.
         /// Should be empty if no payment method is used.</param>
         /// <param name="applicableManualConditions">List of manually applied to order conditions.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<CheckinInfo> CalculateCheckinAsync(DeliveryOrder order, Guid organizationId, string? coupon = null,
             Guid? referrerId = null, Guid? terminalGroupId = null, IEnumerable<DynamicDiscount>? dynamicDiscounts = null,
             IEnumerable<Guid>? availablePaymentMarketingCampaignIds = null,
-            IEnumerable<Guid>? applicableManualConditions = null);
+            IEnumerable<Guid>? applicableManualConditions = null, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Get all organization's manual conditions.
@@ -45,8 +46,9 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// </summary>
         /// <param name="organizationId">Organization id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<ManualConditionInfos> GetManualConditionsAsync(Guid organizationId);
+        Task<ManualConditionInfos> GetManualConditionsAsync(Guid organizationId, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Get programs.
@@ -55,8 +57,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// <param name="organizationId">Organization id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="WithoutMarketingCampaigns">Determines if marketing campaigns not required.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<ProgramInfos> GetProgramsAsync(Guid organizationId, bool? WithoutMarketingCampaigns = null);
+        Task<ProgramInfos> GetProgramsAsync(Guid organizationId, bool? WithoutMarketingCampaigns = null,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Get coupon info.
@@ -66,8 +70,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="number">Number. Can be null.</param>
         /// <param name="series">Series. Can be null.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<CouponInfos> GetCouponInfoAsync(Guid organizationId, string? number = null, string? series = null);
+        Task<CouponInfos> GetCouponInfoAsync(Guid organizationId, string? number = null, string? series = null,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Get a list of coupon series in which there are not deleted and not activated coupons.
@@ -75,8 +81,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// </summary>
         /// <param name="organizationId">Organization id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<SeriesWithNotActivatedCouponInfos> GetCouponSeriesWithNonActivatedCouponsAsync(Guid organizationId);
+        Task<SeriesWithNotActivatedCouponInfos> GetCouponSeriesWithNonActivatedCouponsAsync(Guid organizationId,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Get list of non-activated coupons.
@@ -87,9 +95,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// <param name="series">Series. Can be null.</param>
         /// <param name="pageSize">Page size.</param>
         /// <param name="page">Page.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<NotActivatedCouponInfos> GetNonActivatedCouponsAsync(Guid organizationId, string? series = null,
-            int? pageSize = null, int? page = null);
+            int? pageSize = null, int? page = null, CancellationToken? cancellationToken = default);
 
         #endregion
 
@@ -101,8 +110,9 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// </summary>
         /// <param name="organizationId">Organization id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<CustomerCategoryInfos> GetCustomerCategoriesAsync(Guid organizationId);
+        Task<CustomerCategoryInfos> GetCustomerCategoriesAsync(Guid organizationId, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Add specified category for customer.
@@ -112,8 +122,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// <param name="categoryId">Guest category id.</param>
         /// <param name="organizationId">Organization id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task AddCategoryForCustomerAsync(Guid customerId, Guid categoryId, Guid organizationId);
+        Task AddCategoryForCustomerAsync(Guid customerId, Guid categoryId, Guid organizationId,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Remove specified category for customer.
@@ -123,8 +135,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// <param name="categoryId">Guest category id.</param>
         /// <param name="organizationId">Organization id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task RemoveCategoryForCustomerAsync(Guid customerId, Guid categoryId, Guid organizationId);
+        Task RemoveCategoryForCustomerAsync(Guid customerId, Guid categoryId, Guid organizationId,
+            CancellationToken? cancellationToken = default);
 
         #endregion
 
@@ -142,9 +156,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// <param name="cardTrack">Customer card track.</param>
         /// <param name="cardNumber">Customer card number.</param>
         /// <param name="email">Customer email.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<CustomerInfo> GetCustomerInfoBySpecifiedCriterionAsync(Guid organizationId, SearchCustomerType type, Guid? id = null,
-            string? phone = null, string? cardTrack = null, string? cardNumber = null, string? email = null);
+            string? phone = null, string? cardTrack = null, string? cardNumber = null, string? email = null,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Get customer info by phone.
@@ -153,8 +169,9 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// <param name="organizationId">Organization id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="phone">Customer phone number.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<CustomerInfo> GetCustomerInfoByPhoneAsync(Guid organizationId, string phone);
+        Task<CustomerInfo> GetCustomerInfoByPhoneAsync(Guid organizationId, string phone, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Get customer info by card track.
@@ -163,8 +180,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// <param name="organizationId">Organization id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="cardTrack">Customer card track.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<CustomerInfo> GetCustomerInfoByCardTrackAsync(Guid organizationId, string cardTrack);
+        Task<CustomerInfo> GetCustomerInfoByCardTrackAsync(Guid organizationId, string cardTrack,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Get customer info by card number.
@@ -173,8 +192,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// <param name="organizationId">Organization id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="cardNumber">Customer card number.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<CustomerInfo> GetCustomerInfoByCardNumberAsync(Guid organizationId, string cardNumber);
+        Task<CustomerInfo> GetCustomerInfoByCardNumberAsync(Guid organizationId, string cardNumber,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Get customer info by email.
@@ -183,8 +204,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// <param name="organizationId">Organization id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="email">Customer email.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<CustomerInfo> GetCustomerInfoByEmailAsync(Guid organizationId, string email);
+        Task<CustomerInfo> GetCustomerInfoByEmailAsync(Guid organizationId, string email,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Get customer info by ID.
@@ -193,8 +216,9 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// <param name="organizationId">Organization id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="id">Customer id.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<CustomerInfo> GetCustomerInfoByIdAsync(Guid organizationId, Guid id);
+        Task<CustomerInfo> GetCustomerInfoByIdAsync(Guid organizationId, Guid id, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Create or update customer info by id or phone or card track.
@@ -217,12 +241,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// <param name="referrerId">Id for referrer guest. Null for old integrations, Guid.Empty - for referrer deletion.
         /// Can be null.</param>
         /// <param name="userData">Customer user data. Can be null.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<Guid> CreateOrUpdateCustomerAsync(Guid organizationId, Guid? id = null, string? phone = null,
             string? cardTrack = null, string? cardNumber = null, string? name = null, string? middleName = null,
             string? surName = null, DateTime? birthday = null, string? email = null, Gender? sex = null,
             GuestConsentStatus? consentStatus = null, bool? shouldReceivePromoActionsInfo = null,
-            Guid? referrerId = null, string? userData = null);
+            Guid? referrerId = null, string? userData = null, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Add new customer for program.
@@ -232,8 +257,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// <param name="programId">Program id.</param>
         /// <param name="organizationId">Organization id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<Guid> AddCustomerToProgramAsync(Guid customerId, Guid programId, Guid organizationId);
+        Task<Guid> AddCustomerToProgramAsync(Guid customerId, Guid programId, Guid organizationId,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Add new card for customer.
@@ -244,8 +271,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// <param name="cardNumber">Card number.</param>
         /// <param name="organizationId">Organization id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task AddCardForCustomerAsync(Guid customerId, string cardTrack, string cardNumber, Guid organizationId);
+        Task AddCardForCustomerAsync(Guid customerId, string cardTrack, string cardNumber, Guid organizationId,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Delete existing card for customer.
@@ -255,8 +284,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// <param name="cardTrack">Card track.</param>
         /// <param name="organizationId">Organization id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task DeleteCardForCustomerAsync(Guid customerId, string cardTrack, Guid organizationId);
+        Task DeleteCardForCustomerAsync(Guid customerId, string cardTrack, Guid organizationId,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Hold customer's money in loyalty program. Payment will be process on POS during processing of an order.
@@ -269,9 +300,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// <param name="sum">Sum.</param>
         /// <param name="transactionId">Predefined transaction id. Random if empty.</param>
         /// <param name="comment">Additional information about holding. Can be null.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<Guid> HoldMoneyOfCustomerAsync(Guid customerId, Guid walletId, Guid organizationId, double sum,
-            Guid? transactionId = null, string? comment = null);
+            Guid? transactionId = null, string? comment = null, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Cancel holding transaction that created earlier.
@@ -280,8 +312,9 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// <param name="transactionId">Transaction id.</param>
         /// <param name="organizationId">Organization id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task CancelHoldMoneyOfCustomerAsync(Guid transactionId, Guid organizationId);
+        Task CancelHoldMoneyOfCustomerAsync(Guid transactionId, Guid organizationId, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Refill customer balance.
@@ -293,9 +326,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="sum">Sum of balance change. Must be possible.</param>
         /// <param name="comment">Comment. Can be null.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task RefillCustomerBalanceAsync(Guid customerId, Guid walletId, Guid organizationId, double sum,
-            string? comment = null);
+            string? comment = null, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Withdraw customer balance.
@@ -307,9 +341,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="sum">Sum of balance change. Must be possible.</param>
         /// <param name="comment">Comment. Can be null.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task WithdrawCustomerBalanceAsync(Guid customerId, Guid walletId, Guid organizationId, double sum,
-            string? comment = null);
+            string? comment = null, CancellationToken? cancellationToken = default);
 
         #endregion
 
@@ -323,8 +358,9 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// <param name="text">Message text.</param>
         /// <param name="organizationId">Organization id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task SendSmsAsync(string phone, string text, Guid organizationId);
+        Task SendSmsAsync(string phone, string text, Guid organizationId, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Send email message to specified email address. Sending proceed according iikoCard organization's settings.
@@ -335,8 +371,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         /// <param name="body">Message body.</param>
         /// <param name="organizationId">Organization id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task SendEmailAsync(string receiver, string subject, Guid organizationId, string? body = null);
+        Task SendEmailAsync(string receiver, string subject, Guid organizationId, string? body = null,
+            CancellationToken? cancellationToken = default);
 
         #endregion
     }

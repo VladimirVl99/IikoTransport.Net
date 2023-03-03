@@ -32,8 +32,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// Source: https://api-ru.iiko.services/#tag/Authorization.
         /// </summary>
         /// <param name="apiLogin">API login. It is set in iikoWeb.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<string> RetrieveSessionKeyForApiUserAsync(string apiLogin);
+        Task<string> RetrieveSessionKeyForApiUserAsync(string apiLogin,
+            CancellationToken? cancellationToken = default);
 
         #endregion
 
@@ -48,9 +50,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// <param name="additionalInfo">Additional info about the problem.</param>
         /// <param name="messageType">Type of message.</param>
         /// <param name="organizationId">Organization UOC Id.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task SendNotificationToExternalSystemsAsync(string orderSource, Guid orderId,
-            string additionalInfo, MessageType messageType, Guid organizationId);
+            string additionalInfo, MessageType messageType, Guid organizationId,
+            CancellationToken? cancellationToken = default);
 
         #endregion
 
@@ -68,9 +72,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// or only minimal information should be returned (id and name).</param>
         /// <param name="includeDisabled">Attribute that shows that response contains disabled
         /// organizations.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OrganizationInfo> RetrieveAvailableOrganizationsAsync(IEnumerable<Guid>? organizationIds = null,
-            bool returnAdditionalInfo = false, bool includeDisabled = false);
+            bool returnAdditionalInfo = false, bool includeDisabled = false, CancellationToken? cancellationToken = default);
 
         #endregion
 
@@ -83,9 +88,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// <param name="organizationIds">Organizations IDs for which information is requested.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="includeDisabled">Attribute that shows that response contains disabled terminal groups.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<DeliveryTerminalGroupInfo> RetrieveGroupsOfDeliveryTerminalsAsync(IEnumerable<Guid> organizationIds,
-            bool includeDisabled = false);
+            bool includeDisabled = false, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Returns information on availability of group of terminals.
@@ -95,9 +101,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="terminalGroupIds">List of terminal groups IDs.
         /// Can be obtained by https://api-ru.iiko.services/api/1/terminal_groups operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<AvailabilityTerminalGroupInfo> RetrieveInformationOnAvailabilityOfGroupOfTerminalsAsync(
-            IEnumerable<Guid> organizationIds, IEnumerable<Guid> terminalGroupIds);
+            IEnumerable<Guid> organizationIds, IEnumerable<Guid> terminalGroupIds,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Awake terminal groups from sleep mode.
@@ -107,9 +115,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="terminalGroupIds">List of terminal groups IDs.
         /// Can be obtained by https://api-ru.iiko.services/api/1/terminal_groups operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<AwakeTerminalGroupsResult> AwakeTerminalGroupsFromSleepModeAsync(
-            IEnumerable<Guid> organizationIds, IEnumerable<Guid> terminalGroupIds);
+            IEnumerable<Guid> organizationIds, IEnumerable<Guid> terminalGroupIds,
+            CancellationToken? cancellationToken = default);
 
         #endregion
 
@@ -122,8 +132,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// </summary>
         /// <param name="organizationIds">Organizations ids which delivery cancel causes needs to be returned.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<CancelCauseInfo> RetrieveDeliveryCancelCausesAsync(IEnumerable<Guid> organizationIds);
+        Task<CancelCauseInfo> RetrieveDeliveryCancelCausesAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Order types.
@@ -131,8 +143,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// </summary>
         /// <param name="organizationIds">Organizations IDs which payment types have to be returned.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<OrderTypeInfo> RetrieveOrderTypes(IEnumerable<Guid> organizationIds);
+        Task<OrderTypeInfo> RetrieveOrderTypes(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Discounts / surcharges.
@@ -140,8 +154,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// </summary>
         /// <param name="organizationIds">Organization IDs that require discounts return.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<DiscountInfo> RetrieveDiscountsAndSurchargesAsync(IEnumerable<Guid> organizationIds);
+        Task<DiscountInfo> RetrieveDiscountsAndSurchargesAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Payment types.
@@ -149,8 +165,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// </summary>
         /// <param name="organizationIds">Organizations IDs which payment types have to be returned.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<PaymentInfo> RetrievePaymentTypesAsync(IEnumerable<Guid> organizationIds);
+        Task<PaymentInfo> RetrievePaymentTypesAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Removal types (reasons for deletion).
@@ -159,16 +177,19 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// </summary>
         /// <param name="organizationIds">Organizations ids which removal types needs to be returned.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<RemovalTypeInfo> RetrieveRemovalTypesAsync(IEnumerable<Guid> organizationIds);
+        Task<RemovalTypeInfo> RetrieveRemovalTypesAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Get tips tipes for api-login`s rms group.
         /// Allowed from version 7.7.4.
         /// Source: https://api-ru.iiko.services/#tag/Dictionaries/paths/~1api~11~1tips_types/post.
         /// </summary>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<TipTypeInfo> RetrieveTipsTipesForRmsGroupAsync();
+        Task<TipTypeInfo> RetrieveTipsTipesForRmsGroupAsync(CancellationToken? cancellationToken = default);
 
         #endregion
 
@@ -182,15 +203,18 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="startRevision">Initial revision.
         /// Items list will be received only in case there is a newer revision in the database.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<MenuInfo> RetrieveMenuAsync(Guid organizationId, long? startRevision = null);
+        Task<MenuInfo> RetrieveMenuAsync(Guid organizationId, long? startRevision = null,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// External menus with price categories.
         /// Source: https://api-ru.iiko.services/#tag/Menu/paths/~1api~12~1menu/post.
         /// </summary>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<ExternalMenuInfo> RetrieveExternalMenusWithPriceCategoriesAsync();
+        Task<ExternalMenuInfo> RetrieveExternalMenusWithPriceCategoriesAsync(CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Retrieve external menu by ID.
@@ -203,9 +227,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// <param name="priceCategoryId">Price category id.
         /// Can be obtained by https://api-ru.iiko.services/api/2/menu operation.</param>
         /// <param name="version">Version of the result data model.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<Menu> RetrieveExternalMenuByIdAsync(string externalMenuId, IEnumerable<Guid> organizationIds,
-            string? priceCategoryId = null, int? version = null);
+            string? priceCategoryId = null, int? version = null, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Out-of-stock items.
@@ -213,8 +238,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// </summary>
         /// <param name="organizationIds">Organizations for which out-of-stock lists will be requested.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<OutOfStockInfo> RetrieveOutOfStockItemsAsync(IEnumerable<Guid> organizationIds);
+        Task<OutOfStockInfo> RetrieveOutOfStockItemsAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Get all organization's combos.
@@ -223,8 +250,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// <param name="extraData">Extra data.</param>
         /// <param name="organizationId">Organization id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<ComboInfo> RetrieveCombosInfoAsync(bool extraData, Guid organizationId);
+        Task<ComboInfo> RetrieveCombosInfoAsync(bool extraData, Guid organizationId,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Make combo price calculation.
@@ -233,9 +262,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// <param name="items">Items with modifiers included in combo.</param>
         /// <param name="organizationId">Organization id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<ComboPriceInfo> CalculateComboPriceAsync(IEnumerable<OrderItem> items,
-            Guid organizationId);
+            Guid organizationId, CancellationToken? cancellationToken = default);
 
         #endregion
 
@@ -248,8 +278,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// <param name="organizationId">Organization id which "correlationId" belongs to.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="correlationId">Operation ID obtained from any command supporting operations.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<CommandStatus> GetStatusOfCommandAsync(Guid organizationId, Guid correlationId);
+        Task<CommandStatus> GetStatusOfCommandAsync(Guid organizationId, Guid correlationId,
+            CancellationToken? cancellationToken = default);
 
         #endregion
 
@@ -266,9 +298,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// If driver coordinates were recorded in server storage within interval:
         /// ("current server time" - "offsetInSeconds", "current server time"],
         /// driver and their coordinates will be retrieved.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<CoordinateHistory> RetrieveCoordinatesHistoryOfDriverAsync(IEnumerable<Guid> organizationIds,
-            int? offsetInSeconds = null);
+            int? offsetInSeconds = null, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Returns list of all employees which are delivery drivers in specified restaurants.
@@ -276,8 +309,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// </summary>
         /// <param name="organizationIds">List of organizations.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<CouriersInfo> RetrieveDeliveryDriversInSpecifiedRestaurantsAsync(IEnumerable<Guid> organizationIds);
+        Task<CouriersInfo> RetrieveDeliveryDriversInSpecifiedRestaurantsAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Returns list of all employees which are delivery drivers in specified restaurants,
@@ -287,9 +322,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// <param name="organizationIds">List of organizations.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="rolesToCheck">Employee's roles for check.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<CouriersWithCheckRolesInfo> RetrieveDeliveryDriversInSpecifiedRestaurantsWithCheckRolesAsync(
-            IEnumerable<Guid> organizationIds, IEnumerable<string> rolesToCheck);
+            IEnumerable<Guid> organizationIds, IEnumerable<string> rolesToCheck, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Returns list of all active (courier session is opened) courier's locations which are delivery
@@ -300,9 +336,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="terminalGroupId">iikoFront terminals group ID.
         /// Can be obtained by https://api-ru.iiko.services/api/1/terminal_groups operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<ActiveCouriersInfo> RetrieveActiveDeliveryDriversInSpecifiedRestaurantAndOnSpecifiedTerminalAsync(
-            Guid organizationId, Guid terminalGroupId);
+            Guid organizationId, Guid terminalGroupId, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Returns list of all active (courier session is opened) courier's locations which are delivery drivers in specified restaurants.
@@ -310,9 +347,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// </summary>
         /// <param name="organizationIds">List of organizations.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<ActiveCouriersInfo> RetrieveActiveLocationsOfCourierInSpecifiedRestaurantsAsync(
-            IEnumerable<Guid> organizationIds);
+            IEnumerable<Guid> organizationIds, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Returns employee info.
@@ -321,8 +359,9 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// <param name="organizationId">Organization ID.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="id">Employee ID.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<EmployeeInfo> RetrieveEmployeeInfoAsync(Guid organizationId, Guid id);
+        Task<EmployeeInfo> RetrieveEmployeeInfoAsync(Guid organizationId, Guid id, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Open personal session.
@@ -336,9 +375,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// <param name="employeeId">Employee ID.</param>
         /// <param name="roleId">Employee role ID.
         /// Must be null if the restaurant doesn't use roles, otherwise not-null role must be specified.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<PersonalSessionActionResult> OpenPersonalSessionAsync(Guid organizationId,
-            Guid terminalGroupId, Guid employeeId, Guid? roleId = null);
+            Guid terminalGroupId, Guid employeeId, Guid? roleId = null, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Close personal session.
@@ -350,8 +390,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// <param name="terminalGroupId">Delivery group ID.
         /// Can be obtained by https://api-ru.iiko.services/api/1/terminal_groups operation.</param>
         /// <param name="employeeId">Employee ID.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<PersonalSessionActionResult> ClosePersonalSessionAsync(Guid organizationId, Guid terminalGroupId, Guid employeeId);
+        Task<PersonalSessionActionResult> ClosePersonalSessionAsync(Guid organizationId, Guid terminalGroupId, Guid employeeId,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Check if personal session is open.
@@ -362,8 +404,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         /// <param name="terminalGroupId">Delivery group ID.
         /// Can be obtained by https://api-ru.iiko.services/api/1/terminal_groups operation.</param>
         /// <param name="employeeId">Employee ID.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<PersonalSessionInfo> CheckForOpenPersonalShiftAsync(Guid organizationId, Guid terminalGroupId, Guid employeeId);
+        Task<PersonalSessionInfo> CheckForOpenPersonalShiftAsync(Guid organizationId, Guid terminalGroupId, Guid employeeId,
+            CancellationToken? cancellationToken = default);
 
         #endregion
     }

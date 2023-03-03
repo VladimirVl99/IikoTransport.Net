@@ -63,7 +63,8 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
 
         public async Task<CheckinInfo> CalculateCheckinAsync(DeliveryOrder order, Guid organizationId, string? coupon = null,
             Guid? referrerId = null, Guid? terminalGroupId = null, IEnumerable<DynamicDiscount>? dynamicDiscounts = null,
-            IEnumerable<Guid>? availablePaymentMarketingCampaignIds = null, IEnumerable<Guid>? applicableManualConditions = null)
+            IEnumerable<Guid>? availablePaymentMarketingCampaignIds = null, IEnumerable<Guid>? applicableManualConditions = null,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -77,26 +78,29 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 applicableManualConditions
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultLoyaltyCalculateUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultLoyaltyCalculateUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<CheckinInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<ManualConditionInfos> GetManualConditionsAsync(Guid organizationId)
+        public async Task<ManualConditionInfos> GetManualConditionsAsync(Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
                 organizationId
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultManualConditionUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultManualConditionUri, body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<ManualConditionInfos>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<ProgramInfos> GetProgramsAsync(Guid organizationId, bool? WithoutMarketingCampaigns = null)
+        public async Task<ProgramInfos> GetProgramsAsync(Guid organizationId, bool? WithoutMarketingCampaigns = null,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -104,13 +108,14 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 WithoutMarketingCampaigns
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultProgramUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultProgramUri, body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<ProgramInfos>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<CouponInfos> GetCouponInfoAsync(Guid organizationId, string? number = null, string? series = null)
+        public async Task<CouponInfos> GetCouponInfoAsync(Guid organizationId, string? number = null, string? series = null,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -119,27 +124,28 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 series
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCouponsInfoUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCouponsInfoUri, body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<CouponInfos>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<SeriesWithNotActivatedCouponInfos> GetCouponSeriesWithNonActivatedCouponsAsync(Guid organizationId)
+        public async Task<SeriesWithNotActivatedCouponInfos> GetCouponSeriesWithNonActivatedCouponsAsync(Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
                 organizationId
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCouponsSeriesUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCouponsSeriesUri, body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<SeriesWithNotActivatedCouponInfos>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<NotActivatedCouponInfos> GetNonActivatedCouponsAsync(Guid organizationId, string? series = null,
-            int? pageSize = null, int? page = null)
+            int? pageSize = null, int? page = null, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -149,7 +155,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 page
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCouponsBySeriesUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCouponsBySeriesUri, body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<NotActivatedCouponInfos>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
@@ -159,20 +165,23 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
 
         #region Customer categories https://api-ru.iiko.services/#tag/Customer-categories
 
-        public async Task<CustomerCategoryInfos> GetCustomerCategoriesAsync(Guid organizationId)
+        public async Task<CustomerCategoryInfos> GetCustomerCategoriesAsync(Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
                 organizationId
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCustomerCategoryUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCustomerCategoryUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<CustomerCategoryInfos>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task AddCategoryForCustomerAsync(Guid customerId, Guid categoryId, Guid organizationId)
+        public async Task AddCategoryForCustomerAsync(Guid customerId, Guid categoryId, Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -181,10 +190,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 organizationId
             });
 
-            await SendHttpPostBearerRequestAsync(DefaultCustomerCategoryAddUri, body, Token);
+            await SendHttpPostBearerRequestAsync(DefaultCustomerCategoryAddUri, body, Token, cancellationToken);
         }
 
-        public async Task RemoveCategoryForCustomerAsync(Guid customerId, Guid categoryId, Guid organizationId)
+        public async Task RemoveCategoryForCustomerAsync(Guid customerId, Guid categoryId, Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -193,7 +203,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 organizationId
             });
 
-            await SendHttpPostBearerRequestAsync(DefaultCustomerCategoryRemoveUri, body, Token);
+            await SendHttpPostBearerRequestAsync(DefaultCustomerCategoryRemoveUri, body, Token, cancellationToken);
         }
 
         #endregion
@@ -201,7 +211,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         #region Customers https://api-ru.iiko.services/#tag/Customers
 
         public async Task AddCardForCustomerAsync(Guid customerId, string cardTrack, string cardNumber,
-            Guid organizationId)
+            Guid organizationId, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -211,10 +221,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 organizationId
             });
 
-            await SendHttpPostBearerRequestAsync(DefaultCustomerCardAddUri, body, Token);
+            await SendHttpPostBearerRequestAsync(DefaultCustomerCardAddUri, body, Token, cancellationToken);
         }
 
-        public async Task<Guid> AddCustomerToProgramAsync(Guid customerId, Guid programId, Guid organizationId)
+        public async Task<Guid> AddCustomerToProgramAsync(Guid customerId, Guid programId, Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -223,7 +234,8 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 organizationId
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCustomerProgramAddUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCustomerProgramAddUri, body, Token,
+                cancellationToken);
 
             var result = JsonConvert.DeserializeObject<JToken>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
@@ -236,7 +248,8 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
             return userWalletId;
         }
 
-        public async Task CancelHoldMoneyOfCustomerAsync(Guid transactionId, Guid organizationId)
+        public async Task CancelHoldMoneyOfCustomerAsync(Guid transactionId, Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -244,14 +257,15 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 organizationId
             });
 
-            await SendHttpPostBearerRequestAsync(DefaultCustomerWalletCancelHoldUri, body, Token);
+            await SendHttpPostBearerRequestAsync(DefaultCustomerWalletCancelHoldUri, body, Token,
+                cancellationToken);
         }
 
         public async Task<Guid> CreateOrUpdateCustomerAsync(Guid organizationId, Guid? id = null,
             string? phone = null, string? cardTrack = null, string? cardNumber = null, string? name = null,
             string? middleName = null, string? surName = null, DateTime? birthday = null, string? email = null,
             Gender? sex = null, GuestConsentStatus? consentStatus = null, bool? shouldReceivePromoActionsInfo = null,
-            Guid? referrerId = null, string? userData = null)
+            Guid? referrerId = null, string? userData = null, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -272,7 +286,8 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 userData
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCustomerCreateOrUpdateUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCustomerCreateOrUpdateUri, body, Token,
+                cancellationToken);
 
             var result = JsonConvert.DeserializeObject<JToken>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
@@ -285,7 +300,8 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
             return customerId;
         }
 
-        public async Task DeleteCardForCustomerAsync(Guid customerId, string cardTrack, Guid organizationId)
+        public async Task DeleteCardForCustomerAsync(Guid customerId, string cardTrack, Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -294,10 +310,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 organizationId
             });
 
-            await SendHttpPostBearerRequestAsync(DefaultCustomerCardRemoveUri, body, Token);
+            await SendHttpPostBearerRequestAsync(DefaultCustomerCardRemoveUri, body, Token, cancellationToken);
         }
 
-        public async Task<CustomerInfo> GetCustomerInfoByCardNumberAsync(Guid organizationId, string cardNumber)
+        public async Task<CustomerInfo> GetCustomerInfoByCardNumberAsync(Guid organizationId, string cardNumber,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -306,13 +323,15 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 type = SearchCustomerType.CardNumber.ToSearchCustomerType()
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCustomerInfoUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCustomerInfoUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<CustomerInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<CustomerInfo> GetCustomerInfoByCardTrackAsync(Guid organizationId, string cardTrack)
+        public async Task<CustomerInfo> GetCustomerInfoByCardTrackAsync(Guid organizationId, string cardTrack,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -321,13 +340,15 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 type = SearchCustomerType.CardTrack.ToSearchCustomerType()
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCustomerInfoUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCustomerInfoUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<CustomerInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<CustomerInfo> GetCustomerInfoByEmailAsync(Guid organizationId, string email)
+        public async Task<CustomerInfo> GetCustomerInfoByEmailAsync(Guid organizationId, string email,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -336,13 +357,15 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 type = SearchCustomerType.Email.ToSearchCustomerType()
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCustomerInfoUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCustomerInfoUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<CustomerInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<CustomerInfo> GetCustomerInfoByIdAsync(Guid organizationId, Guid id)
+        public async Task<CustomerInfo> GetCustomerInfoByIdAsync(Guid organizationId, Guid id,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -351,13 +374,15 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 type = SearchCustomerType.Id.ToSearchCustomerType()
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCustomerInfoUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCustomerInfoUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<CustomerInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<CustomerInfo> GetCustomerInfoByPhoneAsync(Guid organizationId, string phone)
+        public async Task<CustomerInfo> GetCustomerInfoByPhoneAsync(Guid organizationId, string phone,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -366,14 +391,16 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 type = SearchCustomerType.Phone.ToSearchCustomerType()
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCustomerInfoUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCustomerInfoUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<CustomerInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<CustomerInfo> GetCustomerInfoBySpecifiedCriterionAsync(Guid organizationId, SearchCustomerType type,
-            Guid? id = null, string? phone = null, string? cardTrack = null, string? cardNumber = null, string? email = null)
+            Guid? id = null, string? phone = null, string? cardTrack = null, string? cardNumber = null, string? email = null,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -386,14 +413,14 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 email
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCustomerInfoUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCustomerInfoUri, body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<CustomerInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<Guid> HoldMoneyOfCustomerAsync(Guid customerId, Guid walletId, Guid organizationId, double sum,
-            Guid? transactionId = null, string? comment = null)
+            Guid? transactionId = null, string? comment = null, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -405,7 +432,8 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 comment
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCustomerWalletHoldUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCustomerWalletHoldUri, body, Token,
+                cancellationToken);
 
             var result = JsonConvert.DeserializeObject<JToken>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
@@ -419,7 +447,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
         }
 
         public async Task RefillCustomerBalanceAsync(Guid customerId, Guid walletId, Guid organizationId, double sum,
-            string? comment = null)
+            string? comment = null, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -430,11 +458,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 comment
             });
 
-            await SendHttpPostBearerRequestAsync(DefaultCustomerWalletTopupUri, body, Token);
+            await SendHttpPostBearerRequestAsync(DefaultCustomerWalletTopupUri, body, Token, cancellationToken);
         }
 
         public async Task WithdrawCustomerBalanceAsync(Guid customerId, Guid walletId, Guid organizationId, double sum,
-            string? comment = null)
+            string? comment = null, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -445,14 +473,15 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 comment
             });
 
-            await SendHttpPostBearerRequestAsync(DefaultCustomerWalletChargeoffUri, body, Token);
+            await SendHttpPostBearerRequestAsync(DefaultCustomerWalletChargeoffUri, body, Token, cancellationToken);
         }
 
         #endregion
 
         #region Messages https://api-ru.iiko.services/#tag/Messages
 
-        public async Task SendEmailAsync(string receiver, string subject, Guid organizationId, string? body = null)
+        public async Task SendEmailAsync(string receiver, string subject, Guid organizationId, string? body = null,
+            CancellationToken? cancellationToken = default)
         {
             string requestBody = JsonConvert.SerializeObject(new
             {
@@ -462,10 +491,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 body
             });
 
-            await SendHttpPostBearerRequestAsync(DefaultMessageSendEmailUri, requestBody, Token);
+            await SendHttpPostBearerRequestAsync(DefaultMessageSendEmailUri, requestBody, Token,
+                cancellationToken);
         }
 
-        public async Task SendSmsAsync(string phone, string text, Guid organizationId)
+        public async Task SendSmsAsync(string phone, string text, Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             string requestBody = JsonConvert.SerializeObject(new
             {
@@ -474,7 +505,8 @@ namespace IikoTransport.Net.Repositories.IikoCloud.LoyaltyAndDiscounts
                 organizationId
             });
 
-            await SendHttpPostBearerRequestAsync(DefaultMessageSendSmsUri, requestBody, Token);
+            await SendHttpPostBearerRequestAsync(DefaultMessageSendSmsUri, requestBody, Token,
+                cancellationToken);
         }
 
         #endregion

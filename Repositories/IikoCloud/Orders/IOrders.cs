@@ -24,9 +24,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Orders
         /// Can be obtained by https://api-ru.iiko.services/api/1/terminal_groups operation.</param>
         /// <param name="order">Order.</param>
         /// <param name="createOrderSettings">Order creation parameters.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OrderWithOperationInfo> CreateTableOrderAsync(Guid organizationId, Guid terminalGroupId,
-            TableOrder? order = null, OrderCreationSettings? createOrderSettings = null);
+            TableOrder? order = null, OrderCreationSettings? createOrderSettings = null,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Retrieve orders by IDs.
@@ -40,10 +42,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Orders
         /// <param name="posOrderIds">POS order IDs.
         /// Required if "orderIds" is null. Must be null if "orderIds" is not null.</param>
         /// <param name="sourceKeys">Source keys.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OrdersWithOperationInfo> RetrieveTableOrdersByIdAsync(IEnumerable<Guid> organizationIds,
             IEnumerable<Guid>? orderIds = null, IEnumerable<Guid>? posOrderIds = null,
-            IEnumerable<string>? sourceKeys = null);
+            IEnumerable<string>? sourceKeys = null, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Retrieve orders by tables.
@@ -58,10 +61,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Orders
         /// <param name="dateFrom">Order creation date (terminal time zone). Lower limit.</param>
         /// <param name="dateTo">Order creation date (terminal time zone). Upper limit.</param>
         /// <param name="sourceKeys">Source keys.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OrdersWithOperationInfo> RetrieveTableOrdersByTablesAsync(IEnumerable<Guid> organizationIds,
             IEnumerable<Guid> tableIds, IEnumerable<OrderStatus>? statuses = null, DateTime? dateFrom = null,
-            DateTime? dateTo = null, IEnumerable<string>? sourceKeys = null);
+            DateTime? dateTo = null, IEnumerable<string>? sourceKeys = null, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Add order items.
@@ -74,9 +78,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Orders
         /// <param name="orderId">Order ID.</param>
         /// <param name="items">Order items (may include ProductOrderItem or CompoundOrderItem).</param>
         /// <param name="combos">Combos. Allowed from version 7.6.1.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OperationInfo> AddTableOrderItemsAsync(Guid organizationId, Guid orderId, IEnumerable<OrderItem> items,
-            IEnumerable<Combo> combos);
+            IEnumerable<Combo> combos, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Close order.
@@ -88,9 +93,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Orders
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="orderId">Order ID.</param>
         /// <param name="chequeAdditionalInfo">Cheque additional information according to russian federal law #54.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OperationInfo> CloseTableOrderAsync(Guid organizationId, Guid orderId,
-            ChequeAdditionalInfo? chequeAdditionalInfo = null);
+            ChequeAdditionalInfo? chequeAdditionalInfo = null, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Change table order's payments.
@@ -104,9 +110,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Orders
         /// <param name="orderId">Order ID.</param>
         /// <param name="payments">Order payments.</param>
         /// <param name="tips">Order tips.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OperationInfo> ChangePaymentsForTableOrderAsync(Guid organizationId, Guid orderId,
-            IEnumerable<Payment> payments, IEnumerable<Tips>? tips = null);
+            IEnumerable<Payment> payments, IEnumerable<Tips>? tips = null, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Init orders, created on POS, by tables.
@@ -120,9 +127,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Orders
         /// Can be obtained by https://api-ru.iiko.services/api/1/terminal_groups operation.</param>
         /// <param name="tableIds">Table IDs.
         /// Can be obtained by https://api-ru.iiko.services/api/1/reserve/available_restaurant_sections operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OperationInfo> InitTableOrdersByTablesAsync(Guid organizationId, Guid terminalGroupId,
-            IEnumerable<Guid> tableIds);
+            IEnumerable<Guid> tableIds, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Init orders, created on POS, by POS orders.
@@ -135,9 +143,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Orders
         /// <param name="terminalGroupId">Terminal group ID.
         /// Can be obtained by https://api-ru.iiko.services/api/1/terminal_groups operation.</param>
         /// <param name="posOrderIds">POS order IDs.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OperationInfo> InitTableOrdersByPOSOrdersAsync(Guid organizationId, Guid terminalGroupId,
-            IEnumerable<Guid> posOrderIds);
+            IEnumerable<Guid> posOrderIds, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Add customer to order.
@@ -149,8 +158,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Orders
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="orderId">Order ID.</param>
         /// <param name="customer">Guest info.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<OperationInfo> AddCustomerToTableOrderAsync(Guid organizationId, Guid orderId, Customer customer);
+        Task<OperationInfo> AddCustomerToTableOrderAsync(Guid organizationId, Guid orderId, Customer customer,
+            CancellationToken? cancellationToken = default);
 
         #endregion
     }

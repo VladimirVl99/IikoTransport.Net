@@ -10,6 +10,81 @@ namespace IikoTransport.Net.Repositories
     public class HttpHelper
     {
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="body"></param>
+        /// <param name="token"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        protected static async Task<string> SendHttpPostBearerRequestAsync(string url, string body, string? token = null,
+            CancellationToken? cancellationToken = default)
+            => cancellationToken is not null ? await SendHttpPostBearerRequestAsync(url, body, token,
+                cancellationToken: (CancellationToken)cancellationToken) : await SendHttpPostBearerRequestAsync(url,
+                body, token: null);
+
+        /// <summary>
+        /// Send http post bearer request to the Api server.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="token"></param>
+        /// <param name="body"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        protected static async Task<string> SendHttpPostBearerRequestAsync(string url, string body, string? token = null,
+            CancellationToken cancellationToken = default)
+        {
+            using var client = new HttpClient();
+
+            if (token != null)
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var data = new StringContent(body, Encoding.UTF8, "application/json");
+            var response = await client.PostAsync(url, data, cancellationToken);
+            string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new Exception("The operation was aborted.");
+            }
+
+            if (!response.StatusCode.Equals(HttpStatusCode.OK))
+                throw new HttpRequestException(responseBody, null, response.StatusCode);
+
+            return responseBody;
+        }
+
+        /// <summary>
+        /// Send http get bearer request to the Api server.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="token"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        protected static async Task<string> SendHttpGetBearerRequestAsync(string url, string token,
+            CancellationToken cancellationToken = default)
+        {
+            using var client = new HttpClient();
+
+            if (token != null)
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.GetAsync(url, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new Exception("The operation was aborted.");
+            }
+
+            if (!response.StatusCode.Equals(HttpStatusCode.OK))
+                throw new HttpRequestException(responseBody, null, response.StatusCode);
+
+            return responseBody;
+        }
+
+        /// <summary>
         /// Send http post bearer request to the Api server.
         /// </summary>
         /// <param name="url"></param>

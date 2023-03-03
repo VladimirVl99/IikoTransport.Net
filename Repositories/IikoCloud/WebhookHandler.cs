@@ -11,28 +11,37 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         private readonly string _url;
         private readonly IIikoTransport _iikoTransport;
+        private readonly CancellationToken _cancellationToken;
 
-        private readonly Func<IIikoTransport, Update, Task> _updateHandler;
-        private readonly Func<IIikoTransport, Exception, Task> _errorHandler;
+        private readonly Func<IIikoTransport, Update, CancellationToken, Task> _updateHandler;
+        private readonly Func<IIikoTransport, Exception, CancellationToken, Task> _errorHandler;
 
 
         public WebhookHandler(
-            Func<IIikoTransport, Update, Task> updateHandler,
-            Func<IIikoTransport, Exception, Task> errorHandler,
-            IIikoTransport iikoTransport)
+            Func<IIikoTransport, Update, CancellationToken, Task> updateHandler,
+            Func<IIikoTransport, Exception, CancellationToken, Task> errorHandler,
+            IIikoTransport iikoTransport,
+            CancellationToken cancellationToken = default)
         {
             _updateHandler = updateHandler ?? throw new ArgumentNullException(nameof(updateHandler));
             _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
             _url = iikoTransport.WebHooksUri!;
             _iikoTransport = iikoTransport;
+            _cancellationToken = cancellationToken;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void Start()
         {
             var serverTread = new Thread(new ThreadStart(Run));
             serverTread.Start();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void Run()
         {
             var listener = new HttpListener();
@@ -43,9 +52,18 @@ namespace IikoTransport.Net.Repositories.IikoCloud
             {
                 try
                 {
-                    var httpContextTask = listener.GetContextAsync();
-                    httpContextTask.Wait();
-                    var httpContext = httpContextTask.Result;
+                    HttpListenerContext? httpContext = null;
+
+                    Task.Run(async () =>
+                    {
+                        httpContext = await listener.GetContextAsync();
+                    },
+                    _cancellationToken).Wait();
+
+                    if (httpContext is null)
+                    {
+                        throw new Exception($"{nameof(httpContext)} is null.");
+                    }
 
                     var request = httpContext.Request;
                     string text;
@@ -62,14 +80,28 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                     httpContext.Response.Close();
 
                     Task.Run(async () =>
-                        await _updateHandler(_iikoTransport, update).ConfigureAwait(false)
-                    );
+                    {
+                        await _updateHandler(_iikoTransport, update, _cancellationToken).ConfigureAwait(false);
+                    },
+                    _cancellationToken).Wait();
+
+                    if (_cancellationToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
                 }
                 catch (Exception ex)
                 {
                     Task.Run(async () =>
-                        await _errorHandler(_iikoTransport, ex).ConfigureAwait(false)
-                    );
+                    {
+                        await _errorHandler(_iikoTransport, ex, _cancellationToken).ConfigureAwait(false);
+                    },
+                    _cancellationToken).Wait();
+
+                    if (_cancellationToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
                 }
             }
 

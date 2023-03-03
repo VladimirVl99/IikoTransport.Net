@@ -34,7 +34,8 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Webhooks
 
         #region Webhooks https://api-ru.iiko.services/#tag/Webhooks
 
-        public async Task<WebhookSettings> GetWebhooksSettingsForSpecifiedOrganizationAsync(Guid organizationId)
+        public async Task<WebhookSettings> GetWebhooksSettingsForSpecifiedOrganizationAsync(Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -42,14 +43,15 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Webhooks
             });
 
             var responseBody = await SendHttpPostBearerRequestAsync(DefaultGetWebhooksSettingsForSpecifiedOrganizationUri,
-                body, Token);
+                body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<WebhookSettings>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<OperationInfo> UpdateWebhooksSettingsForSpecifiedOrganizationAsync(Guid organizationId,
-            string webHooksUri, string? authToken = null, Filter? webHooksFilter = null)
+            string webHooksUri, string? authToken = null, Filter? webHooksFilter = null,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -60,7 +62,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Webhooks
             });
 
             var responseBody = await SendHttpPostBearerRequestAsync(DefaultUpdateWebhooksSettingsForSpecifiedOrganizationUri,
-                body, Token);
+                body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);

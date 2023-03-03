@@ -19,8 +19,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Webhooks
         /// </summary>
         /// <param name="organizationId">Organization UOC Id.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<WebhookSettings> GetWebhooksSettingsForSpecifiedOrganizationAsync(Guid organizationId);
+        Task<WebhookSettings> GetWebhooksSettingsForSpecifiedOrganizationAsync(Guid organizationId,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Update webhooks settings for specified organization and authorized API login.
@@ -31,9 +33,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Webhooks
         /// <param name="webHooksUri">Webhook handler url.</param>
         /// <param name="authToken">Authorization token to pass to the webhook handler.</param>
         /// <param name="webHooksFilter">Webhooks filter.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OperationInfo> UpdateWebhooksSettingsForSpecifiedOrganizationAsync(Guid organizationId,
-            string webHooksUri, string? authToken = null, Filter? webHooksFilter = null);
+            string webHooksUri, string? authToken = null, Filter? webHooksFilter = null,
+            CancellationToken? cancellationToken = default);
 
         #endregion
     }

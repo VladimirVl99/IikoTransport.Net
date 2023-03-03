@@ -83,10 +83,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
 
         #region Authorization https://api-ru.iiko.services/#tag/Authorization
 
-        public async Task<string> RetrieveSessionKeyForApiUserAsync(string apiLogin)
+        public async Task<string> RetrieveSessionKeyForApiUserAsync(string apiLogin, CancellationToken? cancellationToken = default)
         {
             var body = JsonConvert.SerializeObject(new { apiLogin });
-            string responseBody = await SendHttpPostBearerRequestAsync(DefaultSessionKeyRetrieveUri, body);
+
+            string responseBody = await SendHttpPostBearerRequestAsync(DefaultSessionKeyRetrieveUri, body,
+                cancellationToken: cancellationToken);
+
             var auth = JsonConvert.DeserializeObject<SessionKey>(responseBody);
 
             return !string.IsNullOrEmpty(auth?.Token)
@@ -98,11 +101,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         #region Notifications https://api-ru.iiko.services/#tag/Notifications
 
         public async Task SendNotificationToExternalSystemsAsync(string orderSource, Guid orderId,
-            string additionalInfo, MessageType messageType, Guid organizationId)
+            string additionalInfo, MessageType messageType, Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { orderSource, orderId, additionalInfo,
                 messageType = messageType.ToString(), organizationId });
-            await SendHttpPostBearerRequestAsync(DefaultSendNotificationToIikoFrontUri, body, Token);
+            await SendHttpPostBearerRequestAsync(DefaultSendNotificationToIikoFrontUri, body, Token,
+                cancellationToken);
         }
 
         #endregion
@@ -110,10 +115,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         #region Organizations https://api-ru.iiko.services/#tag/Organizations
 
         public async Task<OrganizationInfo> RetrieveAvailableOrganizationsAsync(IEnumerable<Guid>? organizationIds = null,
-            bool returnAdditionalInfo = false, bool includeDisabled = false)
+            bool returnAdditionalInfo = false, bool includeDisabled = false, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationIds, returnAdditionalInfo, includeDisabled });
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultOrganizationsRetrieveUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultOrganizationsRetrieveUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<OrganizationInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
@@ -124,30 +130,33 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         #region Terminal groups https://api-ru.iiko.services/#tag/Terminal-groups
 
         public async Task<DeliveryTerminalGroupInfo> RetrieveGroupsOfDeliveryTerminalsAsync(IEnumerable<Guid> organizationIds,
-            bool includeDisabled = false)
+            bool includeDisabled = false, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationIds, includeDisabled });
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultGroupsOfDeliveryTerminalsRetrieveUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultGroupsOfDeliveryTerminalsRetrieveUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<DeliveryTerminalGroupInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<AvailabilityTerminalGroupInfo> RetrieveInformationOnAvailabilityOfGroupOfTerminalsAsync(
-            IEnumerable<Guid> organizationIds, IEnumerable<Guid> terminalGroupIds)
+            IEnumerable<Guid> organizationIds, IEnumerable<Guid> terminalGroupIds, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationIds, terminalGroupIds });
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultAvailabilityOfGroupOfTerminalsRetrieveUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultAvailabilityOfGroupOfTerminalsRetrieveUri, body,
+                Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<AvailabilityTerminalGroupInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<AwakeTerminalGroupsResult> AwakeTerminalGroupsFromSleepModeAsync(IEnumerable<Guid> organizationIds,
-            IEnumerable<Guid> terminalGroupIds)
+            IEnumerable<Guid> terminalGroupIds, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationIds, terminalGroupIds });
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultAwakeTerminalGroupsFromSleepModeUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultAwakeTerminalGroupsFromSleepModeUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<AwakeTerminalGroupsResult>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
@@ -157,54 +166,65 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
 
         #region Dictionaries https://api-ru.iiko.services/#tag/Dictionaries
 
-        public async Task<CancelCauseInfo> RetrieveDeliveryCancelCausesAsync(IEnumerable<Guid> organizationIds)
+        public async Task<CancelCauseInfo> RetrieveDeliveryCancelCausesAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationIds });
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultDeliveryCancelCausesRetrieveUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultDeliveryCancelCausesRetrieveUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<CancelCauseInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<OrderTypeInfo> RetrieveOrderTypes(IEnumerable<Guid> organizationIds)
+        public async Task<OrderTypeInfo> RetrieveOrderTypes(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationIds });
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultOrderTypesRetrieveUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultOrderTypesRetrieveUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<OrderTypeInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<DiscountInfo> RetrieveDiscountsAndSurchargesAsync(IEnumerable<Guid> organizationIds)
+        public async Task<DiscountInfo> RetrieveDiscountsAndSurchargesAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationIds });
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultDiscountsRetrieveUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultDiscountsRetrieveUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<DiscountInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<PaymentInfo> RetrievePaymentTypesAsync(IEnumerable<Guid> organizationIds)
+        public async Task<PaymentInfo> RetrievePaymentTypesAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationIds });
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultPaymentTypesRetrieveUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultPaymentTypesRetrieveUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<PaymentInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<RemovalTypeInfo> RetrieveRemovalTypesAsync(IEnumerable<Guid> organizationIds)
+        public async Task<RemovalTypeInfo> RetrieveRemovalTypesAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationIds });
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRemovalTypesRetrieveUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRemovalTypesRetrieveUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<RemovalTypeInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<TipTypeInfo> RetrieveTipsTipesForRmsGroupAsync()
+        public async Task<TipTypeInfo> RetrieveTipsTipesForRmsGroupAsync(CancellationToken? cancellationToken = default)
         {
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultTipsTipesRetrieveUri, string.Empty, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultTipsTipesRetrieveUri, string.Empty, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<TipTypeInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
@@ -214,56 +234,66 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
 
         #region Menu https://api-ru.iiko.services/#tag/Menu
 
-        public async Task<MenuInfo> RetrieveMenuAsync(Guid organizationId, long? startRevision = null)
+        public async Task<MenuInfo> RetrieveMenuAsync(Guid organizationId, long? startRevision = null,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationId, startRevision });
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultMenuRetrieveUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultMenuRetrieveUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<MenuInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<ExternalMenuInfo> RetrieveExternalMenusWithPriceCategoriesAsync()
+        public async Task<ExternalMenuInfo> RetrieveExternalMenusWithPriceCategoriesAsync(
+            CancellationToken? cancellationToken = default)
         {
             var responseBody = await SendHttpPostBearerRequestAsync(DefaultExternalMenusWithPriceCategoriesRetrieveUri,
-                string.Empty, Token);
+                string.Empty, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<ExternalMenuInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<Menu> RetrieveExternalMenuByIdAsync(string externalMenuId, IEnumerable<Guid> organizationIds,
-            string? priceCategoryId = null, int? version = null)
+            string? priceCategoryId = null, int? version = null, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { externalMenuId, organizationIds, priceCategoryId, version });
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultExternalMenuByIdRetrieveUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultExternalMenuByIdRetrieveUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<Menu>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<OutOfStockInfo> RetrieveOutOfStockItemsAsync(IEnumerable<Guid> organizationIds)
+        public async Task<OutOfStockInfo> RetrieveOutOfStockItemsAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationIds });
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultOutOfStockItemsRetrieveUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultOutOfStockItemsRetrieveUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<OutOfStockInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<ComboInfo> RetrieveCombosInfoAsync(bool extraData, Guid organizationId)
+        public async Task<ComboInfo> RetrieveCombosInfoAsync(bool extraData, Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { extraData, organizationId });
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCombosInfoRetrieveUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCombosInfoRetrieveUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<ComboInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<ComboPriceInfo> CalculateComboPriceAsync(IEnumerable<OrderItem> items, Guid organizationId)
+        public async Task<ComboPriceInfo> CalculateComboPriceAsync(IEnumerable<OrderItem> items, Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { items, organizationId });
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCalculateComboPriceUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCalculateComboPriceUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<ComboPriceInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
@@ -273,10 +303,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
 
         #region Operations https://api-ru.iiko.services/#tag/Operations
 
-        public async Task<CommandStatus> GetStatusOfCommandAsync(Guid organizationId, Guid correlationId)
+        public async Task<CommandStatus> GetStatusOfCommandAsync(Guid organizationId, Guid correlationId,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationId, correlationId });
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultStatusOfCommandRetrieveUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultStatusOfCommandRetrieveUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<CommandStatusInfo>(responseBody)?.State
                 ?? throw new Exception(DefaultNullableExceptionMessage);
@@ -287,95 +319,101 @@ namespace IikoTransport.Net.Repositories.IikoCloud.General
         #region Employees https://api-ru.iiko.services/#tag/Employees
 
         public async Task<CoordinateHistory> RetrieveCoordinatesHistoryOfDriverAsync(IEnumerable<Guid> organizationIds,
-            int? offsetInSeconds = null)
+            int? offsetInSeconds = null, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationIds, offsetInSeconds });
             var responseBody = await SendHttpPostBearerRequestAsync(DefaultCoordinatesHistoryOfDriverRetrieveUri,
-                body, Token);
+                body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<CoordinateHistory>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<CouriersInfo> RetrieveDeliveryDriversInSpecifiedRestaurantsAsync(IEnumerable<Guid> organizationIds)
+        public async Task<CouriersInfo> RetrieveDeliveryDriversInSpecifiedRestaurantsAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationIds });
             var responseBody = await SendHttpPostBearerRequestAsync(DefaultDeliveryDriversInSpecifiedRestaurantRetrieveUri,
-                body, Token);
+                body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<CouriersInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<PersonalSessionInfo> CheckForOpenPersonalShiftAsync(Guid organizationId, Guid terminalGroupId,
-            Guid employeeId)
+            Guid employeeId, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationId, terminalGroupId, employeeId });
             var responseBody = await SendHttpPostBearerRequestAsync(
-                DefaultCheckIfPersonalSessionIsOpenUri, body, Token);
+                DefaultCheckIfPersonalSessionIsOpenUri, body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<PersonalSessionInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<PersonalSessionActionResult> ClosePersonalSessionAsync(Guid organizationId, Guid terminalGroupId,
-            Guid employeeId)
+            Guid employeeId, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationId, terminalGroupId, employeeId });
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultClosePersonalSessionUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultClosePersonalSessionUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<PersonalSessionActionResult>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<PersonalSessionActionResult> OpenPersonalSessionAsync(Guid organizationId,
-            Guid terminalGroupId, Guid employeeId, Guid? roleId = null)
+            Guid terminalGroupId, Guid employeeId, Guid? roleId = null, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationId, terminalGroupId, employeeId, roleId });
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultOpenPersonalSessionUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultOpenPersonalSessionUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<PersonalSessionActionResult>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<ActiveCouriersInfo> RetrieveActiveDeliveryDriversInSpecifiedRestaurantAndOnSpecifiedTerminalAsync(
-            Guid organizationId, Guid terminalGroupId)
+            Guid organizationId, Guid terminalGroupId, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationId, terminalGroupId });
             var responseBody = await SendHttpPostBearerRequestAsync(
-                DefaultActiveLocationsOfCourierWhichAreClockedInOnSpecifiedDeliveryRetrieveUri, body, Token);
+                DefaultActiveLocationsOfCourierWhichAreClockedInOnSpecifiedDeliveryRetrieveUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<ActiveCouriersInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<ActiveCouriersInfo> RetrieveActiveLocationsOfCourierInSpecifiedRestaurantsAsync(
-            IEnumerable<Guid> organizationIds)
+            IEnumerable<Guid> organizationIds, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationIds });
             var responseBody = await SendHttpPostBearerRequestAsync(
-                DefaultActiveLocationsOfCourierBySpecifiedRestaurantsRetrieveUri, body, Token);
+                DefaultActiveLocationsOfCourierBySpecifiedRestaurantsRetrieveUri, body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<ActiveCouriersInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<CouriersWithCheckRolesInfo> RetrieveDeliveryDriversInSpecifiedRestaurantsWithCheckRolesAsync(
-            IEnumerable<Guid> organizationIds, IEnumerable<string> rolesToCheck)
+            IEnumerable<Guid> organizationIds, IEnumerable<string> rolesToCheck, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationIds, rolesToCheck });
             var responseBody = await SendHttpPostBearerRequestAsync(
-                DefaultDeliveryDriversInSpecifiedRestaurantAndRolesToCheckRetrieveUri, body, Token);
+                DefaultDeliveryDriversInSpecifiedRestaurantAndRolesToCheckRetrieveUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<CouriersWithCheckRolesInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<EmployeeInfo> RetrieveEmployeeInfoAsync(Guid organizationId, Guid id)
+        public async Task<EmployeeInfo> RetrieveEmployeeInfoAsync(Guid organizationId, Guid id,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new { organizationId, id });
             var responseBody = await SendHttpPostBearerRequestAsync(
-                DefaultEmployeeInfoRetrieveUri, body, Token);
+                DefaultEmployeeInfoRetrieveUri, body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<EmployeeInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);

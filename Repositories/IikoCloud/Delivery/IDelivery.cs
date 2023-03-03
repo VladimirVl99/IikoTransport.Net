@@ -43,9 +43,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="terminalGroupId">Front group ID an order must be sent to.
         /// Can be obtained by https://api-ru.iiko.services/api/1/terminal_groups operation.</param>
         /// <param name="createOrderSettings">Order creation parameters.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OrderWithOperationInfo> CreateDeliveryAsync(Guid organizationId, DeliveryOrder order,
-            Guid? terminalGroupId = null, OrderCreationSettings? createOrderSettings = null);
+            Guid? terminalGroupId = null, OrderCreationSettings? createOrderSettings = null,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Update order problem.
@@ -57,9 +59,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="orderId">Order ID.</param>
         /// <param name="hasProblem">Problem flag.</param>
         /// <param name="problem">[ 0 .. 1000 ] characters. Problem text.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OperationInfo> UpdateDeliveryOrderProblemAsync(Guid organizationId, Guid orderId, bool hasProblem,
-            string? problem = null);
+            string? problem = null, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Update delivery status.
@@ -72,9 +75,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="deliveryStatus">Delivery status. Can be only switched between these three statuses.</param>
         /// <param name="deliveryDate">The date and time when the order was received by
         /// the guest (Local for delivery terminal).</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OperationInfo> UpdateDeliveryStatusAsync(Guid organizationId, Guid orderId, DeliveryStatusShort deliveryStatus,
-            DateTime? deliveryDate = null);
+            DateTime? deliveryDate = null, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Update order courier.
@@ -87,8 +91,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="orderId">Order ID.</param>
         /// <param name="employeeId">Courier ID.
         /// Can be obtained by https://api-ru.iiko.services/api/1/employees/couriers operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<OperationInfo> UpdateDeliveryOrderCourierAsync(Guid organizationId, Guid orderId, Guid employeeId);
+        Task<OperationInfo> UpdateDeliveryOrderCourierAsync(Guid organizationId, Guid orderId, Guid employeeId,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Add order items.
@@ -101,9 +107,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="orderId">Order ID.</param>
         /// <param name="items">Order items (may include ProductOrderItem or CompoundOrderItem).</param>
         /// <param name="combos">Combos. Allowed from version 7.6.1.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OperationInfo> AddDeliveryOrderItemsAsync(Guid organizationId, Guid orderId, IEnumerable<OrderItem> items,
-            IEnumerable<Combo>? combos = null);
+            IEnumerable<Combo>? combos = null, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Close order.
@@ -118,8 +125,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="organizationId">Organization ID of a new order.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="orderId">Order ID.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<OperationInfo> CloseDeliveryOrderAsync(Guid organizationId, Guid orderId, DateTime? deliveryDate = null);
+        Task<OperationInfo> CloseDeliveryOrderAsync(Guid organizationId, Guid orderId, DateTime? deliveryDate = null,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Cancel delivery order.
@@ -136,9 +145,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="removalTypeId">Removal type (for delete printed order items). Allowed from version 7.7.1.</param>
         /// <param name="userIdForWriteoff">User for writeoff (for delete printed order items).
         /// Allowed from version 7.7.1.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OperationInfo> CancelDeliveryOrderAsync(Guid organizationId, Guid orderId, Guid? movedOrderId = null,
-            Guid? cancelCauseId = null, Guid? removalTypeId = null, Guid? userIdForWriteoff = null);
+            Guid? cancelCauseId = null, Guid? removalTypeId = null, Guid? userIdForWriteoff = null,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Change time when client wants the order to be delivered.
@@ -150,9 +161,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="orderId">Order ID.</param>
         /// <param name="newCompleteBefore">New time when client wants the order to be delivered (Local for delivery terminal).</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OperationInfo> ChangeTimeWhenClientWantsOrderToBeDeliveredAsync(Guid organizationId, Guid orderId,
-            DateTime newCompleteBefore);
+            DateTime newCompleteBefore, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Change order's delivery point information.
@@ -164,9 +176,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="orderId">Order ID.</param>
         /// <param name="newDeliveryPoint">New address of delivery.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OperationInfo> ChangeDeliveryPointForDeliveryOrderAsync(Guid organizationId, Guid orderId,
-            DeliveryPoint newDeliveryPoint);
+            DeliveryPoint newDeliveryPoint, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Change order's delivery type.
@@ -179,9 +192,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="orderId">Order ID.</param>
         /// <param name="newServiceType">Service type of a delivery order.</param>
         /// <param name="deliveryPoint">Address of delivery. Required if newServiceType is 'DeliveryByCourier'.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OperationInfo> ChangeDeliveryTypeForOrderAsync(Guid organizationId, Guid orderId, OrderServiceType newServiceType,
-            DeliveryPoint? deliveryPoint = null);
+            DeliveryPoint? deliveryPoint = null, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Change order's payments.
@@ -196,9 +210,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="orderId">Order ID.</param>
         /// <param name="payments">Order payments.</param>
         /// <param name="tips">Order tips.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OperationInfo> ChangePaymentForDeliveryOrderAsync(Guid organizationId, Guid orderId, IEnumerable<Payment> payments,
-            IEnumerable<Tips>? tips = null);
+            IEnumerable<Tips>? tips = null, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Change delivery comment.
@@ -210,8 +225,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="orderId">Order ID.</param>
         /// <param name="comment">New comment.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<OperationInfo> ChangeDeliveryCommentAsync(Guid organizationId, Guid orderId, string comment);
+        Task<OperationInfo> ChangeDeliveryCommentAsync(Guid organizationId, Guid orderId, string comment,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Print delivery bill.
@@ -222,8 +239,9 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="organizationId">Organization ID of a new order.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="orderId">Order ID.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<OperationInfo> PrintDeliveryBillAsync(Guid organizationId, Guid orderId);
+        Task<OperationInfo> PrintDeliveryBillAsync(Guid organizationId, Guid orderId, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Confirm delivery.
@@ -234,8 +252,9 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="organizationId">Organization ID of a new order.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="orderId">Order ID.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<OperationInfo> ConfirmDeliveryAsync(Guid organizationId, Guid orderId);
+        Task<OperationInfo> ConfirmDeliveryAsync(Guid organizationId, Guid orderId, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Cancel delivery confirmation.
@@ -246,8 +265,9 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="organizationId">Organization ID of a new order.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="orderId">Order ID.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<OperationInfo> CancelDeliveryConfirmationAsync(Guid organizationId, Guid orderId);
+        Task<OperationInfo> CancelDeliveryConfirmationAsync(Guid organizationId, Guid orderId, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Assign/change the order operator.
@@ -259,9 +279,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="orderId">Order ID.</param>
         /// <param name="operatorId">Operator to assign the order to.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OperationInfo> AssignOrChangeDeliveryOrderOperatorAsync(Guid organizationId, Guid orderId,
-            Guid operatorId);
+            Guid operatorId, CancellationToken? cancellationToken = default);
 
         #endregion
 
@@ -278,10 +299,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="sourceKeys">Source keys.</param>
         /// <param name="posOrderIds">POS order IDs information on which is required.
         /// Required if "orderIds" is null. Must be null if "orderIds" is not null.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OrderInfoWithOperation> RetrieveDeliveryOrdersByIdsAsync(Guid organizationId,
             IEnumerable<Guid>? orderIds = null, IEnumerable<string>? sourceKeys = null,
-            IEnumerable<Guid>? posOrderIds = null);
+            IEnumerable<Guid>? posOrderIds = null, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Retrieve list of orders by statuses and dates.
@@ -293,10 +315,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="deliveryDateTo">Order delivery date (Local for delivery terminal). Upper limit.</param>
         /// <param name="statuses">Allowed order statuses.</param>
         /// <param name="sourceKeys">Source keys.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<RevisionOrderInfo> RetrieveDeliveryOrdersByStatusesAndDatesAsync(
             IEnumerable<Guid> organizationIds, DateTime deliveryDateFrom, DateTime? deliveryDateTo = null,
-            IEnumerable<DeliveryStatusShort>? statuses = null, IEnumerable<string>? sourceKeys = null);
+            IEnumerable<DeliveryStatusShort>? statuses = null, IEnumerable<string>? sourceKeys = null,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Retrieve list of orders changed from the time revision was passed.
@@ -307,9 +331,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="organizationIds">Organization ID for which an order search will be performed.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="sourceKeys">Source keys.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<RevisionOrderInfo> RetrieveDeliveryOrdersChangedFromTimeRevisionAsync(long startRevision,
-            IEnumerable<Guid> organizationIds, IEnumerable<string>? sourceKeys = null);
+            IEnumerable<Guid> organizationIds, IEnumerable<string>? sourceKeys = null,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Retrieve list of orders by telephone number, dates and revision.
@@ -324,11 +350,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// new/edited orders will be returned.</param>
         /// <param name="sourceKeys">Source keys.</param>
         /// <param name="rowsCount">Maximum number of items returned. If null, all items will be returned.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<RevisionOrderInfo> RetrieveDeliveryOrdersByPhoneAndDatesAndRevisionAsync(
             IEnumerable<Guid> organizationIds, string? phone = null, DateTime? deliveryDateFrom = null,
             DateTime? deliveryDateTo = null, long? startRevision = null, IEnumerable<string>? sourceKeys = null,
-            int? rowsCount = null);
+            int? rowsCount = null, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Search orders by search text and additional filters (date, problem, statuses and other).
@@ -351,13 +378,15 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="sourceKeys">Source keys.</param>
         /// <param name="orderIds">Order IDs.</param>
         /// <param name="posOrderIds">POS order IDs. Must be null if "orderIds" is not null.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<RevisionOrderInfo> RetrieveDeliveryOrdersByAdditionalFiltersAsync(IEnumerable<Guid> organizationIds,
             SortProperty sortProperty, SortDirection sortDirection, IEnumerable<Guid>? terminalGroupIds = null,
             DateTime? deliveryDateFrom = null, DateTime? deliveryDateTo = null, IEnumerable<DeliveryStatus>? statuses = null,
             bool? hasProblem = null, OrderServiceType? orderServiceType = null, string? searchText = null,
             int? timeToCookingErrorTimeout = null, int? cookingTimeout = null, int? rowsCount = null,
-            IEnumerable<string>? sourceKeys = null, IEnumerable<Guid>? orderIds = null, IEnumerable<Guid>? posOrderIds = null);
+            IEnumerable<string>? sourceKeys = null, IEnumerable<Guid>? orderIds = null, IEnumerable<Guid>? posOrderIds = null,
+            CancellationToken? cancellationToken = default);
 
         #endregion
 
@@ -369,8 +398,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// </summary>
         /// <param name="organizationIds">Organization ID for which an order search will be performed.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<RegionWithOperation> RetrieveRegionsAsync(IEnumerable<Guid> organizationIds);
+        Task<RegionWithOperation> RetrieveRegionsAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Cities.
@@ -378,8 +409,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// </summary>
         /// <param name="organizationIds">Organization ID for which an order search will be performed.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<CitiesWithOperation> RetrieveCitiesAsync(IEnumerable<Guid> organizationIds);
+        Task<CitiesWithOperation> RetrieveCitiesAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Streets by city.
@@ -388,8 +421,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="organizationId">Organization ID details of which have to be returned.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="cityId">City ID.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<StreetsWithOperation> RetrieveStreetsByCityAsync(Guid organizationId, Guid cityId);
+        Task<StreetsWithOperation> RetrieveStreetsByCityAsync(Guid organizationId, Guid cityId,
+            CancellationToken? cancellationToken = default);
 
         #endregion
 
@@ -402,8 +437,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// </summary>
         /// <param name="organizationIds">Organizations IDs which delivery restrictions have to be returned.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<DeliveryRestrictionsWithOperation> RetrieveDeliveryRestrictionsAsync(IEnumerable<Guid> organizationIds);
+        Task<DeliveryRestrictionsWithOperation> RetrieveDeliveryRestrictionsAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Update delivery restrictions.
@@ -445,6 +482,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// in minutes from the beginning of the day.</param>
         /// <param name="defaultDeliveryServiceProductId">Link to "delivery service payment".</param>
         /// <param name="externalAssignationServiceUrl">Address of external delivery distribution service.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OperationInfo> UpdateDeliveryRestrictionsAsync(Guid organizationId, int deliveryGeocodeServiceType,
             long defaultDeliveryDurationInMinutes, long defaultSelfServiceDurationInMinutes, bool useSameDeliveryDuration,
@@ -454,7 +492,8 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
             bool useExternalAssignationService, bool frontTrustsCallCenterCheck, bool requireExactAddressForGeocoding,
             int zonesMode, bool autoAssignExternalDeliveries, int actionOnValidationRejection,
             string? deliveryRegionsMapUrl = null, double? defaultMinSum = null, int? defaultFrom = null,
-            int? defaultTo = null, Guid? defaultDeliveryServiceProductId = null, string? externalAssignationServiceUrl = null);
+            int? defaultTo = null, Guid? defaultDeliveryServiceProductId = null, string? externalAssignationServiceUrl = null,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Get suitable terminal groups for delivery restrictions.
@@ -470,11 +509,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="deliveryDate">Delivery date (Local for delivery terminal).</param>
         /// <param name="deliverySum">Sum.</param>
         /// <param name="discountSum">Discounts sum.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<SuitableTerminalGroupsWithOperation> GetSuitableTerminalGroupsForDeliveryRestrictionsAsync(
             IEnumerable<Guid> organizationIds, bool isCourierDelivery, DeliveryAddress? deliveryAddress = null,
             Coordinate? orderLocation = null, IEnumerable<RestrictionsOrderItem>? orderItems = null,
-            DateTime? deliveryDate = null, double? deliverySum = null, double? discountSum = null);
+            DateTime? deliveryDate = null, double? deliverySum = null, double? discountSum = null,
+            CancellationToken? cancellationToken = default);
 
         #endregion
 
@@ -487,8 +528,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// </summary>
         /// <param name="organizationIds">Organizations IDs which marketing sources have to be returned.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<MarketingSourceWithOperation> RetrieveMarketingSourcesAsync(IEnumerable<Guid> organizationIds);
+        Task<MarketingSourceWithOperation> RetrieveMarketingSourcesAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default);
 
         #endregion
 
@@ -502,9 +545,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="orderId">Order ID.</param>
         /// <param name="employeeId">ID of the employee who wants to get this draft for editing.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OrderDraftWithOperation> RetrieveOrderDraftByIdAsync(Guid organizationId, Guid orderId,
-            Guid employeeId);
+            Guid employeeId, CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Retrieve order drafts list by parameters.
@@ -518,10 +562,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="limit">Desirable size of result set (50 by default).</param>
         /// <param name="offset">Offset from the beginning of full result set for paging.</param>
         /// <param name="sourceKeys">Delivery sources (DeliveryClub, PH and etc.)</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OrderDraftsListWithOperation> RetrieveOrderDraftsByParametersAsync(IEnumerable<Guid> organizationIds,
             DateTime? deliveryDateFrom = null, DateTime? deliveryDateTo = null, string? phone = null,
-            int? limit = null, int? offset = null, IEnumerable<string>? sourceKeys = null);
+            int? limit = null, int? offset = null, IEnumerable<string>? sourceKeys = null,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Store order draft changes to DB.
@@ -530,8 +576,10 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="organizationId">Organization ID of a new order.
         /// Can be obtained by https://api-ru.iiko.services/api/1/organizations operation.</param>
         /// <param name="order">Order item.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<OperationInfo> StoreOrderDraftChangesToDbAsync(Guid organizationId, DeliveryOrder order);
+        Task<OperationInfo> StoreOrderDraftChangesToDbAsync(Guid organizationId, DeliveryOrder order,
+            CancellationToken? cancellationToken = default);
 
         /// <summary>
         /// Admit order draft changes and send them to Front.
@@ -543,9 +591,11 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Delivery
         /// <param name="terminalGroupId">Front group ID an order must be sent to.
         /// Can be obtained by https://api-ru.iiko.services/api/1/terminal_groups operation.</param>
         /// <param name="createOrderSettings">Order creation parameters.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<OrderWithOperationInfo> AdmitOrderDraftChangesAndSendThemToFrontAsync(Guid organizationId,
-            Guid orderId, Guid? terminalGroupId = null, OrderCreationSettings? createOrderSettings = null);
+            Guid orderId, Guid? terminalGroupId = null, OrderCreationSettings? createOrderSettings = null,
+            CancellationToken? cancellationToken = default);
 
         #endregion
     }

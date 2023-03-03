@@ -45,7 +45,8 @@ namespace IikoTransport.Net.Repositories.IikoCloud.BanquetsAndReserves
         #region Banquets/reserves https://api-ru.iiko.services/#tag/Banquetsreserves
 
         public async Task<OrganizationInfo> RetrieveOrganizationsForWhichReserveBookingAreAvailableAsync(
-            IEnumerable<Guid>? organizationIds = null, bool returnAdditionalInfo = false, bool includeDisabled = false)
+            IEnumerable<Guid>? organizationIds = null, bool returnAdditionalInfo = false, bool includeDisabled = false,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -55,14 +56,14 @@ namespace IikoTransport.Net.Repositories.IikoCloud.BanquetsAndReserves
             });
 
             var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveOrganizationsForWhichReserveBookingAreAvailableUri,
-                body, Token);
+                body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<OrganizationInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<DeliveryTerminalGroupInfo> RetrieveTerminalGroupsForWhichReserveBookingAreAvailableAsync(
-            IEnumerable<Guid> organizationIds)
+            IEnumerable<Guid> organizationIds, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -70,14 +71,15 @@ namespace IikoTransport.Net.Repositories.IikoCloud.BanquetsAndReserves
             });
 
             var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveTerminalGroupsForWhichReserveBookingAreAvailableUri,
-                body, Token);
+                body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<DeliveryTerminalGroupInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<RestaurantSectionsWithOperation> RetrieveRestaurantSectionsForWhichReserveBookingAreAvailableAsync(
-            IEnumerable<Guid> terminalGroupIds, bool returnSchema = false, long? revision = null)
+            IEnumerable<Guid> terminalGroupIds, bool returnSchema = false, long? revision = null,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -87,14 +89,15 @@ namespace IikoTransport.Net.Repositories.IikoCloud.BanquetsAndReserves
             });
 
             var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveRestaurantSectionsForWhichReserveBookingAreAvailableUri,
-                body, Token);
+                body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<RestaurantSectionsWithOperation>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<ReservesWithOperation> RetrieveReservesForPassedRestaurantSectionsAsync(
-            IEnumerable<Guid> restaurantSectionIds, DateTime dateFrom, DateTime? dateTo = null)
+            IEnumerable<Guid> restaurantSectionIds, DateTime dateFrom, DateTime? dateTo = null,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -104,7 +107,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud.BanquetsAndReserves
             });
 
             var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveReservesForPassedRestaurantSectionsUri,
-                body, Token);
+                body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<ReservesWithOperation>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
@@ -113,7 +116,8 @@ namespace IikoTransport.Net.Repositories.IikoCloud.BanquetsAndReserves
         public async Task<BanquetWithOperation> CreateReserveAsync(Guid organizationId, Guid terminalGroupId,
             Customer customer, string phone, long durationInMinutes, bool shouldRemind, IEnumerable<Guid> tableIds,
             DateTime estimatedStartTime, Guid? id = null, string? externalNumber = null, ReserveOrder? order = null,
-            string? comment = null, int? transportToFrontTimeout = null, GuestDetails? guests = null)
+            string? comment = null, int? transportToFrontTimeout = null, GuestDetails? guests = null,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -134,14 +138,15 @@ namespace IikoTransport.Net.Repositories.IikoCloud.BanquetsAndReserves
             });
 
             var responseBody = await SendHttpPostBearerRequestAsync(DefaultCreateReserveUri,
-                body, Token);
+                body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<BanquetWithOperation>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<ReservesWithOperation> RetrieveReservesStatusesByIdsAsync(Guid organizationId,
-            IEnumerable<Guid> reserveIds, IEnumerable<string>? sourceKeys = null)
+            IEnumerable<Guid> reserveIds, IEnumerable<string>? sourceKeys = null,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -151,7 +156,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud.BanquetsAndReserves
             });
 
             var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveReservesStatusesByIdsUri,
-                body, Token);
+                body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<ReservesWithOperation>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);

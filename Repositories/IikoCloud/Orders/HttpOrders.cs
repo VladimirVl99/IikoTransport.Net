@@ -50,7 +50,8 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Orders
         #region Orders https://api-ru.iiko.services/#tag/Orders
 
         public async Task<OrderWithOperationInfo> CreateTableOrderAsync(Guid organizationId, Guid terminalGroupId,
-            TableOrder? order = null, OrderCreationSettings? createOrderSettings = null)
+            TableOrder? order = null, OrderCreationSettings? createOrderSettings = null,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -60,14 +61,16 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Orders
                 createOrderSettings
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCreateOrderUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCreateOrderUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<OrderWithOperationInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<OrdersWithOperationInfo> RetrieveTableOrdersByIdAsync(IEnumerable<Guid> organizationIds,
-            IEnumerable<Guid>? orderIds = null, IEnumerable<Guid>? posOrderIds = null, IEnumerable<string>? sourceKeys = null)
+            IEnumerable<Guid>? orderIds = null, IEnumerable<Guid>? posOrderIds = null, IEnumerable<string>? sourceKeys = null,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -77,7 +80,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Orders
                 sourceKeys
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveOrdersByIdsUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveOrdersByIdsUri, body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<OrdersWithOperationInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
@@ -85,7 +88,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Orders
 
         public async Task<OrdersWithOperationInfo> RetrieveTableOrdersByTablesAsync(IEnumerable<Guid> organizationIds,
             IEnumerable<Guid> tableIds, IEnumerable<OrderStatus>? statuses = null, DateTime? dateFrom = null,
-            DateTime? dateTo = null, IEnumerable<string>? sourceKeys = null)
+            DateTime? dateTo = null, IEnumerable<string>? sourceKeys = null, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -97,14 +100,15 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Orders
                 sourceKeys
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveOrdersByTablesUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultRetrieveOrdersByTablesUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<OrdersWithOperationInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<OperationInfo> AddTableOrderItemsAsync(Guid organizationId, Guid orderId, IEnumerable<OrderItemRequest> items,
-            IEnumerable<ComboRequest> combos)
+            IEnumerable<ComboRequest> combos, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -114,14 +118,14 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Orders
                 combos
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultAddOrderItemsUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultAddOrderItemsUri, body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<OperationInfo> CloseTableOrderAsync(Guid organizationId, Guid orderId,
-            ChequeAdditionalInfo? chequeAdditionalInfo = null)
+            ChequeAdditionalInfo? chequeAdditionalInfo = null, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -130,14 +134,14 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Orders
                 chequeAdditionalInfo
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCloseOrderUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultCloseOrderUri, body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<OperationInfo> ChangePaymentsForTableOrderAsync(Guid organizationId, Guid orderId, IEnumerable<PaymentRequest> payments,
-            IEnumerable<TipsRequest>? tips = null)
+            IEnumerable<TipsRequest>? tips = null, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -147,13 +151,14 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Orders
                 tips
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultPaymentsOfTableOrderUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultPaymentsOfTableOrderUri, body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<OperationInfo> InitTableOrdersByTablesAsync(Guid organizationId, Guid terminalGroupId, IEnumerable<Guid> tableIds)
+        public async Task<OperationInfo> InitTableOrdersByTablesAsync(Guid organizationId, Guid terminalGroupId, IEnumerable<Guid> tableIds,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -162,14 +167,14 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Orders
                 tableIds
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultInitByTableUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultInitByTableUri, body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
         public async Task<OperationInfo> InitTableOrdersByPOSOrdersAsync(Guid organizationId, Guid terminalGroupId,
-            IEnumerable<Guid> posOrderIds)
+            IEnumerable<Guid> posOrderIds, CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -178,13 +183,14 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Orders
                 posOrderIds
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultInitByPosOrderUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultInitByPosOrderUri, body, Token, cancellationToken);
 
             return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);
         }
 
-        public async Task<OperationInfo> AddCustomerToTableOrderAsync(Guid organizationId, Guid orderId, Customer customer)
+        public async Task<OperationInfo> AddCustomerToTableOrderAsync(Guid organizationId, Guid orderId, Customer customer,
+            CancellationToken? cancellationToken = default)
         {
             string body = JsonConvert.SerializeObject(new
             {
@@ -193,7 +199,8 @@ namespace IikoTransport.Net.Repositories.IikoCloud.Orders
                 customer
             });
 
-            var responseBody = await SendHttpPostBearerRequestAsync(DefaultAddCustomerToOrderUri, body, Token);
+            var responseBody = await SendHttpPostBearerRequestAsync(DefaultAddCustomerToOrderUri, body, Token,
+                cancellationToken);
 
             return JsonConvert.DeserializeObject<OperationInfo>(responseBody)
                 ?? throw new Exception(DefaultNullableExceptionMessage);

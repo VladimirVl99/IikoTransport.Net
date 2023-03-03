@@ -93,7 +93,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         /// <summary>
         /// 
         /// </summary>
-        private string? _webHooksUri;
+        private readonly string? _webHooksUri;
 
         /// <summary>
         /// 
@@ -172,6 +172,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         /// </summary>
         /// <param name="apiLogin"></param>
         /// <param name="webHooksUri"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public async Task<IikoTransport> CreateAsync(string apiLogin, string? webHooksUri = null)
         {
@@ -183,20 +184,21 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         #region Authorization https://api-ru.iiko.services/#tag/Authorization
 
-        public async Task<string> RetrieveSessionKeyForApiUserAsync(string apiLogin)
-            => await _httpGeneral.RetrieveSessionKeyForApiUserAsync(apiLogin);
+        public async Task<string> RetrieveSessionKeyForApiUserAsync(string apiLogin,
+            CancellationToken? cancellationToken = default)
+            => await _httpGeneral.RetrieveSessionKeyForApiUserAsync(apiLogin, cancellationToken);
 
         #endregion
 
         #region Notifications https://api-ru.iiko.services/#tag/Notifications
 
         public async Task SendNotificationToExternalSystemsAsync(string orderSource, Guid orderId, string additionalInfo,
-            MessageType messageType, Guid organizationId)
+            MessageType messageType, Guid organizationId, CancellationToken? cancellationToken = default)
         {
             try
             {
                 await _httpGeneral.SendNotificationToExternalSystemsAsync(orderSource, orderId, additionalInfo,
-                    messageType, organizationId);
+                    messageType, organizationId, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -204,7 +206,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     await _httpGeneral.SendNotificationToExternalSystemsAsync(orderSource, orderId, additionalInfo,
-                        messageType, organizationId);
+                        messageType, organizationId, cancellationToken);
                     return;
                 }
 
@@ -217,11 +219,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         #region Organizations https://api-ru.iiko.services/#tag/Organizations
 
         public async Task<OrganizationInfo> RetrieveAvailableOrganizationsAsync(IEnumerable<Guid>? organizationIds = null,
-            bool returnAdditionalInfo = false, bool includeDisabled = false)
+            bool returnAdditionalInfo = false, bool includeDisabled = false, CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpGeneral.RetrieveAvailableOrganizationsAsync(organizationIds, returnAdditionalInfo, includeDisabled);
+                return await _httpGeneral.RetrieveAvailableOrganizationsAsync(organizationIds, returnAdditionalInfo, includeDisabled,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -229,7 +232,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpGeneral.RetrieveAvailableOrganizationsAsync(organizationIds, returnAdditionalInfo,
-                        includeDisabled);
+                        includeDisabled, cancellationToken);
                 }
 
                 throw e;
@@ -241,18 +244,20 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         #region Terminal groups https://api-ru.iiko.services/#tag/Terminal-groups
 
         public async Task<DeliveryTerminalGroupInfo> RetrieveGroupsOfDeliveryTerminalsAsync(IEnumerable<Guid> organizationIds,
-            bool includeDisabled = false)
+            bool includeDisabled = false, CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpGeneral.RetrieveGroupsOfDeliveryTerminalsAsync(organizationIds, includeDisabled);
+                return await _httpGeneral.RetrieveGroupsOfDeliveryTerminalsAsync(organizationIds, includeDisabled,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpGeneral.RetrieveGroupsOfDeliveryTerminalsAsync(organizationIds, includeDisabled);
+                    return await _httpGeneral.RetrieveGroupsOfDeliveryTerminalsAsync(organizationIds, includeDisabled,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -260,12 +265,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<AvailabilityTerminalGroupInfo> RetrieveInformationOnAvailabilityOfGroupOfTerminalsAsync(
-            IEnumerable<Guid> organizationIds, IEnumerable<Guid> terminalGroupIds)
+            IEnumerable<Guid> organizationIds, IEnumerable<Guid> terminalGroupIds, CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpGeneral.RetrieveInformationOnAvailabilityOfGroupOfTerminalsAsync(
-                    organizationIds, terminalGroupIds);
+                    organizationIds, terminalGroupIds, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -273,7 +278,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpGeneral.RetrieveInformationOnAvailabilityOfGroupOfTerminalsAsync(organizationIds,
-                        terminalGroupIds);
+                        terminalGroupIds, cancellationToken);
                 }
 
                 throw e;
@@ -281,18 +286,20 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<AwakeTerminalGroupsResult> AwakeTerminalGroupsFromSleepModeAsync(IEnumerable<Guid> organizationIds,
-            IEnumerable<Guid> terminalGroupIds)
+            IEnumerable<Guid> terminalGroupIds, CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpGeneral.AwakeTerminalGroupsFromSleepModeAsync(organizationIds, terminalGroupIds);
+                return await _httpGeneral.AwakeTerminalGroupsFromSleepModeAsync(organizationIds, terminalGroupIds,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpGeneral.AwakeTerminalGroupsFromSleepModeAsync(organizationIds, terminalGroupIds);
+                    return await _httpGeneral.AwakeTerminalGroupsFromSleepModeAsync(organizationIds, terminalGroupIds,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -303,108 +310,114 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         #region Dictionaries https://api-ru.iiko.services/#tag/Dictionaries
 
-        public async Task<CancelCauseInfo> RetrieveDeliveryCancelCausesAsync(IEnumerable<Guid> organizationIds)
+        public async Task<CancelCauseInfo> RetrieveDeliveryCancelCausesAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpGeneral.RetrieveDeliveryCancelCausesAsync(organizationIds);
+                return await _httpGeneral.RetrieveDeliveryCancelCausesAsync(organizationIds, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpGeneral.RetrieveDeliveryCancelCausesAsync(organizationIds);
+                    return await _httpGeneral.RetrieveDeliveryCancelCausesAsync(organizationIds,
+                        cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<OrderTypeInfo> RetrieveOrderTypes(IEnumerable<Guid> organizationIds)
+        public async Task<OrderTypeInfo> RetrieveOrderTypes(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpGeneral.RetrieveOrderTypes(organizationIds);
+                return await _httpGeneral.RetrieveOrderTypes(organizationIds, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpGeneral.RetrieveOrderTypes(organizationIds);
+                    return await _httpGeneral.RetrieveOrderTypes(organizationIds, cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<DiscountInfo> RetrieveDiscountsAndSurchargesAsync(IEnumerable<Guid> organizationIds)
+        public async Task<DiscountInfo> RetrieveDiscountsAndSurchargesAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpGeneral.RetrieveDiscountsAndSurchargesAsync(organizationIds);
+                return await _httpGeneral.RetrieveDiscountsAndSurchargesAsync(organizationIds, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpGeneral.RetrieveDiscountsAndSurchargesAsync(organizationIds);
+                    return await _httpGeneral.RetrieveDiscountsAndSurchargesAsync(organizationIds, cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<PaymentInfo> RetrievePaymentTypesAsync(IEnumerable<Guid> organizationIds)
+        public async Task<PaymentInfo> RetrievePaymentTypesAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpGeneral.RetrievePaymentTypesAsync(organizationIds);
+                return await _httpGeneral.RetrievePaymentTypesAsync(organizationIds, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpGeneral.RetrievePaymentTypesAsync(organizationIds);
+                    return await _httpGeneral.RetrievePaymentTypesAsync(organizationIds, cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<RemovalTypeInfo> RetrieveRemovalTypesAsync(IEnumerable<Guid> organizationIds)
+        public async Task<RemovalTypeInfo> RetrieveRemovalTypesAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpGeneral.RetrieveRemovalTypesAsync(organizationIds);
+                return await _httpGeneral.RetrieveRemovalTypesAsync(organizationIds, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpGeneral.RetrieveRemovalTypesAsync(organizationIds);
+                    return await _httpGeneral.RetrieveRemovalTypesAsync(organizationIds, cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<TipTypeInfo> RetrieveTipsTipesForRmsGroupAsync()
+        public async Task<TipTypeInfo> RetrieveTipsTipesForRmsGroupAsync(CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpGeneral.RetrieveTipsTipesForRmsGroupAsync();
+                return await _httpGeneral.RetrieveTipsTipesForRmsGroupAsync(cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpGeneral.RetrieveTipsTipesForRmsGroupAsync();
+                    return await _httpGeneral.RetrieveTipsTipesForRmsGroupAsync(cancellationToken);
                 }
 
                 throw e;
@@ -415,36 +428,39 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         #region Menu https://api-ru.iiko.services/#tag/Menu
 
-        public async Task<MenuInfo> RetrieveMenuAsync(Guid organizationId, long? startRevision = null)
+        public async Task<MenuInfo> RetrieveMenuAsync(Guid organizationId, long? startRevision = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpGeneral.RetrieveMenuAsync(organizationId, startRevision);
+                return await _httpGeneral.RetrieveMenuAsync(organizationId, startRevision, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpGeneral.RetrieveMenuAsync(organizationId, startRevision);
+                    return await _httpGeneral.RetrieveMenuAsync(organizationId, startRevision,
+                        cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<ExternalMenuInfo> RetrieveExternalMenusWithPriceCategoriesAsync()
+        public async Task<ExternalMenuInfo> RetrieveExternalMenusWithPriceCategoriesAsync(
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpGeneral.RetrieveExternalMenusWithPriceCategoriesAsync();
+                return await _httpGeneral.RetrieveExternalMenusWithPriceCategoriesAsync(cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpGeneral.RetrieveExternalMenusWithPriceCategoriesAsync();
+                    return await _httpGeneral.RetrieveExternalMenusWithPriceCategoriesAsync(cancellationToken);
                 }
 
                 throw e;
@@ -452,12 +468,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<Menu> RetrieveExternalMenuByIdAsync(string externalMenuId, IEnumerable<Guid> organizationIds,
-            string? priceCategoryId = null, int? version = null)
+            string? priceCategoryId = null, int? version = null, CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpGeneral.RetrieveExternalMenuByIdAsync(externalMenuId, organizationIds, priceCategoryId,
-                    version);
+                    version, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -465,61 +481,65 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpGeneral.RetrieveExternalMenuByIdAsync(externalMenuId, organizationIds,
-                        priceCategoryId, version);
+                        priceCategoryId, version, cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<OutOfStockInfo> RetrieveOutOfStockItemsAsync(IEnumerable<Guid> organizationIds)
+        public async Task<OutOfStockInfo> RetrieveOutOfStockItemsAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpGeneral.RetrieveOutOfStockItemsAsync(organizationIds);
+                return await _httpGeneral.RetrieveOutOfStockItemsAsync(organizationIds, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpGeneral.RetrieveOutOfStockItemsAsync(organizationIds);
+                    return await _httpGeneral.RetrieveOutOfStockItemsAsync(organizationIds,
+                        cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<ComboInfo> RetrieveCombosInfoAsync(bool extraData, Guid organizationId)
+        public async Task<ComboInfo> RetrieveCombosInfoAsync(bool extraData, Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpGeneral.RetrieveCombosInfoAsync(extraData, organizationId);
+                return await _httpGeneral.RetrieveCombosInfoAsync(extraData, organizationId, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpGeneral.RetrieveCombosInfoAsync(extraData, organizationId);
+                    return await _httpGeneral.RetrieveCombosInfoAsync(extraData, organizationId, cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<ComboPriceInfo> CalculateComboPriceAsync(IEnumerable<OrderItemRequest> items, Guid organizationId)
+        public async Task<ComboPriceInfo> CalculateComboPriceAsync(IEnumerable<OrderItemRequest> items, Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpGeneral.CalculateComboPriceAsync(items, organizationId);
+                return await _httpGeneral.CalculateComboPriceAsync(items, organizationId, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpGeneral.CalculateComboPriceAsync(items, organizationId);
+                    return await _httpGeneral.CalculateComboPriceAsync(items, organizationId, cancellationToken);
                 }
 
                 throw e;
@@ -530,18 +550,21 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         #region Operations https://api-ru.iiko.services/#tag/Operations
 
-        public async Task<CommandStatus> GetStatusOfCommandAsync(Guid organizationId, Guid correlationId)
+        public async Task<CommandStatus> GetStatusOfCommandAsync(Guid organizationId, Guid correlationId,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpGeneral.GetStatusOfCommandAsync(organizationId, correlationId);
+                return await _httpGeneral.GetStatusOfCommandAsync(organizationId, correlationId,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpGeneral.GetStatusOfCommandAsync(organizationId, correlationId);
+                    return await _httpGeneral.GetStatusOfCommandAsync(organizationId, correlationId,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -553,36 +576,40 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         #region Employees https://api-ru.iiko.services/#tag/Employees
 
         public async Task<CoordinateHistory> RetrieveCoordinatesHistoryOfDriverAsync(IEnumerable<Guid> organizationIds,
-            int? offsetInSeconds = null)
+            int? offsetInSeconds = null, CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpGeneral.RetrieveCoordinatesHistoryOfDriverAsync(organizationIds, offsetInSeconds);
+                return await _httpGeneral.RetrieveCoordinatesHistoryOfDriverAsync(organizationIds, offsetInSeconds,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpGeneral.RetrieveCoordinatesHistoryOfDriverAsync(organizationIds, offsetInSeconds);
+                    return await _httpGeneral.RetrieveCoordinatesHistoryOfDriverAsync(organizationIds, offsetInSeconds,
+                        cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<CouriersInfo> RetrieveDeliveryDriversInSpecifiedRestaurantsAsync(IEnumerable<Guid> organizationIds)
+        public async Task<CouriersInfo> RetrieveDeliveryDriversInSpecifiedRestaurantsAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpGeneral.RetrieveDeliveryDriversInSpecifiedRestaurantsAsync(organizationIds);
+                return await _httpGeneral.RetrieveDeliveryDriversInSpecifiedRestaurantsAsync(organizationIds, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpGeneral.RetrieveDeliveryDriversInSpecifiedRestaurantsAsync(organizationIds);
+                    return await _httpGeneral.RetrieveDeliveryDriversInSpecifiedRestaurantsAsync(organizationIds,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -590,12 +617,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<CouriersWithCheckRolesInfo> RetrieveDeliveryDriversInSpecifiedRestaurantsWithCheckRolesAsync(
-            IEnumerable<Guid> organizationIds, IEnumerable<string> rolesToCheck)
+            IEnumerable<Guid> organizationIds, IEnumerable<string> rolesToCheck, CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpGeneral.RetrieveDeliveryDriversInSpecifiedRestaurantsWithCheckRolesAsync(
-                    organizationIds, rolesToCheck);
+                    organizationIds, rolesToCheck, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -603,7 +630,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpGeneral.RetrieveDeliveryDriversInSpecifiedRestaurantsWithCheckRolesAsync(
-                        organizationIds, rolesToCheck);
+                        organizationIds, rolesToCheck, cancellationToken);
                 }
 
                 throw e;
@@ -611,12 +638,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<ActiveCouriersInfo> RetrieveActiveDeliveryDriversInSpecifiedRestaurantAndOnSpecifiedTerminalAsync(
-            Guid organizationId, Guid terminalGroupId)
+            Guid organizationId, Guid terminalGroupId, CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpGeneral.RetrieveActiveDeliveryDriversInSpecifiedRestaurantAndOnSpecifiedTerminalAsync(
-                    organizationId, terminalGroupId);
+                    organizationId, terminalGroupId, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -624,7 +651,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpGeneral.RetrieveActiveDeliveryDriversInSpecifiedRestaurantAndOnSpecifiedTerminalAsync(
-                        organizationId, terminalGroupId);
+                        organizationId, terminalGroupId, cancellationToken);
                 }
 
                 throw e;
@@ -632,12 +659,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<ActiveCouriersInfo> RetrieveActiveLocationsOfCourierInSpecifiedRestaurantsAsync(
-            IEnumerable<Guid> organizationIds)
+            IEnumerable<Guid> organizationIds, CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpGeneral.RetrieveActiveLocationsOfCourierInSpecifiedRestaurantsAsync(
-                    organizationIds);
+                    organizationIds, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -645,25 +672,27 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpGeneral.RetrieveActiveLocationsOfCourierInSpecifiedRestaurantsAsync(
-                        organizationIds);
+                        organizationIds, cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<EmployeeInfo> RetrieveEmployeeInfoAsync(Guid organizationId, Guid id)
+        public async Task<EmployeeInfo> RetrieveEmployeeInfoAsync(Guid organizationId, Guid id,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpGeneral.RetrieveEmployeeInfoAsync(organizationId, id);
+                return await _httpGeneral.RetrieveEmployeeInfoAsync(organizationId, id, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpGeneral.RetrieveEmployeeInfoAsync(organizationId, id);
+                    return await _httpGeneral.RetrieveEmployeeInfoAsync(organizationId, id,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -671,12 +700,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<PersonalSessionActionResult> OpenPersonalSessionAsync(Guid organizationId,
-            Guid terminalGroupId, Guid employeeId, Guid? roleId = null)
+            Guid terminalGroupId, Guid employeeId, Guid? roleId = null, CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpGeneral.OpenPersonalSessionAsync(organizationId, terminalGroupId,
-                    employeeId, roleId);
+                    employeeId, roleId, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -684,7 +713,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpGeneral.OpenPersonalSessionAsync(organizationId, terminalGroupId,
-                        employeeId, roleId);
+                        employeeId, roleId, cancellationToken);
                 }
 
                 throw e;
@@ -692,18 +721,20 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<PersonalSessionActionResult> ClosePersonalSessionAsync(Guid organizationId,
-            Guid terminalGroupId, Guid employeeId)
+            Guid terminalGroupId, Guid employeeId, CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpGeneral.ClosePersonalSessionAsync(organizationId, terminalGroupId, employeeId);
+                return await _httpGeneral.ClosePersonalSessionAsync(organizationId, terminalGroupId, employeeId,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpGeneral.ClosePersonalSessionAsync(organizationId, terminalGroupId, employeeId);
+                    return await _httpGeneral.ClosePersonalSessionAsync(organizationId, terminalGroupId, employeeId,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -711,18 +742,20 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<PersonalSessionInfo> CheckForOpenPersonalShiftAsync(Guid organizationId, Guid terminalGroupId,
-            Guid employeeId)
+            Guid employeeId, CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpGeneral.CheckForOpenPersonalShiftAsync(organizationId, terminalGroupId, employeeId);
+                return await _httpGeneral.CheckForOpenPersonalShiftAsync(organizationId, terminalGroupId, employeeId,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpGeneral.CheckForOpenPersonalShiftAsync(organizationId, terminalGroupId, employeeId);
+                    return await _httpGeneral.CheckForOpenPersonalShiftAsync(organizationId, terminalGroupId, employeeId,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -738,18 +771,20 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         #region Deliveries: Create and update https://api-ru.iiko.services/#tag/Deliveries:-Create-and-update
 
         public async Task<DeliveryOrderWithOperationInfoResponse> CreateDeliveryAsync(Guid organizationId, DeliveryOrderRequest order,
-            Guid? terminalGroupId = null, OrderCreationSettings? createOrderSettings = null)
+            Guid? terminalGroupId = null, OrderCreationSettings? createOrderSettings = null, CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpDelivery.CreateDeliveryAsync(organizationId, order, terminalGroupId, createOrderSettings);
+                return await _httpDelivery.CreateDeliveryAsync(organizationId, order, terminalGroupId, createOrderSettings,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpDelivery.CreateDeliveryAsync(organizationId, order, terminalGroupId, createOrderSettings);
+                    return await _httpDelivery.CreateDeliveryAsync(organizationId, order, terminalGroupId, createOrderSettings,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -757,18 +792,20 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<OperationInfo> UpdateDeliveryOrderProblemAsync(Guid organizationId, Guid orderId, bool hasProblem,
-            string? problem = null)
+            string? problem = null, CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpDelivery.UpdateDeliveryOrderProblemAsync(organizationId, orderId, hasProblem, problem);
+                return await _httpDelivery.UpdateDeliveryOrderProblemAsync(organizationId, orderId, hasProblem, problem,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpDelivery.UpdateDeliveryOrderProblemAsync(organizationId, orderId, hasProblem, problem);
+                    return await _httpDelivery.UpdateDeliveryOrderProblemAsync(organizationId, orderId, hasProblem, problem,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -776,36 +813,39 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<OperationInfo> UpdateDeliveryStatusAsync(Guid organizationId, Guid orderId, SimpleDeliveryStatus deliveryStatus,
-            DateTime? deliveryDate = null)
+            DateTime? deliveryDate = null, CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpDelivery.UpdateDeliveryStatusAsync(organizationId, orderId, deliveryStatus, deliveryDate);
+                return await _httpDelivery.UpdateDeliveryStatusAsync(organizationId, orderId, deliveryStatus, deliveryDate,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpDelivery.UpdateDeliveryStatusAsync(organizationId, orderId, deliveryStatus, deliveryDate);
+                    return await _httpDelivery.UpdateDeliveryStatusAsync(organizationId, orderId, deliveryStatus, deliveryDate,
+                        cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<OperationInfo> UpdateDeliveryOrderCourierAsync(Guid organizationId, Guid orderId, Guid employeeId)
+        public async Task<OperationInfo> UpdateDeliveryOrderCourierAsync(Guid organizationId, Guid orderId, Guid employeeId,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpDelivery.UpdateDeliveryOrderCourierAsync(organizationId, orderId, employeeId);
+                return await _httpDelivery.UpdateDeliveryOrderCourierAsync(organizationId, orderId, employeeId, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpDelivery.UpdateDeliveryOrderCourierAsync(organizationId, orderId, employeeId);
+                    return await _httpDelivery.UpdateDeliveryOrderCourierAsync(organizationId, orderId, employeeId, cancellationToken);
                 }
 
                 throw e;
@@ -813,36 +853,40 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<OperationInfo> AddDeliveryOrderItemsAsync(Guid organizationId, Guid orderId, IEnumerable<OrderItemRequest> items,
-            IEnumerable<ComboRequest>? combos = null)
+            IEnumerable<ComboRequest>? combos = null, CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpDelivery.AddDeliveryOrderItemsAsync(organizationId, orderId, items, combos);
+                return await _httpDelivery.AddDeliveryOrderItemsAsync(organizationId, orderId, items, combos, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpDelivery.AddDeliveryOrderItemsAsync(organizationId, orderId, items, combos);
+                    return await _httpDelivery.AddDeliveryOrderItemsAsync(organizationId, orderId, items, combos,
+                        cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<OperationInfo> CloseDeliveryOrderAsync(Guid organizationId, Guid orderId, DateTime? deliveryDate = null)
+        public async Task<OperationInfo> CloseDeliveryOrderAsync(Guid organizationId, Guid orderId, DateTime? deliveryDate = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpDelivery.CloseDeliveryOrderAsync(organizationId, orderId, deliveryDate);
+                return await _httpDelivery.CloseDeliveryOrderAsync(organizationId, orderId, deliveryDate,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpDelivery.CloseDeliveryOrderAsync(organizationId, orderId, deliveryDate);
+                    return await _httpDelivery.CloseDeliveryOrderAsync(organizationId, orderId, deliveryDate,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -850,12 +894,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<OperationInfo> CancelDeliveryOrderAsync(Guid organizationId, Guid orderId, Guid? movedOrderId = null,
-            Guid? cancelCauseId = null, Guid? removalTypeId = null, Guid? userIdForWriteoff = null)
+            Guid? cancelCauseId = null, Guid? removalTypeId = null, Guid? userIdForWriteoff = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpDelivery.CancelDeliveryOrderAsync(organizationId, orderId, movedOrderId, cancelCauseId,
-                    removalTypeId, userIdForWriteoff);
+                    removalTypeId, userIdForWriteoff, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -863,7 +908,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpDelivery.CancelDeliveryOrderAsync(organizationId, orderId, movedOrderId, cancelCauseId,
-                        removalTypeId, userIdForWriteoff);
+                        removalTypeId, userIdForWriteoff, cancellationToken);
                 }
 
                 throw e;
@@ -871,12 +916,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<OperationInfo> ChangeTimeWhenClientWantsOrderToBeDeliveredAsync(Guid organizationId,
-            Guid orderId, DateTime newCompleteBefore)
+            Guid orderId, DateTime newCompleteBefore, CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpDelivery.ChangeTimeWhenClientWantsOrderToBeDeliveredAsync(organizationId,
-                    orderId, newCompleteBefore);
+                    orderId, newCompleteBefore, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -884,7 +929,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpDelivery.ChangeTimeWhenClientWantsOrderToBeDeliveredAsync(organizationId,
-                        orderId, newCompleteBefore);
+                        orderId, newCompleteBefore, cancellationToken);
                 }
 
                 throw e;
@@ -892,12 +937,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<OperationInfo> ChangeDeliveryPointForDeliveryOrderAsync(Guid organizationId, Guid orderId,
-            DeliveryPointRequest newDeliveryPoint)
+            DeliveryPointRequest newDeliveryPoint, CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpDelivery.ChangeDeliveryPointForDeliveryOrderAsync(organizationId, orderId,
-                    newDeliveryPoint);
+                    newDeliveryPoint, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -905,7 +950,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpDelivery.ChangeDeliveryPointForDeliveryOrderAsync(organizationId, orderId,
-                        newDeliveryPoint);
+                        newDeliveryPoint, cancellationToken);
                 }
 
                 throw e;
@@ -913,12 +958,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<OperationInfo> ChangeDeliveryTypeForOrderAsync(Guid organizationId, Guid orderId,
-            OrderServiceType newServiceType, DeliveryPointRequest? deliveryPoint = null)
+            OrderServiceType newServiceType, DeliveryPointRequest? deliveryPoint = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpDelivery.ChangeDeliveryTypeForOrderAsync(organizationId, orderId,
-                    newServiceType, deliveryPoint);
+                    newServiceType, deliveryPoint, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -926,7 +972,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpDelivery.ChangeDeliveryTypeForOrderAsync(organizationId, orderId,
-                        newServiceType, deliveryPoint);
+                        newServiceType, deliveryPoint, cancellationToken);
                 }
 
                 throw e;
@@ -934,12 +980,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<OperationInfo> ChangePaymentForDeliveryOrderAsync(Guid organizationId, Guid orderId,
-            IEnumerable<PaymentRequest> payments, IEnumerable<TipsRequest>? tips = null)
+            IEnumerable<PaymentRequest> payments, IEnumerable<TipsRequest>? tips = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpDelivery.ChangePaymentForDeliveryOrderAsync(organizationId, orderId,
-                    payments, tips);
+                    payments, tips, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -947,79 +994,89 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpDelivery.ChangePaymentForDeliveryOrderAsync(organizationId, orderId,
-                        payments, tips);
+                        payments, tips, cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<OperationInfo> ChangeDeliveryCommentAsync(Guid organizationId, Guid orderId, string comment)
+        public async Task<OperationInfo> ChangeDeliveryCommentAsync(Guid organizationId, Guid orderId, string comment,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpDelivery.ChangeDeliveryCommentAsync(organizationId, orderId, comment);
+                return await _httpDelivery.ChangeDeliveryCommentAsync(organizationId, orderId, comment, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpDelivery.ChangeDeliveryCommentAsync(organizationId, orderId, comment);
+                    return await _httpDelivery.ChangeDeliveryCommentAsync(organizationId, orderId, comment,
+                        cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<OperationInfo> PrintDeliveryBillAsync(Guid organizationId, Guid orderId)
+        public async Task<OperationInfo> PrintDeliveryBillAsync(Guid organizationId, Guid orderId,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpDelivery.PrintDeliveryBillAsync(organizationId, orderId);
+                return await _httpDelivery.PrintDeliveryBillAsync(organizationId, orderId,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpDelivery.PrintDeliveryBillAsync(organizationId, orderId);
+                    return await _httpDelivery.PrintDeliveryBillAsync(organizationId, orderId,
+                        cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<OperationInfo> ConfirmDeliveryAsync(Guid organizationId, Guid orderId)
+        public async Task<OperationInfo> ConfirmDeliveryAsync(Guid organizationId, Guid orderId,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpDelivery.ConfirmDeliveryAsync(organizationId, orderId);
+                return await _httpDelivery.ConfirmDeliveryAsync(organizationId, orderId, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpDelivery.ConfirmDeliveryAsync(organizationId, orderId);
+                    return await _httpDelivery.ConfirmDeliveryAsync(organizationId, orderId,
+                        cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<OperationInfo> CancelDeliveryConfirmationAsync(Guid organizationId, Guid orderId)
+        public async Task<OperationInfo> CancelDeliveryConfirmationAsync(Guid organizationId, Guid orderId,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpDelivery.CancelDeliveryConfirmationAsync(organizationId, orderId);
+                return await _httpDelivery.CancelDeliveryConfirmationAsync(organizationId, orderId,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpDelivery.CancelDeliveryConfirmationAsync(organizationId, orderId);
+                    return await _httpDelivery.CancelDeliveryConfirmationAsync(organizationId, orderId,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -1027,12 +1084,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<OperationInfo> AssignOrChangeDeliveryOrderOperatorAsync(Guid organizationId, Guid orderId,
-            Guid operatorId)
+            Guid operatorId, CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpDelivery.AssignOrChangeDeliveryOrderOperatorAsync(organizationId, orderId,
-                    operatorId);
+                    operatorId, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1040,7 +1097,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpDelivery.AssignOrChangeDeliveryOrderOperatorAsync(organizationId, orderId,
-                        operatorId);
+                        operatorId, cancellationToken);
                 }
 
                 throw e;
@@ -1052,12 +1109,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         #region Deliveries: Retrieve https://api-ru.iiko.services/#tag/Deliveries:-Retrieve
 
         public async Task<OrderInfoWithOperation> RetrieveDeliveryOrdersByIdsAsync(Guid organizationId,
-            IEnumerable<Guid>? orderIds = null, IEnumerable<string>? sourceKeys = null, IEnumerable<Guid>? posOrderIds = null)
+            IEnumerable<Guid>? orderIds = null, IEnumerable<string>? sourceKeys = null, IEnumerable<Guid>? posOrderIds = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpDelivery.RetrieveDeliveryOrdersByIdsAsync(organizationId, orderIds, sourceKeys,
-                    posOrderIds);
+                    posOrderIds, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1065,7 +1123,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpDelivery.RetrieveDeliveryOrdersByIdsAsync(organizationId, orderIds, sourceKeys,
-                        posOrderIds);
+                        posOrderIds, cancellationToken);
                 }
 
                 throw e;
@@ -1074,12 +1132,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         public async Task<RevisionOrderInfo> RetrieveDeliveryOrdersByStatusesAndDatesAsync(IEnumerable<Guid> organizationIds,
             DateTime deliveryDateFrom, DateTime? deliveryDateTo = null, IEnumerable<SimpleDeliveryStatus>? statuses = null,
-            IEnumerable<string>? sourceKeys = null)
+            IEnumerable<string>? sourceKeys = null, CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpDelivery.RetrieveDeliveryOrdersByStatusesAndDatesAsync(organizationIds, deliveryDateFrom,
-                    deliveryDateTo, statuses, sourceKeys);
+                    deliveryDateTo, statuses, sourceKeys, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1087,7 +1145,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpDelivery.RetrieveDeliveryOrdersByStatusesAndDatesAsync(organizationIds, deliveryDateFrom,
-                        deliveryDateTo, statuses, sourceKeys);
+                        deliveryDateTo, statuses, sourceKeys, cancellationToken);
                 }
 
                 throw e;
@@ -1095,12 +1153,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<RevisionOrderInfo> RetrieveDeliveryOrdersChangedFromTimeRevisionAsync(long startRevision,
-            IEnumerable<Guid> organizationIds, IEnumerable<string>? sourceKeys = null)
+            IEnumerable<Guid> organizationIds, IEnumerable<string>? sourceKeys = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpDelivery.RetrieveDeliveryOrdersChangedFromTimeRevisionAsync(startRevision,
-                    organizationIds, sourceKeys);
+                    organizationIds, sourceKeys, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1108,7 +1167,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpDelivery.RetrieveDeliveryOrdersChangedFromTimeRevisionAsync(startRevision,
-                        organizationIds, sourceKeys);
+                        organizationIds, sourceKeys, cancellationToken);
                 }
 
                 throw e;
@@ -1117,12 +1176,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         public async Task<RevisionOrderInfo> RetrieveDeliveryOrdersByPhoneAndDatesAndRevisionAsync(IEnumerable<Guid> organizationIds,
             string? phone = null, DateTime? deliveryDateFrom = null, DateTime? deliveryDateTo = null, long? startRevision = null,
-            IEnumerable<string>? sourceKeys = null, int? rowsCount = null)
+            IEnumerable<string>? sourceKeys = null, int? rowsCount = null, CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpDelivery.RetrieveDeliveryOrdersByPhoneAndDatesAndRevisionAsync(organizationIds, phone,
-                    deliveryDateFrom, deliveryDateTo, startRevision, sourceKeys, rowsCount);
+                    deliveryDateFrom, deliveryDateTo, startRevision, sourceKeys, rowsCount, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1130,7 +1189,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpDelivery.RetrieveDeliveryOrdersByPhoneAndDatesAndRevisionAsync(organizationIds, phone,
-                        deliveryDateFrom, deliveryDateTo, startRevision, sourceKeys, rowsCount);
+                        deliveryDateFrom, deliveryDateTo, startRevision, sourceKeys, rowsCount, cancellationToken);
                 }
 
                 throw e;
@@ -1142,13 +1201,15 @@ namespace IikoTransport.Net.Repositories.IikoCloud
             DateTime? deliveryDateFrom = null, DateTime? deliveryDateTo = null, IEnumerable<DeliveryStatus>? statuses = null,
             bool? hasProblem = null, OrderServiceType? orderServiceType = null, string? searchText = null,
             int? timeToCookingErrorTimeout = null, int? cookingTimeout = null, int? rowsCount = null,
-            IEnumerable<string>? sourceKeys = null, IEnumerable<Guid>? orderIds = null, IEnumerable<Guid>? posOrderIds = null)
+            IEnumerable<string>? sourceKeys = null, IEnumerable<Guid>? orderIds = null, IEnumerable<Guid>? posOrderIds = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpDelivery.RetrieveDeliveryOrdersByAdditionalFiltersAsync(organizationIds, sortProperty,
                     sortDirection, terminalGroupIds, deliveryDateFrom, deliveryDateTo, statuses, hasProblem, orderServiceType,
-                    searchText, timeToCookingErrorTimeout, cookingTimeout, rowsCount, sourceKeys, orderIds, posOrderIds);
+                    searchText, timeToCookingErrorTimeout, cookingTimeout, rowsCount, sourceKeys, orderIds, posOrderIds,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1157,7 +1218,8 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpDelivery.RetrieveDeliveryOrdersByAdditionalFiltersAsync(organizationIds, sortProperty,
                         sortDirection, terminalGroupIds, deliveryDateFrom, deliveryDateTo, statuses, hasProblem, orderServiceType,
-                        searchText, timeToCookingErrorTimeout, cookingTimeout, rowsCount, sourceKeys, orderIds, posOrderIds);
+                        searchText, timeToCookingErrorTimeout, cookingTimeout, rowsCount, sourceKeys, orderIds, posOrderIds,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -1168,54 +1230,58 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         #region Addresses https://api-ru.iiko.services/#tag/Addresses
 
-        public async Task<RegionWithOperation> RetrieveRegionsAsync(IEnumerable<Guid> organizationIds)
+        public async Task<RegionWithOperation> RetrieveRegionsAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpDelivery.RetrieveRegionsAsync(organizationIds);
+                return await _httpDelivery.RetrieveRegionsAsync(organizationIds, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpDelivery.RetrieveRegionsAsync(organizationIds);
+                    return await _httpDelivery.RetrieveRegionsAsync(organizationIds, cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<CitiesWithOperation> RetrieveCitiesAsync(IEnumerable<Guid> organizationIds)
+        public async Task<CitiesWithOperation> RetrieveCitiesAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpDelivery.RetrieveCitiesAsync(organizationIds);
+                return await _httpDelivery.RetrieveCitiesAsync(organizationIds, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpDelivery.RetrieveCitiesAsync(organizationIds);
+                    return await _httpDelivery.RetrieveCitiesAsync(organizationIds, cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<StreetsWithOperation> RetrieveStreetsByCityAsync(Guid organizationId, Guid cityId)
+        public async Task<StreetsWithOperation> RetrieveStreetsByCityAsync(Guid organizationId, Guid cityId,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpDelivery.RetrieveStreetsByCityAsync(organizationId, cityId);
+                return await _httpDelivery.RetrieveStreetsByCityAsync(organizationId, cityId, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpDelivery.RetrieveStreetsByCityAsync(organizationId, cityId);
+                    return await _httpDelivery.RetrieveStreetsByCityAsync(organizationId, cityId,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -1226,18 +1292,19 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         #region Delivery restrictions https://api-ru.iiko.services/#tag/Delivery-restrictions
 
-        public async Task<DeliveryRestrictionsWithOperation> RetrieveDeliveryRestrictionsAsync(IEnumerable<Guid> organizationIds)
+        public async Task<DeliveryRestrictionsWithOperation> RetrieveDeliveryRestrictionsAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpDelivery.RetrieveDeliveryRestrictionsAsync(organizationIds);
+                return await _httpDelivery.RetrieveDeliveryRestrictionsAsync(organizationIds, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpDelivery.RetrieveDeliveryRestrictionsAsync(organizationIds);
+                    return await _httpDelivery.RetrieveDeliveryRestrictionsAsync(organizationIds, cancellationToken);
                 }
 
                 throw e;
@@ -1252,7 +1319,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
             bool useExternalAssignationService, bool frontTrustsCallCenterCheck, bool requireExactAddressForGeocoding,
             int zonesMode, bool autoAssignExternalDeliveries, int actionOnValidationRejection, string? deliveryRegionsMapUrl = null,
             double? defaultMinSum = null, int? defaultFrom = null, int? defaultTo = null, Guid? defaultDeliveryServiceProductId = null,
-            string? externalAssignationServiceUrl = null)
+            string? externalAssignationServiceUrl = null, CancellationToken? cancellationToken = default)
         {
             try
             {
@@ -1262,7 +1329,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                     rejectOnGeocodingError, addDeliveryServiceCost, useSameDeliveryServiceProduct, useExternalAssignationService,
                     frontTrustsCallCenterCheck, requireExactAddressForGeocoding, zonesMode, autoAssignExternalDeliveries,
                     actionOnValidationRejection, deliveryRegionsMapUrl, defaultMinSum, defaultFrom, defaultTo,
-                    defaultDeliveryServiceProductId, externalAssignationServiceUrl);
+                    defaultDeliveryServiceProductId, externalAssignationServiceUrl, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1275,7 +1342,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                         rejectOnGeocodingError, addDeliveryServiceCost, useSameDeliveryServiceProduct, useExternalAssignationService,
                         frontTrustsCallCenterCheck, requireExactAddressForGeocoding, zonesMode, autoAssignExternalDeliveries,
                         actionOnValidationRejection, deliveryRegionsMapUrl, defaultMinSum, defaultFrom, defaultTo,
-                        defaultDeliveryServiceProductId, externalAssignationServiceUrl);
+                        defaultDeliveryServiceProductId, externalAssignationServiceUrl, cancellationToken);
                 }
 
                 throw e;
@@ -1285,13 +1352,14 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         public async Task<SuitableTerminalGroupsWithOperation> GetSuitableTerminalGroupsForDeliveryRestrictionsAsync(
             IEnumerable<Guid> organizationIds, bool isCourierDelivery, DeliveryAddressRequest? deliveryAddress = null,
             Coordinate? orderLocation = null, IEnumerable<RestrictionsOrderItem>? orderItems = null,
-            DateTime? deliveryDate = null, double? deliverySum = null, double? discountSum = null)
+            DateTime? deliveryDate = null, double? deliverySum = null, double? discountSum = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpDelivery.GetSuitableTerminalGroupsForDeliveryRestrictionsAsync(organizationIds,
                     isCourierDelivery, deliveryAddress, orderLocation, orderItems, deliveryDate, deliverySum,
-                    discountSum);
+                    discountSum, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1300,7 +1368,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpDelivery.GetSuitableTerminalGroupsForDeliveryRestrictionsAsync(organizationIds,
                         isCourierDelivery, deliveryAddress, orderLocation, orderItems, deliveryDate, deliverySum,
-                        discountSum);
+                        discountSum, cancellationToken);
                 }
 
                 throw e;
@@ -1311,18 +1379,19 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         #region Marketing sources https://api-ru.iiko.services/#tag/Marketing-sources
 
-        public async Task<MarketingSourceWithOperation> RetrieveMarketingSourcesAsync(IEnumerable<Guid> organizationIds)
+        public async Task<MarketingSourceWithOperation> RetrieveMarketingSourcesAsync(IEnumerable<Guid> organizationIds,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpDelivery.RetrieveMarketingSourcesAsync(organizationIds);
+                return await _httpDelivery.RetrieveMarketingSourcesAsync(organizationIds, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpDelivery.RetrieveMarketingSourcesAsync(organizationIds);
+                    return await _httpDelivery.RetrieveMarketingSourcesAsync(organizationIds, cancellationToken);
                 }
 
                 throw e;
@@ -1334,18 +1403,20 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         #region Drafts https://api-ru.iiko.services/#tag/Drafts
 
         public async Task<OrderDraftWithOperation> RetrieveOrderDraftByIdAsync(Guid organizationId, Guid orderId,
-            Guid employeeId)
+            Guid employeeId, CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpDelivery.RetrieveOrderDraftByIdAsync(organizationId, orderId, employeeId);
+                return await _httpDelivery.RetrieveOrderDraftByIdAsync(organizationId, orderId, employeeId,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpDelivery.RetrieveOrderDraftByIdAsync(organizationId, orderId, employeeId);
+                    return await _httpDelivery.RetrieveOrderDraftByIdAsync(organizationId, orderId, employeeId,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -1354,12 +1425,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         public async Task<OrderDraftsListWithOperation> RetrieveOrderDraftsByParametersAsync(IEnumerable<Guid> organizationIds,
             DateTime? deliveryDateFrom = null, DateTime? deliveryDateTo = null, string? phone = null, int? limit = null,
-            int? offset = null, IEnumerable<string>? sourceKeys = null)
+            int? offset = null, IEnumerable<string>? sourceKeys = null, CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpDelivery.RetrieveOrderDraftsByParametersAsync(organizationIds, deliveryDateFrom,
-                    deliveryDateTo, phone, limit, offset, sourceKeys);
+                    deliveryDateTo, phone, limit, offset, sourceKeys, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1367,25 +1438,27 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpDelivery.RetrieveOrderDraftsByParametersAsync(organizationIds, deliveryDateFrom,
-                        deliveryDateTo, phone, limit, offset, sourceKeys);
+                        deliveryDateTo, phone, limit, offset, sourceKeys, cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<OperationInfo> StoreOrderDraftChangesToDbAsync(Guid organizationId, DeliveryOrderRequest order)
+        public async Task<OperationInfo> StoreOrderDraftChangesToDbAsync(Guid organizationId, DeliveryOrderRequest order,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpDelivery.StoreOrderDraftChangesToDbAsync(organizationId, order);
+                return await _httpDelivery.StoreOrderDraftChangesToDbAsync(organizationId, order, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpDelivery.StoreOrderDraftChangesToDbAsync(organizationId, order);
+                    return await _httpDelivery.StoreOrderDraftChangesToDbAsync(organizationId, order,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -1393,12 +1466,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<DeliveryOrderWithOperationInfoResponse> AdmitOrderDraftChangesAndSendThemToFrontAsync(Guid organizationId,
-            Guid orderId, Guid? terminalGroupId = null, OrderCreationSettings? createOrderSettings = null)
+            Guid orderId, Guid? terminalGroupId = null, OrderCreationSettings? createOrderSettings = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpDelivery.AdmitOrderDraftChangesAndSendThemToFrontAsync(organizationId, orderId, terminalGroupId,
-                    createOrderSettings);
+                    createOrderSettings, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1406,7 +1480,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpDelivery.AdmitOrderDraftChangesAndSendThemToFrontAsync(organizationId, orderId, terminalGroupId,
-                        createOrderSettings);
+                        createOrderSettings, cancellationToken);
                 }
 
                 throw e;
@@ -1422,11 +1496,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         #region Orders https://api-ru.iiko.services/#tag/Orders
 
         public async Task<TableOrderWithOperationInfo> CreateTableOrderAsync(Guid organizationId, Guid terminalGroupId,
-            TableOrder? order = null, OrderCreationSettings? createOrderSettings = null)
+            TableOrder? order = null, OrderCreationSettings? createOrderSettings = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpOrders.CreateTableOrderAsync(organizationId, terminalGroupId, order, createOrderSettings);
+                return await _httpOrders.CreateTableOrderAsync(organizationId, terminalGroupId, order, createOrderSettings,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1434,7 +1510,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpOrders.CreateTableOrderAsync(organizationId, terminalGroupId, order,
-                        createOrderSettings);
+                        createOrderSettings, cancellationToken);
                 }
 
                 throw e;
@@ -1442,18 +1518,21 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<OrdersWithOperationInfo> RetrieveTableOrdersByIdAsync(IEnumerable<Guid> organizationIds,
-            IEnumerable<Guid>? orderIds = null, IEnumerable<Guid>? posOrderIds = null, IEnumerable<string>? sourceKeys = null)
+            IEnumerable<Guid>? orderIds = null, IEnumerable<Guid>? posOrderIds = null, IEnumerable<string>? sourceKeys = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpOrders.RetrieveTableOrdersByIdAsync(organizationIds, orderIds, posOrderIds, sourceKeys);
+                return await _httpOrders.RetrieveTableOrdersByIdAsync(organizationIds, orderIds, posOrderIds, sourceKeys,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpOrders.RetrieveTableOrdersByIdAsync(organizationIds, orderIds, posOrderIds, sourceKeys);
+                    return await _httpOrders.RetrieveTableOrdersByIdAsync(organizationIds, orderIds, posOrderIds, sourceKeys,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -1462,12 +1541,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         public async Task<OrdersWithOperationInfo> RetrieveTableOrdersByTablesAsync(IEnumerable<Guid> organizationIds,
             IEnumerable<Guid> tableIds, IEnumerable<OrderStatus>? statuses = null, DateTime? dateFrom = null,
-            DateTime? dateTo = null, IEnumerable<string>? sourceKeys = null)
+            DateTime? dateTo = null, IEnumerable<string>? sourceKeys = null, CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpOrders.RetrieveTableOrdersByTablesAsync(organizationIds, tableIds, statuses,
-                    dateFrom, dateTo, sourceKeys);
+                    dateFrom, dateTo, sourceKeys, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1475,7 +1554,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpOrders.RetrieveTableOrdersByTablesAsync(organizationIds, tableIds, statuses,
-                        dateFrom, dateTo, sourceKeys);
+                        dateFrom, dateTo, sourceKeys, cancellationToken);
                 }
 
                 throw e;
@@ -1483,18 +1562,20 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<OperationInfo> AddTableOrderItemsAsync(Guid organizationId, Guid orderId, IEnumerable<OrderItemRequest> items,
-            IEnumerable<ComboRequest> combos)
+            IEnumerable<ComboRequest> combos, CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpOrders.AddTableOrderItemsAsync(organizationId, orderId, items, combos);
+                return await _httpOrders.AddTableOrderItemsAsync(organizationId, orderId, items, combos,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpOrders.AddTableOrderItemsAsync(organizationId, orderId, items, combos);
+                    return await _httpOrders.AddTableOrderItemsAsync(organizationId, orderId, items, combos,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -1502,12 +1583,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<OperationInfo> CloseTableOrderAsync(Guid organizationId, Guid orderId,
-            ChequeAdditionalInfo? chequeAdditionalInfo = null)
+            ChequeAdditionalInfo? chequeAdditionalInfo = null, CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpOrders.CloseTableOrderAsync(organizationId, orderId,
-                    chequeAdditionalInfo);
+                    chequeAdditionalInfo, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1515,7 +1596,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpOrders.CloseTableOrderAsync(organizationId, orderId,
-                        chequeAdditionalInfo);
+                        chequeAdditionalInfo, cancellationToken);
                 }
 
                 throw e;
@@ -1523,12 +1604,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<OperationInfo> ChangePaymentsForTableOrderAsync(Guid organizationId, Guid orderId,
-            IEnumerable<PaymentRequest> payments, IEnumerable<TipsRequest>? tips = null)
+            IEnumerable<PaymentRequest> payments, IEnumerable<TipsRequest>? tips = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpOrders.ChangePaymentsForTableOrderAsync(organizationId, orderId,
-                    payments, tips);
+                    payments, tips, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1536,7 +1618,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpOrders.ChangePaymentsForTableOrderAsync(organizationId, orderId,
-                        payments, tips);
+                        payments, tips, cancellationToken);
                 }
 
                 throw e;
@@ -1544,12 +1626,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<OperationInfo> InitTableOrdersByTablesAsync(Guid organizationId, Guid terminalGroupId,
-            IEnumerable<Guid> tableIds)
+            IEnumerable<Guid> tableIds, CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpOrders.InitTableOrdersByTablesAsync(organizationId, terminalGroupId,
-                    tableIds);
+                    tableIds, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1557,7 +1639,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpOrders.InitTableOrdersByTablesAsync(organizationId, terminalGroupId,
-                        tableIds);
+                        tableIds, cancellationToken);
                 }
 
                 throw e;
@@ -1565,12 +1647,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<OperationInfo> InitTableOrdersByPOSOrdersAsync(Guid organizationId, Guid terminalGroupId,
-            IEnumerable<Guid> posOrderIds)
+            IEnumerable<Guid> posOrderIds, CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpOrders.InitTableOrdersByPOSOrdersAsync(organizationId, terminalGroupId,
-                    posOrderIds);
+                    posOrderIds, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1578,25 +1660,27 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpOrders.InitTableOrdersByPOSOrdersAsync(organizationId, terminalGroupId,
-                        posOrderIds);
+                        posOrderIds, cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<OperationInfo> AddCustomerToTableOrderAsync(Guid organizationId, Guid orderId, CustomerRequest customer)
+        public async Task<OperationInfo> AddCustomerToTableOrderAsync(Guid organizationId, Guid orderId, CustomerRequest customer,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpOrders.AddCustomerToTableOrderAsync(organizationId, orderId, customer);
+                return await _httpOrders.AddCustomerToTableOrderAsync(organizationId, orderId, customer, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpOrders.AddCustomerToTableOrderAsync(organizationId, orderId, customer);
+                    return await _httpOrders.AddCustomerToTableOrderAsync(organizationId, orderId, customer,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -1612,12 +1696,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         #region Banquets/reserves https://api-ru.iiko.services/#tag/Banquetsreserves
 
         public async Task<OrganizationInfo> RetrieveOrganizationsForWhichReserveBookingAreAvailableAsync(
-            IEnumerable<Guid>? organizationIds = null, bool returnAdditionalInfo = false, bool includeDisabled = false)
+            IEnumerable<Guid>? organizationIds = null, bool returnAdditionalInfo = false, bool includeDisabled = false,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpReserves.RetrieveOrganizationsForWhichReserveBookingAreAvailableAsync(
-                    organizationIds, returnAdditionalInfo, includeDisabled);
+                    organizationIds, returnAdditionalInfo, includeDisabled, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1625,7 +1710,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpReserves.RetrieveOrganizationsForWhichReserveBookingAreAvailableAsync(
-                        organizationIds, returnAdditionalInfo, includeDisabled);
+                        organizationIds, returnAdditionalInfo, includeDisabled, cancellationToken);
                 }
 
                 throw e;
@@ -1633,12 +1718,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<DeliveryTerminalGroupInfo> RetrieveTerminalGroupsForWhichReserveBookingAreAvailableAsync(
-            IEnumerable<Guid> organizationIds)
+            IEnumerable<Guid> organizationIds, CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpReserves.RetrieveTerminalGroupsForWhichReserveBookingAreAvailableAsync(
-                    organizationIds);
+                    organizationIds, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1646,7 +1731,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpReserves.RetrieveTerminalGroupsForWhichReserveBookingAreAvailableAsync(
-                        organizationIds);
+                        organizationIds, cancellationToken);
                 }
 
                 throw e;
@@ -1654,12 +1739,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<RestaurantSectionsWithOperation> RetrieveRestaurantSectionsForWhichReserveBookingAreAvailableAsync(
-            IEnumerable<Guid> terminalGroupIds, bool returnSchema = false, long? revision = null)
+            IEnumerable<Guid> terminalGroupIds, bool returnSchema = false, long? revision = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpReserves.RetrieveRestaurantSectionsForWhichReserveBookingAreAvailableAsync(
-                    terminalGroupIds, returnSchema, revision);
+                    terminalGroupIds, returnSchema, revision, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1667,7 +1753,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpReserves.RetrieveRestaurantSectionsForWhichReserveBookingAreAvailableAsync(
-                        terminalGroupIds, returnSchema, revision);
+                        terminalGroupIds, returnSchema, revision, cancellationToken);
                 }
 
                 throw e;
@@ -1675,12 +1761,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<ReservesWithOperation> RetrieveReservesForPassedRestaurantSectionsAsync(
-            IEnumerable<Guid> restaurantSectionIds, DateTime dateFrom, DateTime? dateTo = null)
+            IEnumerable<Guid> restaurantSectionIds, DateTime dateFrom, DateTime? dateTo = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpReserves.RetrieveReservesForPassedRestaurantSectionsAsync(
-                    restaurantSectionIds, dateFrom, dateTo);
+                    restaurantSectionIds, dateFrom, dateTo, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1688,7 +1775,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpReserves.RetrieveReservesForPassedRestaurantSectionsAsync(
-                        restaurantSectionIds, dateFrom, dateTo);
+                        restaurantSectionIds, dateFrom, dateTo, cancellationToken);
                 }
 
                 throw e;
@@ -1699,13 +1786,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud
             CustomerOfDeliveryRequest customer, string phone, long durationInMinutes, bool shouldRemind,
             IEnumerable<Guid> tableIds, DateTime estimatedStartTime, Guid? id = null, string? externalNumber = null,
             ReserveOrder? order = null, string? comment = null, int? transportToFrontTimeout = null,
-            GuestDetailsRequest? guests = null)
+            GuestDetailsRequest? guests = null, CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpReserves.CreateReserveAsync(organizationId, terminalGroupId, customer,
                     phone, durationInMinutes, shouldRemind, tableIds, estimatedStartTime, id, externalNumber,
-                    order, comment, transportToFrontTimeout, guests);
+                    order, comment, transportToFrontTimeout, guests, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1714,7 +1801,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpReserves.CreateReserveAsync(organizationId, terminalGroupId, customer,
                         phone, durationInMinutes, shouldRemind, tableIds, estimatedStartTime, id, externalNumber,
-                        order, comment, transportToFrontTimeout, guests);
+                        order, comment, transportToFrontTimeout, guests, cancellationToken);
                 }
 
                 throw e;
@@ -1722,12 +1809,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<ReservesWithOperation> RetrieveReservesStatusesByIdsAsync(Guid organizationId,
-            IEnumerable<Guid> reserveIds, IEnumerable<string>? sourceKeys = null)
+            IEnumerable<Guid> reserveIds, IEnumerable<string>? sourceKeys = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpReserves.RetrieveReservesStatusesByIdsAsync(organizationId,
-                    reserveIds, sourceKeys);
+                    reserveIds, sourceKeys, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1735,7 +1823,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpReserves.RetrieveReservesStatusesByIdsAsync(organizationId,
-                        reserveIds, sourceKeys);
+                        reserveIds, sourceKeys, cancellationToken);
                 }
 
                 throw e;
@@ -1750,18 +1838,21 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         #region Webhooks https://api-ru.iiko.services/#tag/Webhooks
 
-        public async Task<WebhookSettings> GetWebhooksSettingsForSpecifiedOrganizationAsync(Guid organizationId)
+        public async Task<WebhookSettings> GetWebhooksSettingsForSpecifiedOrganizationAsync(Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpWebhooks.GetWebhooksSettingsForSpecifiedOrganizationAsync(organizationId);
+                return await _httpWebhooks.GetWebhooksSettingsForSpecifiedOrganizationAsync(organizationId,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpWebhooks.GetWebhooksSettingsForSpecifiedOrganizationAsync(organizationId);
+                    return await _httpWebhooks.GetWebhooksSettingsForSpecifiedOrganizationAsync(organizationId,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -1769,12 +1860,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<OperationInfo> UpdateWebhooksSettingsForSpecifiedOrganizationAsync(Guid organizationId,
-            string webHooksUri, string? authToken = null, Filter? webHooksFilter = null)
+            string webHooksUri, string? authToken = null, Filter? webHooksFilter = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpWebhooks.UpdateWebhooksSettingsForSpecifiedOrganizationAsync(organizationId,
-                    webHooksUri, authToken, webHooksFilter);
+                    webHooksUri, authToken, webHooksFilter, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1782,7 +1874,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpWebhooks.UpdateWebhooksSettingsForSpecifiedOrganizationAsync(organizationId,
-                        webHooksUri, authToken, webHooksFilter);
+                        webHooksUri, authToken, webHooksFilter, cancellationToken);
                 }
 
                 throw e;
@@ -1799,12 +1891,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         public async Task<CheckinInfo> CalculateCheckinAsync(DeliveryOrderRequest order, Guid organizationId, string? coupon = null,
             Guid? referrerId = null, Guid? terminalGroupId = null, IEnumerable<DynamicDiscount>? dynamicDiscounts = null,
-            IEnumerable<Guid>? availablePaymentMarketingCampaignIds = null, IEnumerable<Guid>? applicableManualConditions = null)
+            IEnumerable<Guid>? availablePaymentMarketingCampaignIds = null, IEnumerable<Guid>? applicableManualConditions = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpLoyalty.CalculateCheckinAsync(order, organizationId, coupon, referrerId, terminalGroupId,
-                    dynamicDiscounts, availablePaymentMarketingCampaignIds, applicableManualConditions);
+                    dynamicDiscounts, availablePaymentMarketingCampaignIds, applicableManualConditions, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -1812,79 +1905,85 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpLoyalty.CalculateCheckinAsync(order, organizationId, coupon, referrerId, terminalGroupId,
-                        dynamicDiscounts, availablePaymentMarketingCampaignIds, applicableManualConditions);
+                        dynamicDiscounts, availablePaymentMarketingCampaignIds, applicableManualConditions, cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<ManualConditionInfos> GetManualConditionsAsync(Guid organizationId)
+        public async Task<ManualConditionInfos> GetManualConditionsAsync(Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpLoyalty.GetManualConditionsAsync(organizationId);
+                return await _httpLoyalty.GetManualConditionsAsync(organizationId, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpLoyalty.GetManualConditionsAsync(organizationId);
+                    return await _httpLoyalty.GetManualConditionsAsync(organizationId, cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<ProgramInfos> GetProgramsAsync(Guid organizationId, bool? WithoutMarketingCampaigns = null)
+        public async Task<ProgramInfos> GetProgramsAsync(Guid organizationId, bool? WithoutMarketingCampaigns = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpLoyalty.GetProgramsAsync(organizationId, WithoutMarketingCampaigns);
+                return await _httpLoyalty.GetProgramsAsync(organizationId, WithoutMarketingCampaigns, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpLoyalty.GetProgramsAsync(organizationId, WithoutMarketingCampaigns);
+                    return await _httpLoyalty.GetProgramsAsync(organizationId, WithoutMarketingCampaigns, cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<CouponInfos> GetCouponInfoAsync(Guid organizationId, string? number = null, string? series = null)
+        public async Task<CouponInfos> GetCouponInfoAsync(Guid organizationId, string? number = null, string? series = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpLoyalty.GetCouponInfoAsync(organizationId, number, series);
+                return await _httpLoyalty.GetCouponInfoAsync(organizationId, number, series, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpLoyalty.GetCouponInfoAsync(organizationId, number, series);
+                    return await _httpLoyalty.GetCouponInfoAsync(organizationId, number, series, cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<SeriesWithNotActivatedCouponInfos> GetCouponSeriesWithNonActivatedCouponsAsync(Guid organizationId)
+        public async Task<SeriesWithNotActivatedCouponInfos> GetCouponSeriesWithNonActivatedCouponsAsync(Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpLoyalty.GetCouponSeriesWithNonActivatedCouponsAsync(organizationId);
+                return await _httpLoyalty.GetCouponSeriesWithNonActivatedCouponsAsync(organizationId,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpLoyalty.GetCouponSeriesWithNonActivatedCouponsAsync(organizationId);
+                    return await _httpLoyalty.GetCouponSeriesWithNonActivatedCouponsAsync(organizationId,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -1892,18 +1991,20 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<NotActivatedCouponInfos> GetNonActivatedCouponsAsync(Guid organizationId, string? series = null,
-            int? pageSize = null, int? page = null)
+            int? pageSize = null, int? page = null, CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpLoyalty.GetNonActivatedCouponsAsync(organizationId, series, pageSize, page);
+                return await _httpLoyalty.GetNonActivatedCouponsAsync(organizationId, series, pageSize, page,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpLoyalty.GetNonActivatedCouponsAsync(organizationId, series, pageSize, page);
+                    return await _httpLoyalty.GetNonActivatedCouponsAsync(organizationId, series, pageSize, page,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -1914,36 +2015,40 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         #region Customer categories https://api-ru.iiko.services/#tag/Customer-categories
 
-        public async Task<CustomerCategoryInfos> GetCustomerCategoriesAsync(Guid organizationId)
+        public async Task<CustomerCategoryInfos> GetCustomerCategoriesAsync(Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpLoyalty.GetCustomerCategoriesAsync(organizationId);
+                return await _httpLoyalty.GetCustomerCategoriesAsync(organizationId, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpLoyalty.GetCustomerCategoriesAsync(organizationId);
+                    return await _httpLoyalty.GetCustomerCategoriesAsync(organizationId, cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task AddCategoryForCustomerAsync(Guid customerId, Guid categoryId, Guid organizationId)
+        public async Task AddCategoryForCustomerAsync(Guid customerId, Guid categoryId, Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                await _httpLoyalty.AddCategoryForCustomerAsync(customerId, categoryId, organizationId);
+                await _httpLoyalty.AddCategoryForCustomerAsync(customerId, categoryId, organizationId,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    await _httpLoyalty.AddCategoryForCustomerAsync(customerId, categoryId, organizationId);
+                    await _httpLoyalty.AddCategoryForCustomerAsync(customerId, categoryId, organizationId,
+                        cancellationToken);
                     return;
                 }
 
@@ -1951,18 +2056,21 @@ namespace IikoTransport.Net.Repositories.IikoCloud
             }
         }
 
-        public async Task RemoveCategoryForCustomerAsync(Guid customerId, Guid categoryId, Guid organizationId)
+        public async Task RemoveCategoryForCustomerAsync(Guid customerId, Guid categoryId, Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                await _httpLoyalty.RemoveCategoryForCustomerAsync(customerId, categoryId, organizationId);
+                await _httpLoyalty.RemoveCategoryForCustomerAsync(customerId, categoryId, organizationId,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    await _httpLoyalty.RemoveCategoryForCustomerAsync(customerId, categoryId, organizationId);
+                    await _httpLoyalty.RemoveCategoryForCustomerAsync(customerId, categoryId, organizationId,
+                        cancellationToken);
                     return;
                 }
 
@@ -1974,90 +2082,101 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         #region Customers https://api-ru.iiko.services/#tag/Customers
 
-        public async Task<CustomerInfo> GetCustomerInfoByCardNumberAsync(Guid organizationId, string cardNumber)
+        public async Task<CustomerInfo> GetCustomerInfoByCardNumberAsync(Guid organizationId, string cardNumber,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpLoyalty.GetCustomerInfoByCardNumberAsync(organizationId, cardNumber);
+                return await _httpLoyalty.GetCustomerInfoByCardNumberAsync(organizationId, cardNumber,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpLoyalty.GetCustomerInfoByCardNumberAsync(organizationId, cardNumber);
+                    return await _httpLoyalty.GetCustomerInfoByCardNumberAsync(organizationId, cardNumber,
+                        cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<CustomerInfo> GetCustomerInfoByCardTrackAsync(Guid organizationId, string cardTrack)
+        public async Task<CustomerInfo> GetCustomerInfoByCardTrackAsync(Guid organizationId, string cardTrack,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpLoyalty.GetCustomerInfoByCardTrackAsync(organizationId, cardTrack);
+                return await _httpLoyalty.GetCustomerInfoByCardTrackAsync(organizationId, cardTrack, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpLoyalty.GetCustomerInfoByCardTrackAsync(organizationId, cardTrack);
+                    return await _httpLoyalty.GetCustomerInfoByCardTrackAsync(organizationId, cardTrack,
+                        cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<CustomerInfo> GetCustomerInfoByEmailAsync(Guid organizationId, string email)
+        public async Task<CustomerInfo> GetCustomerInfoByEmailAsync(Guid organizationId, string email,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpLoyalty.GetCustomerInfoByEmailAsync(organizationId, email);
+                return await _httpLoyalty.GetCustomerInfoByEmailAsync(organizationId, email, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpLoyalty.GetCustomerInfoByEmailAsync(organizationId, email);
+                    return await _httpLoyalty.GetCustomerInfoByEmailAsync(organizationId, email,
+                        cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<CustomerInfo> GetCustomerInfoByIdAsync(Guid organizationId, Guid id)
+        public async Task<CustomerInfo> GetCustomerInfoByIdAsync(Guid organizationId, Guid id,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpLoyalty.GetCustomerInfoByIdAsync(organizationId, id);
+                return await _httpLoyalty.GetCustomerInfoByIdAsync(organizationId, id, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpLoyalty.GetCustomerInfoByIdAsync(organizationId, id);
+                    return await _httpLoyalty.GetCustomerInfoByIdAsync(organizationId, id,
+                        cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task<CustomerInfo> GetCustomerInfoByPhoneAsync(Guid organizationId, string phone)
+        public async Task<CustomerInfo> GetCustomerInfoByPhoneAsync(Guid organizationId, string phone,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpLoyalty.GetCustomerInfoByPhoneAsync(organizationId, phone);
+                return await _httpLoyalty.GetCustomerInfoByPhoneAsync(organizationId, phone, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpLoyalty.GetCustomerInfoByPhoneAsync(organizationId, phone);
+                    return await _httpLoyalty.GetCustomerInfoByPhoneAsync(organizationId, phone,
+                        cancellationToken);
                 }
 
                 throw e;
@@ -2065,12 +2184,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<CustomerInfo> GetCustomerInfoBySpecifiedCriterionAsync(Guid organizationId, SearchCustomerType type,
-            Guid? id = null, string? phone = null, string? cardTrack = null, string? cardNumber = null, string? email = null)
+            Guid? id = null, string? phone = null, string? cardTrack = null, string? cardNumber = null, string? email = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpLoyalty.GetCustomerInfoBySpecifiedCriterionAsync(organizationId, type, id, phone,
-                    cardTrack, cardNumber, email);
+                    cardTrack, cardNumber, email, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -2078,7 +2198,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpLoyalty.GetCustomerInfoBySpecifiedCriterionAsync(organizationId, type, id, phone,
-                        cardTrack, cardNumber, email);
+                        cardTrack, cardNumber, email, cancellationToken);
                 }
 
                 throw e;
@@ -2089,13 +2209,13 @@ namespace IikoTransport.Net.Repositories.IikoCloud
             string? cardTrack = null, string? cardNumber = null, string? name = null, string? middleName = null,
             string? surName = null, DateTime? birthday = null, string? email = null, Gender? sex = null,
             GuestConsentStatus? consentStatus = null, bool? shouldReceivePromoActionsInfo = null, Guid? referrerId = null,
-            string? userData = null)
+            string? userData = null, CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpLoyalty.CreateOrUpdateCustomerAsync(organizationId, id, phone, cardTrack, cardNumber,
                     name, middleName, surName, birthday, email, sex, consentStatus, shouldReceivePromoActionsInfo,
-                    referrerId, userData);
+                    referrerId, userData, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -2104,25 +2224,28 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpLoyalty.CreateOrUpdateCustomerAsync(organizationId, id, phone, cardTrack, cardNumber,
                         name, middleName, surName, birthday, email, sex, consentStatus, shouldReceivePromoActionsInfo,
-                        referrerId, userData);
+                        referrerId, userData, cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task AddCardForCustomerAsync(Guid customerId, string cardTrack, string cardNumber, Guid organizationId)
+        public async Task AddCardForCustomerAsync(Guid customerId, string cardTrack, string cardNumber, Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                await _httpLoyalty.AddCardForCustomerAsync(customerId, cardTrack, cardNumber, organizationId);
+                await _httpLoyalty.AddCardForCustomerAsync(customerId, cardTrack, cardNumber, organizationId,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    await _httpLoyalty.AddCardForCustomerAsync(customerId, cardTrack, cardNumber, organizationId);
+                    await _httpLoyalty.AddCardForCustomerAsync(customerId, cardTrack, cardNumber, organizationId,
+                        cancellationToken);
                     return;
                 }
 
@@ -2130,36 +2253,41 @@ namespace IikoTransport.Net.Repositories.IikoCloud
             }
         }
 
-        public async Task<Guid> AddCustomerToProgramAsync(Guid customerId, Guid programId, Guid organizationId)
+        public async Task<Guid> AddCustomerToProgramAsync(Guid customerId, Guid programId, Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                return await _httpLoyalty.AddCustomerToProgramAsync(customerId, programId, organizationId);
+                return await _httpLoyalty.AddCustomerToProgramAsync(customerId, programId, organizationId,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    return await _httpLoyalty.AddCustomerToProgramAsync(customerId, programId, organizationId);
+                    return await _httpLoyalty.AddCustomerToProgramAsync(customerId, programId, organizationId,
+                        cancellationToken);
                 }
 
                 throw e;
             }
         }
 
-        public async Task CancelHoldMoneyOfCustomerAsync(Guid transactionId, Guid organizationId)
+        public async Task CancelHoldMoneyOfCustomerAsync(Guid transactionId, Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                await _httpLoyalty.CancelHoldMoneyOfCustomerAsync(transactionId, organizationId);
+                await _httpLoyalty.CancelHoldMoneyOfCustomerAsync(transactionId, organizationId, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    await _httpLoyalty.CancelHoldMoneyOfCustomerAsync(transactionId, organizationId);
+                    await _httpLoyalty.CancelHoldMoneyOfCustomerAsync(transactionId, organizationId,
+                        cancellationToken);
                     return;
                 }
 
@@ -2167,18 +2295,21 @@ namespace IikoTransport.Net.Repositories.IikoCloud
             }
         }
 
-        public async Task DeleteCardForCustomerAsync(Guid customerId, string cardTrack, Guid organizationId)
+        public async Task DeleteCardForCustomerAsync(Guid customerId, string cardTrack, Guid organizationId,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                await _httpLoyalty.DeleteCardForCustomerAsync(customerId, cardTrack, organizationId);
+                await _httpLoyalty.DeleteCardForCustomerAsync(customerId, cardTrack, organizationId,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    await _httpLoyalty.DeleteCardForCustomerAsync(customerId, cardTrack, organizationId);
+                    await _httpLoyalty.DeleteCardForCustomerAsync(customerId, cardTrack, organizationId,
+                        cancellationToken);
                     return;
                 }
 
@@ -2187,12 +2318,12 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task<Guid> HoldMoneyOfCustomerAsync(Guid customerId, Guid walletId, Guid organizationId, double sum,
-            Guid? transactionId = null, string? comment = null)
+            Guid? transactionId = null, string? comment = null, CancellationToken? cancellationToken = default)
         {
             try
             {
                 return await _httpLoyalty.HoldMoneyOfCustomerAsync(customerId, walletId, organizationId, sum,
-                    transactionId, comment);
+                    transactionId, comment, cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -2200,7 +2331,7 @@ namespace IikoTransport.Net.Repositories.IikoCloud
                 {
                     await UpdateSessionKeyForApiUserAsync();
                     return await _httpLoyalty.HoldMoneyOfCustomerAsync(customerId, walletId, organizationId, sum,
-                        transactionId, comment);
+                        transactionId, comment, cancellationToken);
                 }
 
                 throw e;
@@ -2208,18 +2339,20 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task RefillCustomerBalanceAsync(Guid customerId, Guid walletId, Guid organizationId, double sum,
-            string? comment = null)
+            string? comment = null, CancellationToken? cancellationToken = default)
         {
             try
             {
-                await _httpLoyalty.RefillCustomerBalanceAsync(customerId, walletId, organizationId, sum, comment);
+                await _httpLoyalty.RefillCustomerBalanceAsync(customerId, walletId, organizationId, sum, comment,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    await _httpLoyalty.RefillCustomerBalanceAsync(customerId, walletId, organizationId, sum, comment);
+                    await _httpLoyalty.RefillCustomerBalanceAsync(customerId, walletId, organizationId, sum, comment,
+                        cancellationToken);
                     return;
                 }
 
@@ -2228,18 +2361,20 @@ namespace IikoTransport.Net.Repositories.IikoCloud
         }
 
         public async Task WithdrawCustomerBalanceAsync(Guid customerId, Guid walletId, Guid organizationId, double sum,
-            string? comment = null)
+            string? comment = null, CancellationToken? cancellationToken = default)
         {
             try
             {
-                await _httpLoyalty.WithdrawCustomerBalanceAsync(customerId, walletId, organizationId, sum, comment);
+                await _httpLoyalty.WithdrawCustomerBalanceAsync(customerId, walletId, organizationId, sum, comment,
+                    cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    await _httpLoyalty.WithdrawCustomerBalanceAsync(customerId, walletId, organizationId, sum, comment);
+                    await _httpLoyalty.WithdrawCustomerBalanceAsync(customerId, walletId, organizationId, sum, comment,
+                        cancellationToken);
                     return;
                 }
 
@@ -2251,18 +2386,19 @@ namespace IikoTransport.Net.Repositories.IikoCloud
 
         #region Messages https://api-ru.iiko.services/#tag/Messages
 
-        public async Task SendEmailAsync(string receiver, string subject, Guid organizationId, string? body = null)
+        public async Task SendEmailAsync(string receiver, string subject, Guid organizationId, string? body = null,
+            CancellationToken? cancellationToken = default)
         {
             try
             {
-                await _httpLoyalty.SendEmailAsync(receiver, subject, organizationId, body);
+                await _httpLoyalty.SendEmailAsync(receiver, subject, organizationId, body, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    await _httpLoyalty.SendEmailAsync(receiver, subject, organizationId, body);
+                    await _httpLoyalty.SendEmailAsync(receiver, subject, organizationId, body, cancellationToken);
                     return;
                 }
 
@@ -2270,18 +2406,18 @@ namespace IikoTransport.Net.Repositories.IikoCloud
             }
         }
 
-        public async Task SendSmsAsync(string phone, string text, Guid organizationId)
+        public async Task SendSmsAsync(string phone, string text, Guid organizationId, CancellationToken? cancellationToken = default)
         {
             try
             {
-                await _httpLoyalty.SendSmsAsync(phone, text, organizationId);
+                await _httpLoyalty.SendSmsAsync(phone, text, organizationId, cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 if (e.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await UpdateSessionKeyForApiUserAsync();
-                    await _httpLoyalty.SendSmsAsync(phone, text, organizationId);
+                    await _httpLoyalty.SendSmsAsync(phone, text, organizationId, cancellationToken);
                     return;
                 }
 
